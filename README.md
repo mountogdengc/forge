@@ -2,18 +2,26 @@
 
 ## Adventure development fork
 
-This fork prioritizes Forge's single-player Adventure mode: dependable saves and
-quest progression, a coherent campaign, rewarding exploration, and tools for
-building more Adventure content. Multiplayer feature work is outside the fork's
-current roadmap. Upstream card rules, AI, platform fixes, and other improvements
-remain valuable dependencies of the Adventure experience.
+This fork is being developed specifically for Forge's single-player Adventure
+mode: dependable saves and quest progression, a coherent campaign, rewarding
+exploration, and tools for building more Adventure content. Multiplayer and
+standalone Duel modes are outside the fork's product scope. Adventure's own card
+battles continue to use the shared rules engine, computer opponent, and card data.
+
+Development follows this fork's Adventure goals. Submitting changes upstream is
+not planned; useful upstream fixes can be selectively imported when they benefit
+Adventure. The planned application flow will center on starting or continuing an
+Adventure, managing saves, and adjusting settings.
 
 See the [Adventure roadmap](docs/Adventure/Fork-Roadmap.md) for priorities and the
 [progression validation guide](docs/Adventure/Progression-Validation.md) for the
 checks required before releasing progression changes.
 
-The upstream project information and download links follow below. Those downloads
-do not include this fork's changes unless they have also been integrated upstream.
+## Upstream project reference
+
+The following sections retain upstream project information for reference,
+including modes outside this fork's development scope. Upstream download links
+provide upstream builds; use this fork's source to build its Adventure changes.
 
 Join the **Forge community** on [Discord](https://discord.gg/HcPJNyD66a)!
 

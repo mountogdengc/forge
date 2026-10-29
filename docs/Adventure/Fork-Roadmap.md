@@ -4,7 +4,11 @@
 
 Develop this fork around Forge's single-player Adventure mode: an explorable campaign with dependable progression, a coherent story, useful rewards, and reasons to build and improve decks. The first priority is protecting a player's progress when they explore out of order, return to an old save, or revisit a completed encounter.
 
-Adventure development takes priority over new multiplayer features. Keep the shared card engine, computer opponent, card data, and platform improvements compatible with upstream; those systems also determine the quality of single-player battles.
+Adventure is the fork's product scope. Multiplayer and standalone Duel modes are outside that scope. Adventure's card battles still depend on the shared rules engine, computer opponent, card data, and relevant platform support; maintain those systems for the Adventure experience.
+
+The fork follows its own campaign and interface goals. Submitting changes upstream is not planned, and upstream acceptance is not a design constraint. Selectively import useful upstream fixes when they benefit Adventure and remain compatible with the fork's progression and saves.
+
+Plan an Adventure-centered application flow: start or continue a campaign, manage saves, and adjust settings. Existing standalone-mode code may remain as inherited infrastructure while shared dependencies are understood. Removing code or modules requires a concrete Adventure benefit and a dependency review; the immediate work remains campaign development and reliability.
 
 This is the fork's working direction and implementation sequence. Proposed milestones are not claims that the features already exist or have passed playtesting. Verification results belong in [Progression validation](Progression-Validation.md).
 
@@ -59,6 +63,7 @@ The proposed next milestone is one complete chapter built around existing locati
 
 | Design area | Deliverable for the chapter | Acceptance question |
 | --- | --- | --- |
+| Application flow | An Adventure-focused launch and menu path for starting, continuing, saves, and settings | Can the player enter and resume Adventure directly without navigating unrelated modes? |
 | Story | A short chapter outline, quest relationships, NPC motivations, and a defined ending | Can a player explain what they are pursuing, why it matters, and when this chapter is complete? |
 | Exploration | A documented route through the chapter plus supported alternate orders and optional encounters | Can players explore early without losing essential objectives or being forced to guess the intended order? |
 | Dungeons | Distinct encounters, environmental identity, useful navigation, and appropriate exits | Does each dungeon offer a different challenge or discovery, and can the player leave and resume safely? |
@@ -88,13 +93,13 @@ The initial targets are invalid prerequisites, missing targets, unreachable stag
 
 Provide authors with a short quest checklist and reproducible save scenarios. Expand automated coverage around those failure modes as needed. The goal is to make a new chapter easier to finish and maintain, with less reliance on a particular quest order remembered by its author.
 
-## Upstream integration and maintenance
+## Fork maintenance and selective upstream imports
 
 Keep Adventure changes in focused branches and commits. Separate general engine repairs, content corrections, and campaign additions so each can be reviewed or carried forward independently.
 
 Before taking an upstream change, inspect its current status, dependencies, changed save behavior, and overlap with the fork. Re-run the relevant progression cases after integrating changes to quest execution, map persistence, rewards, or Adventure resources. Continue taking useful card-rule, AI, performance, and platform fixes even when they are not labeled Adventure.
 
-Contribute generally applicable fixes upstream when appropriate, while retaining the fork's Adventure priorities. Follow the repository's requirement to disclose substantial AI coding assistance in any resulting pull request. New multiplayer work remains outside this roadmap's priority sequence.
+Keep development branches and pull requests within this fork for review and tracking. Upstream submissions are not a planned activity. Multiplayer and standalone Duel features do not receive development milestones or determine Adventure feature acceptance. Preserve shared functionality that Adventure uses, and record substantial AI assistance in this fork's change descriptions for provenance.
 
 ## Selected references
 
