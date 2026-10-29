@@ -69,6 +69,8 @@ public class Forge implements ApplicationListener {
     private static ApplicationListener app = null;
     static Scene currentScene = null;
     static Array<Scene> lastScene = new Array<>();
+    private static boolean discardAdventureHistoryOnNextSwitch;
+    private static final Array<Disposable> retiredAdventureResources = new Array<>();
     public static boolean advFreezePlayerControls = false;
     private static Clipboard clipboard;
     private static IDeviceAdapter deviceAdapter;
@@ -1149,6 +1151,32 @@ public class Forge implements ApplicationListener {
         FrameRate.getInstance().updateHistoricalPeak(showFPS);
         return switchScene(newScene, false);
     }
+
+    /** A campaign transition must not leave a Back path into the previous world. */
+    public static void clearAdventureSceneHistory() {
+        lastScene.clear();
+        discardAdventureHistoryOnNextSwitch = true;
+    }
+
+    /** Keep the outgoing scene alive until its leave hook and the transition finish. */
+    public static void retireAdventureResource(Disposable resource) {
+        if (resource != null && !retiredAdventureResources.contains(resource, true)) {
+            retiredAdventureResources.add(resource);
+        }
+    }
+
+    private static void disposeRetiredAdventureResources() {
+        Array<Disposable> resources = new Array<>(retiredAdventureResources);
+        retiredAdventureResources.clear();
+        for (Disposable resource : resources) {
+            if (resource == currentScene) {
+                retiredAdventureResources.add(resource);
+            } else {
+                safeDispose(resource);
+            }
+        }
+    }
+
     public static boolean switchScene(Scene newScene, boolean skipPreview) {
         if (newScene instanceof RewardScene || newScene instanceof SpellSmithScene || newScene instanceof DeckSelectScene || newScene instanceof PlayerStatisticScene || newScene instanceof QuestLogScene) {
             if (!(currentScene instanceof ForgeScene || skipPreview)) //prevent overwriting the last preview if last scene is instance of ForgeScene
@@ -1164,14 +1192,18 @@ public class Forge implements ApplicationListener {
                     lastScene.setSize(i);
                 }
             }
-            lastScene.add(currentScene);
+            if (!discardAdventureHistoryOnNextSwitch) {
+                lastScene.add(currentScene);
+            }
         }
+        discardAdventureHistoryOnNextSwitch = false;
         if (!(newScene instanceof ViewRewardsScene))
             storeScreen();
         Adventure.getInstance().sceneWasSwapped = true;
         currentScene = newScene;
 
         currentScene.enter();
+        disposeRetiredAdventureResources();
         if (currentScene instanceof DuelScene)
             Forge.clearTransitionScreen(true);
         return true;

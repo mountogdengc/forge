@@ -280,6 +280,11 @@ public class GameHUD extends Stage {
         return instance == null ? instance = new GameHUD(WorldStage.getInstance()) : instance;
     }
 
+    public static void resetForCampaign() {
+        Forge.retireAdventureResource(instance);
+        instance = null;
+    }
+
     public Touchpad getTouchpad() {
         return touchpad;
     }

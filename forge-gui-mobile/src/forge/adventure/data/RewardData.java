@@ -97,9 +97,13 @@ public class RewardData implements Serializable {
 
     private static Iterable<PaperCard> allCards;
     private static Iterable<PaperCard> allEnemyCards;
+    private static Config cardPoolConfig;
+    private static boolean commanderCardPool;
 
     static private void initializeAllCards() {
-        ConfigData configData = Config.instance().getConfigData();
+        cardPoolConfig = Config.instance();
+        commanderCardPool = AdventurePlayer.current().isCommanderMode();
+        ConfigData configData = cardPoolConfig.getConfigData();
         RewardData legals = configData.legalCards;
 
         List<Predicate<PaperCard>> filters = new ArrayList<>();
@@ -121,7 +125,7 @@ public class RewardData implements Serializable {
         if (!FModel.getPreferences().getPrefBoolean(FPref.UI_ANTE))
             filters.add(pc -> !pc.getRules().hasKeyword("Remove CARDNAME from your deck before playing if you're not playing for ante."));
 
-        if (!AdventurePlayer.current().isCommanderMode())
+        if (!commanderCardPool)
             filters.add(pc -> !pc.getRules().getAiHints().getRemNonCommanderDecks());
 
         filters.add(pc -> !(pc.getRules().isCustom() && pc.getImageKey(false).startsWith(ImageKeys.ADVENTURECARD_PREFIX)));
@@ -142,13 +146,16 @@ public class RewardData implements Serializable {
     }
 
     static public Iterable<PaperCard> getAllCards() {
-        if (allCards == null)
+        if (allCards == null || cardPoolConfig != Config.instance()
+                || commanderCardPool != AdventurePlayer.current().isCommanderMode())
             initializeAllCards();
         return allCards;
     }
 
     public static void invalidateCardPool() {
         allCards = null;
+        allEnemyCards = null;
+        cardPoolConfig = null;
     }
 
     public Array<Reward> generate(boolean isForEnemy, boolean useSeedlessRandom) {
@@ -168,8 +175,7 @@ public class RewardData implements Serializable {
         Random rewardRandom = useSeedlessRandom ? new Random() : WorldSave.getCurrentSave().getWorld().getRandom();
         //Keep using same generation method for shop rewards, but fully randomize loot drops by not using the instance pre-seeded by the map
 
-        if (allCards==null)
-            initializeAllCards();
+        getAllCards();
         Array<Reward> ret=new Array<>();
 
         if (probability == 0 || rewardRandom.nextFloat() <= probability) {

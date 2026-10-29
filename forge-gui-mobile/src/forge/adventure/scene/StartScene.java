@@ -72,8 +72,19 @@ public class StartScene extends UIScene {
         return object;
     }
 
+    public static void resetForCampaign() {
+        Forge.retireAdventureResource(object);
+        object = null;
+    }
+
+    public void showError(String message) {
+        showDialog(createGenericDialog(Forge.getLocalizer().getMessage("lblError"), message,
+                Forge.getLocalizer().getMessage("lblOK"), null, this::removeDialog, null,
+                false, "", true));
+    }
+
     public boolean NewGame() {
-        Forge.switchScene(NewGameScene.instance());
+        Forge.switchScene(CampaignSelectionScene.instance());
         return true;
     }
 
@@ -95,6 +106,8 @@ public class StartScene extends UIScene {
     }
 
     public boolean Resume() {
+        if (!WorldSave.hasActivePlaythrough())
+            return Continue();
         if (MapStage.getInstance().isInMap())
             Forge.switchScene(TileMapScene.instance());
         else
@@ -106,28 +119,30 @@ public class StartScene extends UIScene {
     boolean loaded = false;
 
     public boolean Continue() {
-        final String lastActiveSave = Config.instance().getSettingData().lastActiveSave;
-
-        if (WorldSave.isSafeFile(lastActiveSave)) {
-            if (loaded)
-                return true;
-            loaded = true;
-            try {
-                Forge.setTransitionScreen(new TransitionScreen(() -> {
-                    loaded = false;
-                    if (WorldSave.load(WorldSave.filenameToSlot(lastActiveSave))) {
+        if (loaded || !WorldSave.canContinue())
+            return true;
+        loaded = true;
+        try {
+            Forge.setTransitionScreen(new TransitionScreen(() -> {
+                try {
+                    if (WorldSave.loadContinue()) {
                         SoundSystem.instance.changeBackgroundTrack();
                         Forge.switchScene(GameScene.instance());
                     } else {
                         Forge.clearTransitionScreen();
+                        StartScene menu = StartScene.instance();
+                        Forge.switchScene(menu);
+                        menu.showError(WorldSave.getLastError());
                     }
-                }, null, false, true, Forge.getLocalizer().getMessage("lblLoadingWorld")));
-            } catch (Exception e) {
-                loaded = false;
-                Forge.clearTransitionScreen();
-            }
+                } finally {
+                    loaded = false;
+                }
+            }, null, false, true, Forge.getLocalizer().getMessage("lblLoadingWorld")));
+        } catch (RuntimeException e) {
+            loaded = false;
+            Forge.clearTransitionScreen();
+            showError(e.getMessage());
         }
-
         return true;
     }
 
@@ -270,8 +285,7 @@ public class StartScene extends UIScene {
             val = e.getMessage();
             //isError = true;
         } finally {
-            Config.instance().getSettingData().lastActiveSave = null;
-            Config.instance().saveSettings();
+            WorldSave.clearContinue();
 
             TextraLabel messageLabel = Controls.newTextraLabel(val);
             messageLabel.setWrap(true);
@@ -318,11 +332,11 @@ public class StartScene extends UIScene {
     }
 
     public void updateResumeContinue() {
-        boolean hasResumeButton = WorldSave.getCurrentSave().getWorld().getData() != null;
+        boolean hasResumeButton = WorldSave.hasActivePlaythrough() && WorldSave.getCurrentSave().getWorld().getData() != null;
         resumeButton.setVisible(hasResumeButton);
 
         // Continue button mutually exclusive with resume button
-        if (Config.instance().getSettingData().lastActiveSave != null && !hasResumeButton) {
+        if (WorldSave.canContinue() && !hasResumeButton) {
             continueButton.setVisible(true);
             if (!Forge.isLandscapeMode()) {
                 continueButton.setX(resumeButton.getX());
@@ -335,7 +349,7 @@ public class StartScene extends UIScene {
 
     @Override
     public void enter() {
-        boolean hasSaveButton = WorldSave.getCurrentSave().getWorld().getData() != null;
+        boolean hasSaveButton = WorldSave.hasActivePlaythrough() && WorldSave.getCurrentSave().getWorld().getData() != null;
         if (hasSaveButton) {
             TileMapScene scene = TileMapScene.instance();
             hasSaveButton = !scene.currentMap().isInMap() || scene.isAutoHealLocation();

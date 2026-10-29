@@ -99,6 +99,43 @@ public class World implements Disposable, SaveFileContent {
         worldDataLoaded = true;
     }
 
+    /** Release campaign-owned data before restoring or generating another playthrough. */
+    public void resetCampaignData() {
+        // Some biome edge caches refer to the shared drawing pixmap. Dispose each identity once.
+        Set<Pixmap> owned = Collections.newSetFromMap(new IdentityHashMap<>());
+        owned.add(biomeImage);
+        owned.add(globalTileDrawing);
+        owned.add(emptyTile);
+        if (biomeTexture != null) {
+            for (BiomeTexture texture : biomeTexture) {
+                if (texture == null) continue;
+                owned.add(texture.emptyPixmap);
+                for (ArrayList<Pixmap> images : texture.images) owned.addAll(images);
+                for (ArrayList<Pixmap> images : texture.smallImages) owned.addAll(images);
+                for (com.badlogic.gdx.utils.IntMap<Pixmap> images : texture.edgeImages) {
+                    for (Pixmap image : images.values()) owned.add(image);
+                }
+            }
+        }
+        for (Pair<Pixmap, HashMap<String, Pixmap>> images : pixmapHash.values()) {
+            owned.add(images.getLeft());
+            owned.addAll(images.getRight().values());
+        }
+        owned.remove(null);
+        for (Pixmap image : owned) Forge.safeDispose(image);
+        biomeImage = null;
+        globalTileDrawing = null;
+        emptyTile = null;
+        // Textures loaded through Assets remain owned by its path-keyed asset manager.
+        globalTexture = null;
+        biomeTexture = null;
+        data = null;
+        worldDataLoaded = false;
+        drawingInfoCache.clear();
+        pixmapHash.clear();
+        storedInfo.clear();
+    }
+
     @Override
     public void load(SaveFileData saveFileData) {
 
@@ -952,8 +989,7 @@ public class World implements Disposable, SaveFileContent {
     }
 
     public void dispose() {
-        drawingInfoCache.clear();
-        Forge.safeDispose(biomeImage, globalTileDrawing, globalTexture, emptyTile);
+        resetCampaignData();
     }
 
     public void setSeed(long seedOffset) {

@@ -35,7 +35,12 @@ public class PointOfInterestData implements Serializable {
 
 
     private static Array<PointOfInterestData> pointOfInterestList;
+    private static Config activeConfig;
     public static Array<PointOfInterestData> getAllPointOfInterest() {
+        if (activeConfig != Config.instance()) {
+            activeConfig = Config.instance();
+            pointOfInterestList = null;
+        }
         if (pointOfInterestList == null) {
             Json json = new Json();
             FileHandle handle = Config.instance().getFile(Paths.POINTS_OF_INTEREST);

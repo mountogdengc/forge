@@ -66,6 +66,11 @@ import java.util.*;
 public class DuelScene extends ForgeScene {
     private static DuelScene object;
 
+    public static void resetForCampaign() {
+        Forge.retireAdventureResource(object);
+        object = null;
+    }
+
     public static DuelScene instance() {
         if (object == null)
             object = new DuelScene();

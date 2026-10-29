@@ -50,6 +50,11 @@ public class RewardScene extends UIScene {
     private ShopActor shopActor;
     private static RewardScene object;
 
+    public static void resetForCampaign() {
+        Forge.retireAdventureResource(object);
+        object = null;
+    }
+
     private PointOfInterestChanges changes;
 
     public static RewardScene instance() {

@@ -37,9 +37,18 @@ public class WorldData implements Serializable {
 
     private static Array<EnemyData> allEnemies;
     private static Array<ShopData> shopList;
+    private static Config activeConfig;
 
+    private static void checkCampaign() {
+        if (activeConfig != Config.instance()) {
+            activeConfig = Config.instance();
+            allEnemies = null;
+            shopList = null;
+        }
+    }
 
     public static Array<ShopData> getShopList() {
+        checkCampaign();
         if (shopList == null) {
             shopList = new Array<>();
             Json json = new Json();
@@ -54,6 +63,7 @@ public class WorldData implements Serializable {
         return shopList;
     }
     static public Array<EnemyData> getAllEnemies() {
+        checkCampaign();
         if (allEnemies == null) {
             Json json = new Json();
             FileHandle handle = Config.instance().getFile(Paths.ENEMIES);

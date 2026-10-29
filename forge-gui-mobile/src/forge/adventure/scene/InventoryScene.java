@@ -211,6 +211,11 @@ public class InventoryScene extends UIScene {
 
     private static InventoryScene object;
 
+    public static void resetForCampaign() {
+        Forge.retireAdventureResource(object);
+        object = null;
+    }
+
     public static InventoryScene instance() {
         if (object == null)
             object = new InventoryScene();

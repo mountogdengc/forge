@@ -34,6 +34,11 @@ import java.util.Set;
  */
 public class MapViewScene extends UIScene {
     private static MapViewScene object;
+
+    public static void resetForCampaign() {
+        Forge.retireAdventureResource(object);
+        object = null;
+    }
     private final ScrollPane scroll;
     private final Image img;
     private final Image miniMapPlayer;

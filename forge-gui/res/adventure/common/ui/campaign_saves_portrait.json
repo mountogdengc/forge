@@ -1,0 +1,12 @@
+{
+  "width": 270,
+  "height": 480,
+  "yDown": true,
+  "elements": [
+    { "type": "Image", "image": "ui/title_bg_portrait.png", "width": 270, "height": 480 },
+    { "type": "Window", "name": "content", "x": 10, "y": 10, "width": 250, "height": 375 },
+    { "type": "TextButton", "name": "secondary", "x": 10, "y": 397, "width": 250, "height": 30 },
+    { "type": "TextButton", "name": "back", "text": "tr(lblBack)", "binding": "Back", "x": 10, "y": 438, "width": 120, "height": 32 },
+    { "type": "TextButton", "name": "action", "binding": "Use", "x": 140, "y": 438, "width": 120, "height": 32 }
+  ]
+}

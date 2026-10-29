@@ -8,6 +8,8 @@ import com.github.tommyettinger.textra.TextraButton;
 import com.github.tommyettinger.textra.TextraLabel;
 import forge.Forge;
 import forge.Graphics;
+import forge.adventure.campaign.CampaignDefinition;
+import forge.adventure.campaign.CampaignManager;
 import forge.adventure.data.RewardData;
 import forge.adventure.util.AdventureBackgroundDownloader;
 import forge.adventure.util.Config;
@@ -110,29 +112,15 @@ public class SettingsScene extends UIScene {
         selectSourcePlane = Controls.newComboBox();
         newPlaneName = Controls.newTextField("");
         selectSourcePlane.setItems(Config.instance().getAllAdventures());
-        SelectBox plane = Controls.newComboBox(Config.instance().getAllAdventures(), Config.instance().getSettingData().plane, o -> {
-            Config.instance().getSettingData().plane = (String) o;
-            Config.instance().saveSettings();
-            Forge.getLocalizer().loadAdventureBundle(Config.instance().getPlanePath((String) o) + "languages/");
-            return null;
-        });
-        plane.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent changeEvent, Actor actor) {
-                restartForge();
-            }
-        });
-        /*newPlane = Controls.newTextButton("Create own plane");
-        newPlane.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                createNewPlane();
-            }
-        });*/
-        addLabel(localizer.getMessage("lblWorld") + " (" + localizer.getMessage("lblRestartRequired") + ")");
-        settingGroup.add(plane).align(Align.right).pad(2);
-        //addLabel(localizer.getMessage("lblCreate") + localizer.getMessage("lblWorld"));
-        settingGroup.add(newPlane).align(Align.right).pad(2);
+        CampaignDefinition campaign = CampaignManager.current();
+        addLabel(localizer.getMessageorUseDefault("lblCampaign", "Campaign"));
+        settingGroup.add(Controls.newTextraLabel(campaign == null
+                ? Config.instance().getPlane() : campaign.getTitle())).align(Align.right).pad(2);
+        settingGroup.row();
+        TextraLabel campaignHint = Controls.newTextraLabel(localizer.getMessageorUseDefault(
+                "lblChooseCampaignNewGame", "Choose a campaign when starting a new game."));
+        campaignHint.setWrap(true);
+        settingGroup.add(campaignHint).colspan(2).fillX().pad(2);
 
         if (!GuiBase.isAndroid()) {
             SelectBox<String> videomode = Controls.newComboBox(ForgeConstants.VIDEO_MODES, Config.instance().getSettingData().videomode, o -> {
@@ -577,6 +565,11 @@ public class SettingsScene extends UIScene {
     }
 
     private static SettingsScene object;
+
+    public static void resetForCampaign() {
+        Forge.retireAdventureResource(object);
+        object = null;
+    }
 
     public static SettingsScene instance() {
         if (object == null)

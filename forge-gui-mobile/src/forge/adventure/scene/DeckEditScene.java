@@ -1,5 +1,7 @@
 package forge.adventure.scene;
 
+import forge.Forge;
+
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import forge.Adventure;
 import forge.adventure.data.AdventureEventData;
@@ -16,6 +18,11 @@ public class DeckEditScene extends ForgeScene {
     private DeckEditScene() {}
 
     private static DeckEditScene object;
+
+    public static void resetForCampaign() {
+        Forge.retireAdventureResource(object);
+        object = null;
+    }
     TextureRegion backDrop;
 
     public static DeckEditScene getInstance(TextureRegion backdrop) {

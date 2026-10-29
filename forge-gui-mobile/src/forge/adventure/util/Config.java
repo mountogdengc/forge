@@ -10,6 +10,8 @@ import com.badlogic.gdx.utils.ObjectMap;
 import forge.CardStorageReader;
 import forge.Forge;
 import forge.ImageKeys;
+import forge.StaticData;
+import forge.adventure.campaign.CampaignDefinition;
 import forge.adventure.data.*;
 import forge.card.*;
 import forge.deck.Deck;
@@ -46,6 +48,7 @@ public class Config {
     private SettingData settingsData;
     private String Lang = "en-us";
     private final String plane;
+    private final CampaignDefinition campaign;
     private ObjectMap<String, ObjectMap<String, Sprite>> atlasSprites = new ObjectMap<>();
     private ObjectMap<PointOfInterestData, Array<Sprite>> poiSprites = new ObjectMap<>();
     private ObjectMap<String, ObjectMap<String, Array<Sprite>>> animatedSprites = new ObjectMap<>();
@@ -54,6 +57,8 @@ public class Config {
     private final FolderDeckCatalog commanderPreconDeckCatalog = new FolderDeckCatalog("decks/starter/commanderprecon/");
     private static final StringBuilder stringBuilder = new StringBuilder(256);
     private static final HashMap<String, String> langPathsMap = new HashMap<>(512);
+    private static StaticData registeredCustomCardDatabase;
+    private static final Set<String> registeredCustomCardFiles = new HashSet<>();
 
 
     static public Config instance() {
@@ -63,14 +68,23 @@ public class Config {
     }
 
     private Config() {
+        this(null, null);
+    }
+
+    private Config(CampaignDefinition campaign, SettingData sharedSettings) {
+        this.campaign = campaign;
         String path = resPath();
         FilenameFilter planesFilter = (file, s) -> !s.contains(".") && !s.equals(commonDirectoryName);
 
         adventures = new File(GuiBase.isMobile() ? ForgeConstants.ADVENTURE_DIR : path + "/res/adventure").list(planesFilter);
-        try {
-            settingsData = new Json().fromJson(SettingData.class, new FileHandle(ForgeConstants.USER_ADVENTURE_DIR + "settings.json"));
-        } catch (Exception e) {
-            settingsData = new SettingData();
+        if (sharedSettings != null) {
+            settingsData = sharedSettings;
+        } else {
+            try {
+                settingsData = new Json().fromJson(SettingData.class, new FileHandle(ForgeConstants.USER_ADVENTURE_DIR + "settings.json"));
+            } catch (Exception e) {
+                settingsData = new SettingData();
+            }
         }
         if (settingsData.plane == null || settingsData.plane.isEmpty()) {
             if (adventures != null && adventures.length >= 1) {
@@ -84,7 +98,7 @@ public class Config {
                     settingsData.plane = Aggregates.random(adventures);
             }
         }
-        plane = settingsData.plane;
+        plane = campaign == null ? settingsData.plane : campaign.getPlane();
 
         if (settingsData.width == 0 || settingsData.height == 0) {
             settingsData.width = 1280;
@@ -106,11 +120,11 @@ public class Config {
             settingsData.cardTooltipAdjLandscape = 1f;
 
         //prefix = "forge-gui/res/adventure/Shandalar/";
-        prefix = getPlanePath(settingsData.plane);
-        commonPrefix = resPath() + "/res/adventure/" + commonDirectoryName + "/";
+        prefix = campaign == null ? getPlanePath(plane) : campaign.getRoot().toString() + "/";
+        commonPrefix = campaign == null ? resPath() + "/res/adventure/" + commonDirectoryName + "/"
+                : campaign.getCommonRoot().toString() + "/";
 
-        currentConfig = this;
-        if (FModel.getPreferences() != null)
+        if (GuiBase.getInterface() != null && FModel.getPreferences() != null)
             Lang = FModel.getPreferences().getPref(ForgePreferences.FPref.UI_LANGUAGE);
         FileHandle file = new FileHandle(prefix + "config.json");
         //TODO: Plane's config file should be merged with the common config file.
@@ -119,9 +133,51 @@ public class Config {
         try {
             configData = new Json().fromJson(ConfigData.class, file);
         } catch (Exception e) {
+            if (campaign != null) {
+                throw new IllegalArgumentException("Cannot read configuration for " + campaign.getTitle() + ".", e);
+            }
             e.printStackTrace();
             configData = new ConfigData();
         }
+        if (campaign != null && (configData.screenWidth <= 0 || configData.screenHeight <= 0
+                || configData.difficulties == null || configData.difficulties.length == 0
+                || configData.colorIds == null || configData.colorIdNames == null
+                || configData.colorIds.length != configData.colorIdNames.length
+                || configData.starterEditions == null || configData.starterEditionNames == null
+                || configData.starterEditions.length != configData.starterEditionNames.length)) {
+            throw new IllegalArgumentException("Campaign " + campaign.getTitle() + " has incomplete character-creation settings.");
+        }
+    }
+
+    /** Build character-creation options without changing the active campaign or global filters. */
+    public static Config forCampaign(CampaignDefinition definition) {
+        return forCampaign(definition, instance().settingsData);
+    }
+
+    /** Resource-only configuration, also usable by editors and headless campaign validation. */
+    public static Config forCampaign(CampaignDefinition definition, SettingData settings) {
+        Objects.requireNonNull(definition, "Campaign definition");
+        Objects.requireNonNull(settings, "Adventure settings");
+        definition.validateResources();
+        return new Config(definition, settings);
+    }
+
+    /** Install a previously validated preview. CampaignManager owns the dependent cache lifecycle. */
+    public static void activateCampaign(Config candidate) {
+        if (candidate == null || candidate.campaign == null) {
+            throw new IllegalArgumentException("A validated campaign configuration is required.");
+        }
+        currentConfig = candidate;
+        candidate.settingsData.plane = candidate.plane;
+        langPathsMap.clear();
+    }
+
+    public String getAdventureRoot() {
+        return resPath() + "/res/adventure/";
+    }
+
+    public CampaignDefinition getCampaign() {
+        return campaign;
     }
 
     private String resPath() {
@@ -329,6 +385,7 @@ public class Config {
                 Cache.put(path, new FileHandle(fullPath));
                 break;
             }
+            if (campaign != null && !campaign.allowsCommonResource(path)) break;
             //no local resource, check common resources
             fullPath = (commonPrefix + path).replace("//", "/");
             langFile = langFilePath(fullPath, commonPrefix);
@@ -483,17 +540,19 @@ public class Config {
     public Array<String> getAllAdventures() {
         String path = ForgeConstants.USER_ADVENTURE_DIR + "/userplanes/";
         Array<String> adventures = new Array<>();
-        if (new File(path).exists())
-            adventures.addAll(new File(path).list());
+        if (new File(path).exists()) {
+            String[] userPlanes = new File(path).list((directory, name) -> new File(directory, name).isDirectory());
+            if (userPlanes != null) adventures.addAll(userPlanes);
+        }
         for (int i = 0; i < adventures.size; i++) {
             adventures.set(i, "<user>" + adventures.get(i));
         }
-        adventures.addAll(this.adventures);
+        if (this.adventures != null) adventures.addAll(this.adventures);
 
         // A hard-coded list of planes that are currently not finished and are considered to be in development
         // (these planes will only appear in the choice box if Developer Mode is enabled in Forge)
         // TODO: migrate this to an externally configurable ini or json file
-        if (!FModel.getPreferences().getPrefBoolean(ForgePreferences.FPref.DEV_MODE_ENABLED)) {
+        if (FModel.getPreferences() == null || !FModel.getPreferences().getPrefBoolean(ForgePreferences.FPref.DEV_MODE_ENABLED)) {
             adventures.removeValue("Amonkhet", false);
             adventures.removeValue("Innistrad", false);
             adventures.removeValue("Crystal_Kingdoms", false);
@@ -684,14 +743,18 @@ public class Config {
         applyTokenEditionFilter();
         RewardData.getAllCards();//initialize before loading custom cards
         final CardRules.Reader rulesReader = new CardRules.Reader();
-        ImageKeys.ADVENTURE_CARD_PICS_DIR = Config.currentConfig.getCommonFilePath(forge.adventure.util.Paths.CUSTOM_CARDS_PICS);// not the cleanest solution
+        ImageKeys.ADVENTURE_CARD_PICS_DIR = getCommonFilePath(forge.adventure.util.Paths.CUSTOM_CARDS_PICS);
+        if (registeredCustomCardDatabase != FModel.getMagicDb()) {
+            registeredCustomCardDatabase = FModel.getMagicDb();
+            registeredCustomCardFiles.clear();
+        }
         File[] customCards = new File(getCommonFilePath(forge.adventure.util.Paths.CUSTOM_CARDS)).listFiles();
         if (customCards == null)
             return;
         for (File cardFile : customCards) {
-            FileInputStream fileInputStream;
-            try {
-                fileInputStream = new FileInputStream(cardFile);
+            String resource = cardFile.toPath().toAbsolutePath().normalize().toString();
+            if (!cardFile.isFile() || registeredCustomCardFiles.contains(resource)) continue;
+            try (FileInputStream fileInputStream = new FileInputStream(cardFile)) {
                 rulesReader.reset();
                 final List<String> lines = FileUtil.readAllLines(new InputStreamReader(fileInputStream, Charset.forName(CardStorageReader.DEFAULT_CHARSET_NAME)), true);
                 CardRules rules = rulesReader.readCard(lines, com.google.common.io.Files.getNameWithoutExtension(cardFile.getName()));
@@ -704,7 +767,9 @@ public class Config {
                 };
                 CardDb db = rules.isVariant() ? FModel.getMagicDb().getVariantCards() : FModel.getMagicDb().getCommonCards();
                 db.addCard(card);
-            } catch (FileNotFoundException e) {
+                // CardDb.addCard appends prints. Reopening a run must not register them again.
+                registeredCustomCardFiles.add(resource);
+            } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
