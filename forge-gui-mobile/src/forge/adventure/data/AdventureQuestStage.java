@@ -8,6 +8,7 @@ import forge.adventure.util.AdventureQuestController;
 import forge.adventure.util.AdventureQuestEvent;
 import forge.adventure.util.AdventureQuestEventType;
 import forge.adventure.util.Current;
+import forge.adventure.world.WorldSave;
 import forge.util.Aggregates;
 
 import java.io.Serializable;
@@ -82,6 +83,44 @@ public class AdventureQuestStage implements Serializable {
 
     public AdventureQuestController.QuestStatus getStatus() {
         return status;
+    }
+
+    /**
+     * Reconcile objectives whose evidence survives the event that originally satisfied them.
+     * This deliberately does not replay an event: doing so could also advance travel, combat,
+     * or other event-counted objectives when accepting or loading a quest.
+     */
+    public boolean reconcilePersistentState() {
+        if (status != ACTIVE) {
+            return false;
+        }
+        if (hasRequiredFetchItems()) {
+            status = COMPLETE;
+            return true;
+        }
+        if (mapFlag == null || mapFlag.isEmpty()) {
+            return false;
+        }
+
+        Integer savedValue = null;
+        if (objective == QuestFlag && Current.player().checkQuestFlag(mapFlag)) {
+            savedValue = Current.player().getQuestFlag(mapFlag);
+        } else if (objective == MapFlag && targetPOI != null) {
+            // Map flags belong to the selected POI (including its saved floors), not the
+            // map the player happens to be in when the quest is accepted or restored.
+            savedValue = WorldSave.getCurrentSave().getStoredMapFlag(targetPOI.getID(), mapFlag);
+        }
+        return reconcilePersistentFlag(savedValue);
+    }
+
+    boolean reconcilePersistentFlag(Integer savedValue) {
+        if (status != ACTIVE || (objective != QuestFlag && objective != MapFlag)
+                || mapFlag == null || mapFlag.isEmpty() || savedValue == null
+                || savedValue < mapFlagValue) {
+            return false;
+        }
+        status = COMPLETE;
+        return true;
     }
 
     public PointOfInterest getTargetPOI() {

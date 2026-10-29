@@ -80,6 +80,11 @@ public class WorldSave {
         return changes;
     }
 
+    /** Read persisted objective evidence without creating map state or loading map assets. */
+    public Integer getStoredMapFlag(String poiRootId, String flagName) {
+        return pointOfInterestChanges.getMapFlag(poiRootId, flagName);
+    }
+
     static public boolean load(int currentSlot) {
         JSONStringLoader.clearCache();
         CardUtil.clearPriceCache();
@@ -98,10 +103,12 @@ public class WorldSave {
                 SaveFileData mainData = (SaveFileData) oos.readObject();
                 currentSave.player.load(mainData.readSubData("player"));
                 GamePlayerUtil.getGuiPlayer().setName(currentSave.player.getName());
+                boolean worldRestored = false;
                 try {
                     currentSave.world.load(mainData.readSubData("world"));
                     currentSave.pointOfInterestChanges.load(mainData.readSubData("pointOfInterestChanges"));
                     WorldStage.getInstance().load(mainData.readSubData("worldStage"));
+                    worldRestored = true;
 
                 } catch (Exception e) {
                     System.err.println("Generating New World");
@@ -110,6 +117,17 @@ public class WorldSave {
                 }
 
                 currentSave.onLoadList.emit();
+                if (worldRestored) {
+                    // Both kinds of flag and the load listeners are ready. Keep this
+                    // outside the world-read fallback: a quest/UI error must never
+                    // regenerate an otherwise valid restored world.
+                    try {
+                        AdventureQuestController.instance().activateNextStages();
+                    } catch (RuntimeException e) {
+                        System.err.println("Unable to reconcile saved quest progress; restored world retained.");
+                        e.printStackTrace();
+                    }
+                }
 
             }
         } catch (ClassNotFoundException | IOException e) {
