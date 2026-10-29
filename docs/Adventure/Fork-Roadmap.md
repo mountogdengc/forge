@@ -6,11 +6,13 @@ Develop a compelling single-player card-battling adventure using Forge's shared 
 
 The inherited Adventure campaign and implementation are candidates for reuse, substantial rework, or complete replacement. Its story, setting, quests, maps, progression systems, interface, and campaign structure are all open to change. Judge each component by its value to the chosen experience. The progression issue review establishes defects in the current implementation; it does not establish the campaign's overall quality or that replacement is preferable. Make those decisions through assessment and playtesting.
 
+Campaign selection and multiple saved playthroughs are core requirements. Every New Game begins by choosing a campaign; each playthrough has its own character, world, story state, and manual/automatic saves. Different campaigns and repeated runs of the same campaign must coexist. A possible Curse of Strahd adaptation illustrates the distinct content packages this should support. See [Campaigns and saves](Campaigns-and-Saves.md) for the accepted behavior, source audit, proposed architecture, and acceptance cases.
+
 Adventure is the fork's product scope. Multiplayer and standalone Duel modes are outside that scope. Adventure's card battles still depend on the shared rules engine, computer opponent, card data, and relevant platform support; maintain those systems for the Adventure experience.
 
 The fork follows its own campaign and interface goals. Submitting changes upstream is not planned, and upstream acceptance is not a design constraint. Selectively import useful upstream fixes when they benefit Adventure and respect the fork's chosen progression design and save policy.
 
-Plan an Adventure-centered application flow: start or continue a campaign, manage saves, and adjust settings. Existing standalone-mode code may remain as inherited infrastructure while shared dependencies are understood. Removing code or modules requires a concrete Adventure benefit and a dependency review; the immediate work remains campaign development and reliability.
+Plan an Adventure-centered application flow: choose a campaign for a new playthrough, continue or load an existing run with its campaign resolved automatically, manage that run's saves, and adjust settings. Existing standalone-mode code may remain as inherited infrastructure while shared dependencies are understood. Removing code or modules requires a concrete Adventure benefit and a dependency review; the immediate work remains campaign development and reliability.
 
 This is the fork's working direction and implementation sequence. Proposed milestones are not claims that the features already exist or have passed playtesting. Verification results belong in [Progression validation](Progression-Validation.md).
 
@@ -40,7 +42,9 @@ The progression foundation branch starts from upstream commit [`4fcb76673693cb21
 - Existing saves are part of the test surface for retained systems and compatibility claims. Distinguish code that reads existing saved facts from a data change that only affects newly created quest instances. A replacement campaign needs an explicit save policy; entering it with an old character is a design choice, not an automatic commitment.
 - Reset behavior must be deliberate. A location reset, a repeatable quest, and New Game+ have different purposes; one must not silently substitute for another.
 
-## Priority 0: Assess Adventure and validate the reusable foundation
+## Priority 0: Assess Adventure and establish the campaign/save foundation
+
+Make selectable campaigns and independent playthroughs an early architecture milestone. The current global plane setting and per-plane slot files do not provide the requested isolation. Implement campaign identity and startup data, independent run/snapshot storage, controlled resource activation, and the New Game/Load Game flow in the sequence described in [Campaigns and saves](Campaigns-and-Saves.md). Prove the behavior with two small campaigns and three runs before committing substantial content to one campaign. The audit below and campaign design can proceed alongside this foundation work.
 
 Before committing to a campaign direction, assess a representative portion of the existing Adventure: the opening, a town, exploration and travel, a dungeon and boss, side quests, rewards, and save/resume behavior. Examine story coherence, player choice, location variety, navigation, repetition, deck growth, difficulty pacing, and the cost of authoring new content. Assess quest execution, map generation, encounters, UI, and persistence separately from the story they currently support.
 
@@ -69,13 +73,13 @@ After the assessment, build a small playable example of the chosen Adventure des
 
 | Design area | Deliverable for the chapter | Acceptance question |
 | --- | --- | --- |
-| Application flow | An Adventure-focused launch and menu path for starting, continuing, saves, and settings | Can the player enter and resume Adventure directly without navigating unrelated modes? |
+| Application flow | Campaign selection for New Game and a run-oriented Continue, Load, Save, and settings flow | Can the player start another campaign and resume any existing run without overwriting it or manually changing a global world setting? |
 | Story | A short chapter outline, quest relationships, NPC motivations, and a defined ending | Can a player explain what they are pursuing, why it matters, and when this chapter is complete? |
 | Exploration | A documented route through the chapter plus supported alternate orders and optional encounters | Can players explore early without losing essential objectives or being forced to guess the intended order? |
 | Dungeons | Distinct encounters, environmental identity, useful navigation, and appropriate exits | Does each dungeon offer a different challenge or discovery, and can the player leave and resume safely? |
 | Deck growth | A reward plan covering cards, items, resources, and access to further opportunities | Do rewards create useful deck decisions without requiring one specific starting deck? |
 | Pacing | A playthrough record that identifies repetitive travel, unclear objectives, and difficulty spikes | Does the chapter remain engaging between battles, and do setbacks leave a reasonable path forward? |
-| Continuity | An explicit policy for fresh campaigns, supported existing characters, and retained saves | Are supported entry paths understandable and completable, and are new-campaign requirements clear? |
+| Continuity | Independent playthroughs and snapshots, with an explicit policy for campaign versions and legacy saves | Can several runs coexist and load the right content, and are supported imports and any migration requirements clear? |
 
 Decide tutorial handling, the relationship between main and side quests, and the chapter's connection to the larger campaign in that outline. A later overarching story can build on the chapter's proven structure.
 

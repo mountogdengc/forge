@@ -8,6 +8,13 @@ exploration, and tools for building more Adventure content. Multiplayer and
 standalone Duel modes are outside the fork's product scope. Adventure's own card
 battles continue to use the shared rules engine, computer opponent, and card data.
 
+Core requirements are campaign selection on every New Game and multiple
+independent playthroughs, with separate manual saves, autosaves, and quicksaves
+for each run. Campaign packages can provide distinct worlds and stories. See
+[Campaigns and saves](docs/Adventure/Campaigns-and-Saves.md) for the requirements,
+current limitations, and proposed implementation; these features are not yet
+implemented by the progression patch.
+
 The inherited Adventure campaign and systems will be assessed for reuse. Its
 story, setting, quests, maps, progression, and interface may be retained, reworked,
 or replaced completely to serve the experience we want to build. The next design

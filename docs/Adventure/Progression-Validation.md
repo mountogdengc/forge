@@ -4,6 +4,8 @@ Use this checklist with the [fork roadmap](Fork-Roadmap.md). It distinguishes a 
 
 This checklist validates the current progression patch and the inherited content it changes. It does not require future campaigns to retain that content. A replacement campaign or Adventure system needs acceptance cases for its chosen design and an explicit policy for existing saves. Apply these regressions where their systems or content are retained, and keep unrun legacy cases marked unverified; retiring content does not turn an unrun case into a pass.
 
+The campaign picker and independent-playthrough architecture are specified in [Campaigns and saves](Campaigns-and-Saves.md). Its C01-C12 acceptance cases all remain **Not run**. The source audit and documentation do not implement those features, and the progression test results below do not validate campaign switching or save isolation.
+
 ## Build and save identity
 
 The foundation baseline is upstream commit `4fcb76673693cb21fd0e31e50b72774fc02053a1`, whose parent POM specifies `2.0.16-SNAPSHOT` and Java release 17. The working branch is `adventure/progression-foundation`. These identify the starting point, not a tested finished build.
