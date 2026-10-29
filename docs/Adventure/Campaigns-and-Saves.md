@@ -4,7 +4,7 @@
 
 Accepted product requirement, October 29, 2026: the player chooses a campaign whenever starting a new game and can keep multiple saved playthroughs. This includes several runs of the same campaign and runs of different campaigns at the same time.
 
-The architecture below is the proposed implementation contract. This document records requirements and a source audit; it does not claim that the campaign picker, isolated playthrough storage, or campaign switching has been implemented or playtested.
+The campaign picker, independent playthrough storage, save browser, campaign activation lifecycle, and legacy import path are implemented on `adventure/progression-foundation`. This document describes their contract and current limits. Build and interactive evidence are recorded separately in [Progression validation](Progression-Validation.md); implementation alone does not establish that every acceptance case has passed.
 
 A future adaptation of *Curse of Strahd* is an example of a distinct campaign this should support. It would supply its own adventure content while using the fork's card battles. The example does not select the first campaign to build. The inherited Forge Adventure is an optional campaign candidate, and may be retained, redesigned, or replaced as described in the [roadmap](Fork-Roadmap.md).
 
@@ -33,34 +33,58 @@ Use a browsable save list rather than a shared ten-slot limit. Storage and any d
 
 Every playthrough owns its character progression, card collection and decks, inventory, quest states, story choices, defeated encounters, and world changes. Application preferences such as audio, display, controls, and accessibility can remain shared. The default is an independent start; transferring a character or collection between campaigns would be a separate explicit feature.
 
-If a campaign offers New Game+, create a new playthrough ID with the campaign's declared carryover and reset rules. Preserve the source run and its snapshots; starting New Game+ must not repurpose that run's automatic-save destinations.
+If a campaign enables New Game+, it receives a new playthrough ID. The first implementation uses the inherited carryover behavior: retain the character and collection, generate a new world, clear quest progress and quest items, and apply the selected difficulty and campaign opening. The source run and its snapshots remain intact. A descriptor can enable or disable this behavior; custom carryover policies are future work.
 
 For example, two runs of the same campaign can each have an autosave, quicksave, and several named manual checkpoints. A third run in another campaign can coexist with both. Reusing a character name never joins those runs or changes their storage destinations.
 
-The logical storage relationship is campaign, then playthrough, then snapshots. Use stable IDs for identity and storage keys; human-readable titles are labels. A save index can provide a combined Load Game view without requiring the player to know directory names. The exact disk layout remains an implementation choice.
+The storage root is `<Adventure user directory>/campaign-saves/`. Human-readable titles and names never become directory names. The browser reads JSON metadata without allocating every save's preview image.
+
+| Relative path | Purpose |
+| --- | --- |
+| `playthroughs/<playthroughId>/playthrough.json` | Run identity, campaign ID/version, name, character, and creation time. |
+| `playthroughs/<playthroughId>/saves/<snapshotId>.sav` | Immutable binary payload, preserving the existing Forge save-header format. |
+| `playthroughs/<playthroughId>/saves/<snapshotId>.json` | Versioned envelope, kind, label, location, timestamp, and SHA-256 checksum. Published after the payload is complete. |
+| `continue.json` | Campaign, version, playthrough, and snapshot locator. |
+
+The normal retention target is three autosaves and three quicksaves per run. The current Continue target and a newly committed save awaiting its callback may temporarily extend that history. Manual, initial, and imported snapshots are not automatically pruned. Explicit replacement creates a new manual snapshot before archiving the old envelope as `.json.replaced`; the old payload remains available for recovery.
 
 ## Campaign definitions
 
-Introduce a discoverable campaign descriptor, with a versioned schema, that separates campaign identity from the current plane-folder convention. Two campaigns may use the same setting or reusable assets; one campaign may contain more than one region or plane.
+`CampaignRegistry` discovers built-in folders under `res/adventure/` and user folders under `<Adventure user directory>/userplanes/`. A package provides `campaign.json` at its root. A minimal explicit descriptor looks like this:
 
-At minimum, a descriptor needs:
+```json
+{
+  "schemaVersion": 1,
+  "id": "fork.example-adventure",
+  "version": "1.0.0",
+  "title": "Example Adventure",
+  "description": "An original campaign with its own world and opening.",
+  "startingQuestIds": [],
+  "startingLocation": null,
+  "allowNewGamePlus": false,
+  "inheritCommonWorld": false,
+  "inheritCommonQuests": false,
+  "development": false
+}
+```
 
-- Stable ID, content version, title, description, and an optional preview image.
-- Engine/save compatibility requirements and declared content dependencies.
-- Resource roots and an explicit policy for shared assets or configuration inheritance.
-- Initial location and starting quest IDs, including a valid no-starting-quest choice.
-- Supported character, starting-deck, card-pool, difficulty, and reward settings.
-- Any campaign initialization data, and declared New Game+ behavior if that feature is offered.
+This is a descriptor example, not a complete playable content package. Supply `world/world.json` and `world/quests.json` plus their referenced content. An empty quest catalog is valid when the campaign declares no opening quests. `startingQuestIds` is required and names numeric quest-template IDs as strings. `startingLocation` is an optional point-of-interest name; null starts on the overworld. Existing `config.json`, hero, deck, difficulty, and reward formats continue to provide character and starting options, with shared configuration/art/UI fallback.
 
-Campaigns must be able to provide their own opening and progression. Shared Java startup code must not automatically add the Shandalar main quest to every new campaign. The same rule applies to New Game+, recovery paths, and any alternative new-world entry point.
+IDs and versions use 1–128 letters, digits, periods, underscores, or hyphens, beginning with a letter or digit. An explicit campaign keeps its ID and version when its title or installation folder is renamed. Duplicate installed campaign IDs are reported as ambiguous and excluded, rather than selecting an arbitrary copy. Only one installed version per campaign ID is supported in this first implementation.
+
+Descriptor schema and save-envelope format are both version 1. Loads require an exact campaign-content version match. Dependency declarations, version migrations, preview artwork, arbitrary initialization hooks, and custom New Game+ carryover rules are extension work; they are not implied by the descriptor above.
+
+Shared Java startup code reads opening quests from the descriptor for both New Game and New Game+. Explicit campaigns receive no automatic Shandalar opening.
 
 Support the selected content design, including authored locations and event sequences as well as procedural components where useful. A new campaign must be able to be a different adventure, rather than only a visual or deck-selection variant of the inherited story.
 
-Shared art and interface assets can be reused through declared defaults. Missing required campaign story or world data should produce a useful validation error instead of silently substituting unrelated common content. Existing plane folders can receive compatibility descriptors during transition; that adapter must make their inherited behavior explicit.
+Common world and quest-catalog fallback require separate opt-ins. Shared art, UI, configuration, and other resource fallback remain available. Discovery checks descriptor syntax, world dimensions, the quest catalog, and declared opening quest templates; character setup checks the configuration. It does not yet exhaustively validate every referenced map, enemy, dialog, or starting location.
 
-## What the current code supports
+Existing plane folders without a descriptor use a legacy adapter. The adapter retains common resource fallback, `Spawn`, and New Game+, and adds historical opening quest `28` only when that template exists. Its ID is derived from the original built-in/user folder name and its version is `legacy-1`; rename stability applies to explicit manifests, so do not rename a legacy folder after creating saves. The inherited development planes remain hidden unless developer mode is enabled; explicit packages use their `development` flag.
 
-Source review baseline: [`37216f201e57ad43e033345167cdfa066dbc438b`](https://github.com/mountogdengc/forge/commit/37216f201e57ad43e033345167cdfa066dbc438b). These are source observations, not results from an interactive game session.
+## Historical source audit
+
+Source review baseline before this implementation: [`37216f201e57ad43e033345167cdfa066dbc438b`](https://github.com/mountogdengc/forge/commit/37216f201e57ad43e033345167cdfa066dbc438b). The table records the problems that motivated the changes, not the new implementation's behavior.
 
 | Finding | Source and implication |
 | --- | --- |
@@ -74,43 +98,49 @@ Source review baseline: [`37216f201e57ad43e033345167cdfa066dbc438b`](https://git
 
 ## Campaign activation and loading
 
-Campaign selection must be resolved before building character-creation options or restoring a world. Introduce an explicit active campaign/playthrough context and a coordinated transition rather than changing only `SettingData.plane`.
+Character setup uses `Config.forCampaign()` and campaign-specific hero data as a preview. Selecting a campaign or cancelling setup does not activate it or change the running playthrough. Pressing Start checkpoints the outgoing run, activates the chosen package, creates a new run identity, generates the world, adds declared opening quests, and commits an initial snapshot before entering a starting location. If generation fails, the menu reports the failure and attempts to restore the previous Continue checkpoint. A failed first save leaves the new game active for a save retry.
 
-Campaign-dependent configuration, resource lookups, quest definitions, hero/avatar data, enemy and shop catalogs, reward pools, localization, and scene instances must be rebuilt or appropriately scoped. The source review found process-wide caches in `Config`, `HeroListData`, `WorldData`, `RewardData`, and `NewGameScene`; inventory the full lifecycle before implementing in-session switching.
+`CampaignManager` coordinates campaign configuration, resource lookups, quest/event controllers, hero/avatar data, enemy/shop/item catalogs, reward pools, localization, music, scenes, stages, and HUD listeners. It clears the Back history and retires outgoing UI resources after the next scene switch. The old global World selector has been removed from Settings. Quickload also switches to the restored campaign's scene.
 
 Load in this order:
 
 1. Read lightweight snapshot metadata and identify its campaign, version, playthrough, and format without creating a world.
 2. Resolve the installed package and check compatibility. A missing or incompatible package leaves the snapshot intact and produces an actionable error.
 3. Finish or isolate writes from the previous session and prepare the target campaign's resources.
-4. Restore into a staged context and make it active only after restoration succeeds. A failed load must not regenerate a substitute world or overwrite the existing save.
+4. Capture a detached copy of the outgoing overworld state, restore the target, and publish its active session only after restoration succeeds. If restoration throws, reactivate and restore the previous campaign/state. If rollback itself fails, report that failure and leave the saved checkpoints intact. No failure path generates a substitute world.
 5. Update Continue using campaign, playthrough, and snapshot IDs. Track the last played run separately from the completion time of a background write.
 
-A metadata envelope or index should support listing snapshots without eagerly constructing every native preview image. Maintain a reader for the existing custom save header; design a versioned transition rather than silently changing its binary layout.
+A JSON envelope supports listing snapshots without eagerly constructing every native preview image. The existing custom binary header layout and its explicit serialization identifier are retained.
+
+Saving and loading while inside a town, dungeon, or other interior map remain blocked. Return to the overworld before saving or switching playthroughs. This boundary protects rollback while exact interior restoration is not implemented; independent saves do not promise saving anywhere.
 
 ## Save integrity and version policy
 
-Capture the immutable campaign/playthrough identity, snapshot ID, destination, and session token when a save is queued. The existing asynchronous path resolves its file path from global configuration inside the worker; that must be changed before campaign switching is enabled. A late completion updates its own run's metadata and must not redirect the active session's Continue pointer.
+Every queued write captures immutable campaign/playthrough identity, snapshot ID, destination, and session token before entering the background worker. A late write stays in its original run. Continue publication checks both the active session and request ordering, so an old session cannot select itself and an older autosave cannot replace a newer manual checkpoint's Continue selection.
 
-Use one reliable write strategy for manual, quick, and automatic saves: write and validate a temporary snapshot, commit the completed file, retain an appropriate recovery copy, and update metadata only after success. Report failures accurately. The existing synchronous manual path and asynchronous path differ, so review both rather than assuming one path's guarantees cover the other.
+Manual, quick, initial, imported, and automatic saves share the repository writer: write and validate a temporary payload, calculate its checksum, move it into place, then publish the JSON envelope. Failed writes leave older snapshots available. Metadata replacement uses an atomic move where supported, with a completed-file move fallback. This is interrupted-write protection, not a guarantee against every filesystem or power-loss failure.
 
 Snapshots record the campaign version and save-format version they were created with. Load only a compatible installed version. Content updates need an explicit compatibility rule or migration; do not silently reinterpret old quest IDs or map identities under a different package. A campaign display-name change must not break discovery of its saves.
 
-For legacy imports, retain the original files and associate them with the correct legacy campaign descriptor. Old numbered slots cannot reliably establish whether two files belong to the same run. Do not group them automatically by slot number or character name. Provide a clear import choice or separate imported runs unless a shared origin is established. Never claim a legacy migration passed from a successful fresh-game test alone.
+Load Game includes **Import old saves**. It lists supported old numbered, auto, and quicksave files by campaign and imports a selected file as a copy into its own named playthrough. Old numbered slots cannot reliably establish a shared run, so imports are never grouped automatically by name or slot number. The old filename-based Continue path also imports the selected legacy file before loading it. The originals remain untouched. Repository copy tests do not by themselves establish that every historical binary save can be loaded.
 
-## Implementation sequence
+## Implementation map
 
-1. Add campaign descriptors, discovery, validation, and explicit adapters for retained plane folders. Make starting locations and quests data-driven.
-2. Introduce campaign/playthrough/snapshot identity and a versioned persistence/index layer. Isolate every save destination and asynchronous completion from global selection.
-3. Implement coordinated activation and loading, including campaign-specific cache and scene lifecycle management.
-4. Add campaign selection before character creation and a run-oriented Load Game screen. Bind Continue and each save action to an explicit run.
-5. Prove isolation with two small original test campaigns and three playthroughs before investing in a full campaign adaptation. Validate legacy import separately.
+| Responsibility | Main implementation |
+| --- | --- |
+| Campaign discovery and startup contract | `campaign/CampaignDefinition`, `CampaignRegistry` |
+| Activation and resource lifecycle | `campaign/CampaignManager`, `Config`, scene/stage reset hooks |
+| Immutable save storage and identity | `world/PlaythroughRepository`, metadata/locator classes, `PlaythroughSession` |
+| Live game capture, restore, Continue, and import | `world/WorldSave` |
+| Campaign picker and character preview | `scene/CampaignSelectionScene`, `NewGameScene` |
+| Run browser, named checkpoints, and New Game+ | `scene/SaveLoadScene`, `StartScene` |
+| Regression coverage | `test/forge/adventure/campaign/CampaignRegistryTest`, `test/forge/adventure/world/PlaythroughRepositoryTest` |
 
 Campaign content assessment can proceed alongside this work. The selectable-campaign foundation precedes committing substantial content to a single campaign. A full Curse of Strahd adaptation is not needed to prove the architecture.
 
 ## Acceptance cases
 
-These are requirements for future implementation. Initial status for every case is **Not run**.
+These are acceptance requirements. Consult the validation guide for actual automated and interactive coverage; a partial automated case is not a complete gameplay pass.
 
 | ID | Scenario | Required result |
 | --- | --- | --- |
@@ -127,4 +157,4 @@ These are requirements for future implementation. Initial status for every case 
 | C11 | Update campaign content or the save format. | Compatible saves load under the documented rule; incompatible ones require an explicit migration or the appropriate version. |
 | C12 | Select a campaign with missing required startup/story data. | Validation explains the problem before starting; shared fallback does not inject another campaign's opening. |
 
-Record actual test evidence in the [validation guide](Progression-Validation.md). The prior progression patch's passing tests do not establish that this proposed architecture works.
+Record actual test evidence in the [validation guide](Progression-Validation.md). The prior progression patch's passing tests are separate from campaign and save validation. Run renaming, campaign-content migrations, and custom New Game+ policies remain future work even though names are not used as storage keys.
