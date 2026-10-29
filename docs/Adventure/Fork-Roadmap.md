@@ -2,11 +2,13 @@
 
 ## Direction
 
-Develop this fork around Forge's single-player Adventure mode: an explorable campaign with dependable progression, a coherent story, useful rewards, and reasons to build and improve decks. The first priority is protecting a player's progress when they explore out of order, return to an old save, or revisit a completed encounter.
+Develop a compelling single-player card-battling adventure using Forge's shared foundation: an explorable campaign with dependable progression, a coherent story, useful rewards, and reasons to build and improve decks.
+
+The inherited Adventure campaign and implementation are candidates for reuse, substantial rework, or complete replacement. Its story, setting, quests, maps, progression systems, interface, and campaign structure are all open to change. Judge each component by its value to the chosen experience. The progression issue review establishes defects in the current implementation; it does not establish the campaign's overall quality or that replacement is preferable. Make those decisions through assessment and playtesting.
 
 Adventure is the fork's product scope. Multiplayer and standalone Duel modes are outside that scope. Adventure's card battles still depend on the shared rules engine, computer opponent, card data, and relevant platform support; maintain those systems for the Adventure experience.
 
-The fork follows its own campaign and interface goals. Submitting changes upstream is not planned, and upstream acceptance is not a design constraint. Selectively import useful upstream fixes when they benefit Adventure and remain compatible with the fork's progression and saves.
+The fork follows its own campaign and interface goals. Submitting changes upstream is not planned, and upstream acceptance is not a design constraint. Selectively import useful upstream fixes when they benefit Adventure and respect the fork's chosen progression design and save policy.
 
 Plan an Adventure-centered application flow: start or continue a campaign, manage saves, and adjust settings. Existing standalone-mode code may remain as inherited infrastructure while shared dependencies are understood. Removing code or modules requires a concrete Adventure benefit and a dependency review; the immediate work remains campaign development and reliability.
 
@@ -27,7 +29,7 @@ The progression foundation branch starts from upstream commit [`4fcb76673693cb21
 | New Game+ quest availability, [#9286](https://github.com/Card-Forge/forge/issues/9286) | [PR #11886](https://github.com/Card-Forge/forge/pull/11886) already clears the character flags that prevented the main quest being offered again. | Preserve and check the existing reset behavior when adding persistent completion or defeat tracking. |
 | On the Hunt save/load, [#5440](https://github.com/Card-Forge/forge/issues/5440) | [PR #7516](https://github.com/Card-Forge/forge/pull/7516) already added recovery for the documented save-before-first-movement case. The code is in the baseline. | Preserve and regression-check the existing repair. An open issue alone does not establish that a new fix is required. |
 | Malformed map dialogs, [#11670](https://github.com/Card-Forge/forge/issues/11670) | Follow-up testing with libGDX rejected far fewer strings than the original strict-JSON scan. [PR #12128](https://github.com/Card-Forge/forge/pull/12128) already repaired the Demon Tower portal and Skep reward dialogs. | Keep the existing repairs. Validate remaining data with Forge's actual parser and dialog behavior before assigning campaign impact. |
-| One-time boss quests, [PR #12260](https://github.com/Card-Forge/forge/pull/12260) | Open upstream work adds one-time quests, required enemies, saved completion/defeat flags, and editor controls. Its author reports no manual in-game validation and excludes old-save migration/duplicate cleanup. | Evaluate and adapt after the foundation. Inspect the current PR revision and compatibility with this fork; do not count an open PR as integrated functionality. |
+| One-time boss quests, [PR #12260](https://github.com/Card-Forge/forge/pull/12260) | Open upstream work adds one-time quests, required enemies, saved completion/defeat flags, and editor controls. Its author reports no manual in-game validation and excludes old-save migration/duplicate cleanup. | Evaluate as an optional candidate against the chosen Adventure design. Inspect the current PR revision and compatibility with this fork; do not count an open PR as integrated functionality. |
 
 ### Progression rules for this fork
 
@@ -35,12 +37,16 @@ The progression foundation branch starts from upstream commit [`4fcb76673693cb21
 - Missing flags must not be mistaken for completed objectives. Respect each objective's comparison or threshold and the scope of the recorded state.
 - Record a defeated boss independently of whether the player currently has a particular quest. Story dialogue can depend on quest state; the fact of victory must remain consistent.
 - Completing an objective, showing its dialogue, and granting its rewards must not repeat simply because the player reloads, revisits a location, or triggers another update.
-- Existing saves are part of the test surface. Distinguish code that reads existing saved facts from a data change that only affects newly created quest instances.
+- Existing saves are part of the test surface for retained systems and compatibility claims. Distinguish code that reads existing saved facts from a data change that only affects newly created quest instances. A replacement campaign needs an explicit save policy; entering it with an old character is a design choice, not an automatic commitment.
 - Reset behavior must be deliberate. A location reset, a repeatable quest, and New Game+ have different purposes; one must not silently substitute for another.
 
-## Priority 0: Finish the progression foundation
+## Priority 0: Assess Adventure and validate the reusable foundation
 
-The first change series is intentionally bounded: quest-state reconciliation, affected boss dialogs, and the Drunken Plea dependency. Review common resources and plane overrides together so an equivalent encounter does not behave differently solely because one copy was missed.
+Before committing to a campaign direction, assess a representative portion of the existing Adventure: the opening, a town, exploration and travel, a dungeon and boss, side quests, rewards, and save/resume behavior. Examine story coherence, player choice, location variety, navigation, repetition, deck growth, difficulty pacing, and the cost of authoring new content. Assess quest execution, map generation, encounters, UI, and persistence separately from the story they currently support.
+
+Produce a short decision record describing the desired experience, evidence from the assessment, and which components to retain, rework, replace, or omit. Compare targeted improvement with a replacement campaign or Adventure layer. Choose a small playable example that will test the proposed direction. No completed quality assessment or replacement decision is implied by this roadmap.
+
+The existing change series is intentionally bounded: quest-state reconciliation, affected boss dialogs, and the Drunken Plea dependency. It repairs the current implementation and provides regression coverage for systems we may reuse. Review common resources and plane overrides together so an equivalent encounter does not behave differently solely because one copy was missed. Continuing every inherited quest or repairing all upstream content is not a prerequisite for assessing or designing a replacement.
 
 The content work covers the Drunken Plea definitions in Shandalar, Shandalar Old Border, Realm of Legends, Crystal Kingdoms, Innistrad, and the Shandalar Spanish override. The Library boss correction covers the common map and the Old Border override, including their difficulty variants. Preserve the story-specific defeat branches and keep fallback branches mutually exclusive; map-dialog evaluation can process more than one matching root. These changes do not add a migration for previously serialized Drunken Plea stages.
 
@@ -51,15 +57,15 @@ Before treating the series as ready for a player run:
 3. Run the applicable manual cases in [Progression validation](Progression-Validation.md), preserving the original saves used for comparison.
 4. Record remaining failures and untested cases. A passing build does not establish that an existing campaign is recoverable.
 
-Next, resolve the two evidence gaps: reproduce Flower Fetching against the existing recursive reset and obtain a reproducible quest-list crash. If either still blocks play, fix it before increasing campaign size.
+Track the two remaining evidence gaps: Flower Fetching against the existing recursive reset and the quest-list crash without a reproduction. Prioritize them when they affect retained systems, selected content, or a compatibility promise we choose to make. A failure in a retained quest system or UI can block release of the chosen experience; an investigation into content we may retire does not block campaign design.
 
-Evaluate PR #12260 as a separate integration. Its one-time quest approach is relevant to defeated bosses and duplicate offers, but its documented lack of old-save migration is a separate design problem. Decide how to handle previously completed quests and already accepted duplicates before exposing the feature to established campaigns. Preserve ordinary repeatable quests and verify New Game+ resets.
+Evaluate PR #12260 as an optional integration if its one-time quest approach fits the chosen design. Its documented lack of old-save migration is a separate design problem. If adopting it for established campaigns, decide how to handle previously completed quests and already accepted duplicates. Preserve intended repeatable quests and verify applicable New Game+ resets.
 
-## Priority 1: Deliver one coherent playable chapter
+## Priority 1: Prototype the chosen design and complete a chapter
 
 Upstream [#9871](https://github.com/Card-Forge/forge/issues/9871) identifies the unfinished main story and proposes a more open campaign, with current story locations becoming side quests and stronger foreshadowing for the end boss. Use that discussion as design input; it is not a finished campaign specification or an adopted fork-wide rewrite.
 
-The proposed next milestone is one complete chapter built around existing locations. It should give the player a clear initial problem, multiple useful places to explore, a recognizable turning point, and a satisfying chapter conclusion. Finish and play through that loop before expanding the world or rewriting every quest.
+After the assessment, build a small playable example of the chosen Adventure design, then develop it into one complete chapter. It may use retained locations, redesigned content, entirely new content, or a combination. Demonstrate exploration, a meaningful quest, card battles, useful rewards, and saving and resuming. The chapter should give the player a clear initial problem, multiple useful places to explore, a recognizable turning point, and a satisfying conclusion. Play through that experience before committing to a larger production scope.
 
 | Design area | Deliverable for the chapter | Acceptance question |
 | --- | --- | --- |
@@ -69,7 +75,7 @@ The proposed next milestone is one complete chapter built around existing locati
 | Dungeons | Distinct encounters, environmental identity, useful navigation, and appropriate exits | Does each dungeon offer a different challenge or discovery, and can the player leave and resume safely? |
 | Deck growth | A reward plan covering cards, items, resources, and access to further opportunities | Do rewards create useful deck decisions without requiring one specific starting deck? |
 | Pacing | A playthrough record that identifies repetitive travel, unclear objectives, and difficulty spikes | Does the chapter remain engaging between battles, and do setbacks leave a reasonable path forward? |
-| Continuity | Explicit behavior for entering with an existing character or an already-cleared location | Does the chapter remain understandable and completable without inventing past accomplishments? |
+| Continuity | An explicit policy for fresh campaigns, supported existing characters, and retained saves | Are supported entry paths understandable and completable, and are new-campaign requirements clear? |
 
 Decide tutorial handling, the relationship between main and side quests, and the chapter's connection to the larger campaign in that outline. A later overarching story can build on the chapter's proven structure.
 
@@ -83,11 +89,11 @@ Once the chapter works end to end, improve the systems that make further adventu
 - Improve quest descriptions and navigation so they reflect actual saved progress and identify the next meaningful action.
 - Add more chapters and locations using the same completion, save compatibility, and playthrough criteria.
 
-Specific new mechanics belong in their own proposals with player-facing benefits and acceptance criteria. Avoid making a story expansion depend on a wholesale rewrite of the card engine or every existing Adventure system.
+Specific new mechanics belong in their own proposals with player-facing benefits and acceptance criteria. Reuse or replace Adventure systems according to the chosen experience, implementation cost, and evidence from the playable chapter. Keep changes focused enough to evaluate their effect on play and persistence.
 
 ## Priority 3: Make content safer to author
 
-Invest in content tools when they remove a demonstrated source of Adventure defects. Extend the existing editor and formats where practical.
+Invest in content tools when they remove a demonstrated source of Adventure defects or materially improve authoring the chosen content. Extend the existing editor and formats where useful; replace them when their limitations justify doing so.
 
 The initial targets are invalid prerequisites, missing targets, unreachable stages, inconsistent one-time rewards, and differences between common maps and plane overrides. Validators should understand libGDX's accepted syntax and separately check dialog semantics such as unnamed choices; strict JSON compliance alone is not a reliable runtime-failure count.
 

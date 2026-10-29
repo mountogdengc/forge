@@ -2,11 +2,17 @@
 
 ## Adventure development fork
 
-This fork is being developed specifically for Forge's single-player Adventure
-mode: dependable saves and quest progression, a coherent campaign, rewarding
+This fork develops a single-player Adventure game using Forge's shared foundation:
+dependable saves and quest progression, a coherent campaign, rewarding
 exploration, and tools for building more Adventure content. Multiplayer and
 standalone Duel modes are outside the fork's product scope. Adventure's own card
 battles continue to use the shared rules engine, computer opponent, and card data.
+
+The inherited Adventure campaign and systems will be assessed for reuse. Its
+story, setting, quests, maps, progression, and interface may be retained, reworked,
+or replaced completely to serve the experience we want to build. The next design
+milestone is an assessment and a playable example of the chosen direction;
+existing locations and campaign structure are optional.
 
 Development follows this fork's Adventure goals. Submitting changes upstream is
 not planned; useful upstream fixes can be selectively imported when they benefit
