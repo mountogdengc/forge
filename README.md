@@ -1,5 +1,20 @@
 # ⚔️  Forge: The Magic: The Gathering Rules Engine
 
+## Adventure development fork
+
+This fork prioritizes Forge's single-player Adventure mode: dependable saves and
+quest progression, a coherent campaign, rewarding exploration, and tools for
+building more Adventure content. Multiplayer feature work is outside the fork's
+current roadmap. Upstream card rules, AI, platform fixes, and other improvements
+remain valuable dependencies of the Adventure experience.
+
+See the [Adventure roadmap](docs/Adventure/Fork-Roadmap.md) for priorities and the
+[progression validation guide](docs/Adventure/Progression-Validation.md) for the
+checks required before releasing progression changes.
+
+The upstream project information and download links follow below. Those downloads
+do not include this fork's changes unless they have also been integrated upstream.
+
 Join the **Forge community** on [Discord](https://discord.gg/HcPJNyD66a)!
 
 [![Test build](https://github.com/Card-Forge/forge/actions/workflows/test-build.yaml/badge.svg)](https://github.com/Card-Forge/forge/actions/workflows/test-build.yaml)
