@@ -26,9 +26,12 @@ upstream-updating snapshot.
 The workflow runs:
 
 ```powershell
-mvn -U -B -ntp -pl forge-gui-mobile-dev -am clean verify "-Drevision=2.0.16-GIT-windows-test"
+mvn -U -B -ntp -pl forge-gui-mobile-dev -am clean verify "-Drevision=2.0.16-GITWindowsTest"
 python tools/adventure/package_windows_test.py --output dist/adventure-windows
 ```
+
+The single `GITWindowsTest` qualifier also satisfies Launch4j's version parser;
+additional hyphens in the qualifier are rejected during EXE generation.
 
 This runs tests for the Adventure client and required reactor modules, not the
 full 12-module default reactor. Packaging requires passing campaign and save
