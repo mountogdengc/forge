@@ -145,13 +145,20 @@ public class MapStage extends GameStage {
         return instance == null ? instance = new MapStage() : instance;
     }
 
+    public static void resetForCampaign() {
+        Forge.retireAdventureResource(instance);
+        instance = null;
+    }
+
     @Override
     public void dispose() {
         disposeWorld();
+        super.dispose();
     }
 
     public void disposeWorld() {
         Forge.safeDispose(gdxWorld);
+        gdxWorld = null;
     }
 
     public void addMapActor(MapObject obj, MapActor newActor) {

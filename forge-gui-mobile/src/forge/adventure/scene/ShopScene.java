@@ -20,6 +20,11 @@ import forge.util.ItemPool;
  */
 public class ShopScene extends ForgeScene {
     private static ShopScene object;
+
+    public static void resetForCampaign() {
+        Forge.retireAdventureResource(object);
+        object = null;
+    }
     private PointOfInterestChanges changes;
     TextureRegion textureRegion;
 

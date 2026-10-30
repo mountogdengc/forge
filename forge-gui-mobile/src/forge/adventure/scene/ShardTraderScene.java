@@ -14,6 +14,11 @@ import forge.adventure.util.Current;
 public class ShardTraderScene extends UIScene {
     private static ShardTraderScene object;
 
+    public static void resetForCampaign() {
+        Forge.retireAdventureResource(object);
+        object = null;
+    }
+
     public static final String spriteAtlas = "maps/tileset/buildings.atlas";
     public static final String sprite = "ShardTrader";
 

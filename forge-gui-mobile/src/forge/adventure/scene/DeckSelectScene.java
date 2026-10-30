@@ -29,6 +29,11 @@ public class DeckSelectScene extends UIScene {
 
     private static DeckSelectScene object;
 
+    public static void resetForCampaign() {
+        Forge.retireAdventureResource(object);
+        object = null;
+    }
+
     public static DeckSelectScene instance() {
         if (object == null)
             object = new DeckSelectScene();

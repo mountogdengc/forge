@@ -97,7 +97,30 @@ public class Assets implements Disposable {
     private ObjectMap<String, Texture> tmxMap;
     private Texture defaultImage, blackTexture;
     private TextureParameter textureParameter;
-    private ObjectMap<String, Font> textrafonts;
+    private ObjectMap<AdventureFontKey, Font> textrafonts;
+
+    private static final class AdventureFontKey {
+        private final String style;
+        private final BitmapFont font;
+        private final TextureAtlas atlas;
+
+        private AdventureFontKey(String style, BitmapFont font, TextureAtlas atlas) {
+            this.style = style;
+            this.font = font;
+            this.atlas = atlas;
+        }
+
+        @Override public int hashCode() {
+            return 31 * (31 * style.hashCode() + System.identityHashCode(font))
+                    + System.identityHashCode(atlas);
+        }
+
+        @Override public boolean equals(Object other) {
+            if (!(other instanceof AdventureFontKey)) return false;
+            AdventureFontKey key = (AdventureFontKey) other;
+            return style.equals(key.style) && font == key.font && atlas == key.atlas;
+        }
+    }
     private int cFB = 0, cFBVal = 0, cTM = 0, cTMVal = 0, cSF = 0, cSFVal = 0, cCF = 0, cCFVal = 0;
     private Texture whiteTexture, backdropTexture, grayTexture, holofoil, miniMapTexture, coinHead, coinTail;
     private FrameBuffer cardFrameBuffer, itemFrameBuffer;
@@ -623,53 +646,57 @@ public class Assets implements Disposable {
     }
 
     public Font getTextraFont(BitmapFont bitmapFont, TextureAtlas item_atlas, TextureAtlas pixelmana_atlas) {
+        AdventureFontKey key = new AdventureFontKey("textrafont", bitmapFont, item_atlas);
         if (textrafonts == null)
             textrafonts = new ObjectMap<>();
-        if (!textrafonts.containsKey("textrafont")) {
+        if (!textrafonts.containsKey(key)) {
             Font font = new Font(bitmapFont, 0f, 2f, 0f, 1f);
             font.addAtlas(item_atlas, 0f, 6f, 0f);
             //problematic atlas since some buttons are small, and this is too big for some buttons, need a way to enable
             //this via property
             //font.addAtlas(pixelmana_atlas, -90f, 20f, 0f);
             font.integerPosition = false;
-            textrafonts.put("textrafont", font);
+            textrafonts.put(key, font);
         }
-        return textrafonts.get("textrafont");
+        return textrafonts.get(key);
     }
 
     public Font getKeysFont(BitmapFont bitmapFont, TextureAtlas keys_atlas) {
+        AdventureFontKey key = new AdventureFontKey("keysfont", bitmapFont, keys_atlas);
         if (textrafonts == null)
             textrafonts = new ObjectMap<>();
-        if (!textrafonts.containsKey("keysfont")) {
+        if (!textrafonts.containsKey(key)) {
             Font font = new Font(bitmapFont);
             font.addAtlas(keys_atlas, 0f, 6f, 0f);
             font.integerPosition = false;
-            textrafonts.put("keysfont", font);
+            textrafonts.put(key, font);
         }
-        return textrafonts.get("keysfont");
+        return textrafonts.get(key);
     }
 
     public Font getTextraFont(String name, BitmapFont bitmapFont, TextureAtlas items_atlas) {
+        AdventureFontKey key = new AdventureFontKey(name, bitmapFont, items_atlas);
         if (textrafonts == null)
             textrafonts = new ObjectMap<>();
-        if (!textrafonts.containsKey(name)) {
+        if (!textrafonts.containsKey(key)) {
             Font font = new Font(bitmapFont, 0f, 2f, 0f, 1f);
             font.addAtlas(items_atlas, 0f, 6f, 0f);
             font.integerPosition = false;
-            textrafonts.put(name, font);
+            textrafonts.put(key, font);
         }
-        return textrafonts.get(name);
+        return textrafonts.get(key);
     }
 
     public Font getGenericHeaderFont(BitmapFont bitmapFont) {
+        AdventureFontKey key = new AdventureFontKey("GenericHeaderFont", bitmapFont, null);
         if (textrafonts == null)
             textrafonts = new ObjectMap<>();
-        if (!textrafonts.containsKey("GenericHeaderFont")) {
+        if (!textrafonts.containsKey(key)) {
             Font font = new Font(bitmapFont, 0f, -0.5f, 0f, -2.5f);
             font.integerPosition = false;
-            textrafonts.put("GenericHeaderFont", font);
+            textrafonts.put(key, font);
         }
-        return textrafonts.get("GenericHeaderFont");
+        return textrafonts.get(key);
     }
 
     public Music getMusic(FileHandle file) {

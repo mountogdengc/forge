@@ -119,6 +119,7 @@ public class AdventurePlayer implements Serializable, SaveFileContent {
         //Reset all properties HERE.
         fantasyMode = false;
         announceFantasy = false;
+        announceCustom = false;
         usingCustomDeck = false;
         adventureMode = null;
         blessing = null;
@@ -133,6 +134,8 @@ public class AdventurePlayer implements Serializable, SaveFileContent {
         equippedItems.clear();
         deckLoadouts.clear();
         characterFlags.clear();
+        tutorialFlags.clear();
+        currentLocationChanges = null;
         questFlags.clear();
         quests.clear();
         events.clear();

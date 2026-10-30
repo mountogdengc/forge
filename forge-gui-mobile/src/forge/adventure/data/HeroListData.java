@@ -22,25 +22,29 @@ public class HeroListData {
     private String avatar;
     private TextureAtlas avatarAtlas;
     private final ObjectMap<String, Array<Sprite>> avatarSprites = new ObjectMap<>();
+    private static Config activeConfig;
 
     static public HeroListData instance() {
-        if (instance == null) {
-            Json json = new Json();
-            FileHandle handle = Config.instance().getFile(Paths.HEROES);
-            if (handle.exists()) {
-                instance = json.fromJson(HeroListData.class, handle);
-                instance.avatarAtlas = Config.instance().getAtlas(instance.avatar);
-                // leaving here as reference since PixelArt images use Nearest without MipMaps. By default it shouldn't have any filters
-                /*instance.avatarSprites.getTextures().first().setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);*/
-            } else {
-                throw new RuntimeException("Path not found: " + handle.path());
-            }
+        if (instance == null || activeConfig != Config.instance()) {
+            instance = forConfig(Config.instance());
+            activeConfig = Config.instance();
         }
         return instance;
     }
 
+    /** Character creation may preview another campaign without activating it. */
+    public static HeroListData forConfig(Config config) {
+        FileHandle handle = config.getFile(Paths.HEROES);
+        if (handle == null || !handle.exists()) {
+            throw new IllegalArgumentException("Campaign hero data is missing.");
+        }
+        HeroListData heroes = new Json().fromJson(HeroListData.class, handle);
+        heroes.avatarAtlas = config.getAtlas(heroes.avatar);
+        return heroes;
+    }
+
     public String getHero(int raceIndex, boolean female) {
-        HeroData data =  instance().heroes[raceIndex];
+        HeroData data = heroes[raceIndex];
 
         if (female)
             return data.female;
@@ -49,11 +53,11 @@ public class HeroListData {
     }
 
     public TextureRegion getAvatar(int heroRace, boolean isFemale, int avatarIndex) {
-        HeroData data = instance().heroes[heroRace];
-        Array<Sprite> sprites = instance().avatarSprites.get(isFemale ? data.femaleAvatar : data.maleAvatar);
+        HeroData data = heroes[heroRace];
+        Array<Sprite> sprites = avatarSprites.get(isFemale ? data.femaleAvatar : data.maleAvatar);
         if (sprites == null) {
-            sprites = instance().avatarAtlas.createSprites(isFemale ? data.femaleAvatar : data.maleAvatar);
-            instance().avatarSprites.put(isFemale ? data.femaleAvatar : data.maleAvatar, sprites);
+            sprites = avatarAtlas.createSprites(isFemale ? data.femaleAvatar : data.maleAvatar);
+            avatarSprites.put(isFemale ? data.femaleAvatar : data.maleAvatar, sprites);
         }
         avatarIndex %= sprites.size;
         if (avatarIndex < 0) {
@@ -64,7 +68,7 @@ public class HeroListData {
 
     public Array<String> getRaces() {
         Array<String> ret = new Array<>();
-        for (HeroData hero : instance().heroes) {
+        for (HeroData hero : heroes) {
             ret.add(Forge.getLocalizer().getMessageorUseDefault("lbl"+hero.name, hero.name));
         }
         return ret;

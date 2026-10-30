@@ -200,6 +200,10 @@ public class UIScene extends Scene {
     }
 
     public UIScene(String uiFilePath) {
+        this(uiFilePath, Config.instance());
+    }
+
+    protected UIScene(String uiFilePath, Config resourceConfig) {
         textboxOpen = false;
         uiFile = uiFilePath;
         stage = new Stage(new ScalingViewport(Scaling.stretch, getIntendedWidth(), getIntendedHeight()), Forge.getGraphics().getBatch()) {
@@ -221,7 +225,7 @@ public class UIScene extends Scene {
                 return super.mouseMoved(screenX, screenY);
             }
         };
-        ui = new UIActor(Config.instance().getFile(uiFile));
+        ui = new UIActor(resourceConfig.getFile(uiFile), resourceConfig);
         for (Actor actor : ui.getChildren()) {
             if (actor instanceof ScrollPane)
                 stage.setScrollFocus(actor);
@@ -255,8 +259,17 @@ public class UIScene extends Scene {
         Dialog dialog = new Dialog(title == null ? "" : title, Controls.getSkin());
         textboxOpen = true;
 
-        if (label != null)
-            dialog.getContentTable().add(Controls.newTextraLabel(label).setWrap(wrap)).center().fill();
+        if (label != null) {
+            if (wrap) {
+                // Wrapped labels have no useful preferred width during pack().
+                // Bound the message explicitly so long save errors stay readable.
+                float messageWidth = Math.min(300f, stage.getViewport().getWorldWidth() - 40f);
+                dialog.getContentTable().add(Controls.newTextraLabel(label).setWrap(true))
+                        .width(messageWidth).pad(6).fillX();
+            } else {
+                dialog.getContentTable().add(Controls.newTextraLabel(label)).center().fill();
+            }
+        }
 
         dialog.button(Controls.newTextButton(stringYes, runnableYes));
 

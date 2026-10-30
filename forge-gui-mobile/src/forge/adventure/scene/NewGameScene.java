@@ -2,6 +2,7 @@ package forge.adventure.scene;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
@@ -12,17 +13,17 @@ import com.badlogic.gdx.utils.Array;
 
 import com.github.tommyettinger.textra.TextraLabel;
 import forge.Forge;
+import forge.adventure.campaign.CampaignDefinition;
+import forge.adventure.campaign.CampaignManager;
 import forge.adventure.data.DialogData;
 import forge.adventure.data.DifficultyData;
 import forge.adventure.data.HeroListData;
-import forge.adventure.player.AdventurePlayer;
 import forge.adventure.stage.WorldStage;
 import forge.adventure.util.*;
 import forge.adventure.world.WorldSave;
 import forge.card.CardEdition;
 import forge.card.ColorSet;
 import forge.deck.DeckProxy;
-import forge.localinstance.properties.ForgePreferences;
 import forge.model.FModel;
 import forge.player.GamePlayerUtil;
 import forge.screens.TransitionScreen;
@@ -37,6 +38,9 @@ import java.util.Random;
  */
 public class NewGameScene extends MenuScene {
 
+    private final CampaignDefinition campaign;
+    private final Config previewConfig;
+    private final HeroListData previewHeroes;
     TextField selectedName;
     ColorSet[] colorIds;
     CardEdition[] editionIds;
@@ -61,8 +65,11 @@ public class NewGameScene extends MenuScene {
 
     private final Array<AdventureModes> modes = new Array<>();
 
-    private NewGameScene() {
-        super(Forge.isLandscapeMode() ? "ui/new_game.json" : "ui/new_game_portrait.json");
+    private NewGameScene(CampaignDefinition campaign, Config config) {
+        super(Forge.isLandscapeMode() ? "ui/new_game.json" : "ui/new_game_portrait.json", config);
+        this.campaign = campaign;
+        previewConfig = config;
+        previewHeroes = HeroListData.forConfig(config);
         gender = ui.findActor("gender");
         selectedName = ui.findActor("nameField");
         generateName();
@@ -74,8 +81,8 @@ public class NewGameScene extends MenuScene {
         String deckLabel = "[BLACK]" + Forge.getLocalizer().getMessage("lblDeck") + ":";
         custom = new Array<>();
         colorId = ui.findActor("colorId");
-        String[] colorSet = Config.instance().colorIds();
-        String[] colorIdNames = Config.instance().colorIdNames();
+        String[] colorSet = previewConfig.colorIds();
+        String[] colorIdNames = previewConfig.colorIdNames();
         colorIds = new ColorSet[colorSet.length];
         for (int i = 0; i < colorIds.length; i++)
             colorIds[i] = ColorSet.fromNames(colorSet[i].toCharArray());
@@ -84,7 +91,7 @@ public class NewGameScene extends MenuScene {
             colorNames.add(UIActor.localize(idName));
         colorId.setTextList(colorNames);
 
-        for (DifficultyData diff : Config.instance().getConfigData().difficulties)//check first difficulty if exists
+        for (DifficultyData diff : previewConfig.getConfigData().difficulties)//check first difficulty if exists
         {
             if (diff.starterDecks != null) {
                 modes.add(AdventureModes.Standard);
@@ -113,8 +120,8 @@ public class NewGameScene extends MenuScene {
         starterEdition = ui.findActor("starterEdition");
         starterEditionLabel = ui.findActor("starterEditionL");
         originalEditionLabelText = starterEditionLabel.storedText;
-        String[] starterEditions = Config.instance().starterEditions();
-        String[] starterEditionNames = Config.instance().starterEditionNames();
+        String[] starterEditions = previewConfig.starterEditions();
+        String[] starterEditionNames = previewConfig.starterEditionNames();
         editionIds = new CardEdition[starterEditions.length];
         for (int i = 0; i < editionIds.length; i++)
             editionIds[i] = FModel.getMagicDb().getEditions().get(starterEditions[i]);
@@ -124,16 +131,16 @@ public class NewGameScene extends MenuScene {
         starterEdition.setTextList(originalEditionNames);
 
         // Precon mode: deck names in colorId, set filter in starterEdition
-        if (Config.instance().hasPreconDecks()) {
+        if (previewConfig.hasPreconDecks()) {
             modes.add(AdventureModes.Precon);
             AdventureModes.Precon.setSelectionName(deckLabel);
-            AdventureModes.Precon.setModes(Config.instance().filterPreconDecks(0));
+            AdventureModes.Precon.setModes(previewConfig.filterPreconDecks(0));
         }
 
-        if (Config.instance().hasCommanderPreconDecks()) {
+        if (previewConfig.hasCommanderPreconDecks()) {
             modes.add(AdventureModes.CommanderPrecon);
             AdventureModes.CommanderPrecon.setSelectionName(deckLabel);
-            AdventureModes.CommanderPrecon.setModes(Config.instance().filterCommanderPreconDecks(0));
+            AdventureModes.CommanderPrecon.setModes(previewConfig.filterCommanderPreconDecks(0));
         }
 
         modes.add(AdventureModes.Chaos);
@@ -185,9 +192,9 @@ public class NewGameScene extends MenuScene {
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 AdventureModes smode = modes.get(mode.getCurrentIndex());
                 if (smode == AdventureModes.Precon) {
-                    colorId.setTextList(Config.instance().filterPreconDecks(starterEdition.getCurrentIndex()));
+                    colorId.setTextList(previewConfig.filterPreconDecks(starterEdition.getCurrentIndex()));
                 } else if (smode == AdventureModes.CommanderPrecon) {
-                    colorId.setTextList(Config.instance().filterCommanderPreconDecks(starterEdition.getCurrentIndex()));
+                    colorId.setTextList(previewConfig.filterCommanderPreconDecks(starterEdition.getCurrentIndex()));
                 }
             }
         });
@@ -200,14 +207,14 @@ public class NewGameScene extends MenuScene {
             }
         });
         race.addListener(event -> NewGameScene.this.updateAvatar());
-        race.setTextList(HeroListData.instance().getRaces());
+        race.setTextList(previewHeroes.getRaces());
         difficulty = ui.findActor("difficulty");
         difficultyHelp = ui.findActor("difficultyHelp");
 
         Array<String> diffList = new Array<>(colorIds.length);
         int i = 0;
         int startingDifficulty = 0;
-        for (DifficultyData diff : Config.instance().getConfigData().difficulties) {
+        for (DifficultyData diff : previewConfig.getConfigData().difficulties) {
             if (diff.startingDifficulty)
                 startingDifficulty = i;
             diffList.add(Forge.getLocalizer().getMessageorUseDefault("lbl" + diff.name, diff.name));
@@ -243,8 +250,20 @@ public class NewGameScene extends MenuScene {
 
     public static NewGameScene instance() {
         if (object == null)
-            object = new NewGameScene();
+            return forCampaign(CampaignManager.current());
         return object;
+    }
+
+    public static NewGameScene forCampaign(CampaignDefinition campaign) {
+        NewGameScene next = new NewGameScene(campaign, Config.forCampaign(campaign));
+        Forge.retireAdventureResource(object);
+        object = next;
+        return object;
+    }
+
+    public static void resetForCampaign() {
+        Forge.retireAdventureResource(object);
+        object = null;
     }
 
     float avatarT = 1f, avatarTT = 1f;
@@ -285,13 +304,13 @@ public class NewGameScene extends MenuScene {
         starterEditionLabel.setVisible(showEdition);
 
         if (selectedMode == AdventureModes.Precon) {
-            starterEdition.setTextList(Config.instance().getPreconSetNames());
+            starterEdition.setTextList(previewConfig.getPreconSetNames());
             starterEditionLabel.setText("[BLACK]" + Forge.getLocalizer().getMessageorUseDefault("lblEdition", "Edition") + ":");
-            colorId.setTextList(Config.instance().filterPreconDecks(starterEdition.getCurrentIndex()));
+            colorId.setTextList(previewConfig.filterPreconDecks(starterEdition.getCurrentIndex()));
         } else if (selectedMode == AdventureModes.CommanderPrecon) {
-            starterEdition.setTextList(Config.instance().getCommanderPreconSetNames());
+            starterEdition.setTextList(previewConfig.getCommanderPreconSetNames());
             starterEditionLabel.setText("[BLACK]" + Forge.getLocalizer().getMessageorUseDefault("lblEdition", "Edition") + ":");
-            colorId.setTextList(Config.instance().filterCommanderPreconDecks(starterEdition.getCurrentIndex()));
+            colorId.setTextList(previewConfig.filterCommanderPreconDecks(starterEdition.getCurrentIndex()));
         } else if (selectedMode == AdventureModes.Standard) {
             starterEditionLabel.setText(originalEditionLabelText);
             starterEdition.setTextList(originalEditionNames);
@@ -328,34 +347,90 @@ public class NewGameScene extends MenuScene {
         if (started)
             return true;
         started = true;
-        if (selectedName.getText().isEmpty()) {
+        if (selectedName.getText().trim().isEmpty())
             generateName();
-        }
-        Runnable runnable = () -> {
-            started = false;
-            //FModel.getPreferences().setPref(ForgePreferences.FPref.UI_ENABLE_MUSIC, false);
-            WorldSave.generateNewWorld(selectedName.getText(),
-                    gender.getCurrentIndex() == 0,
-                    race.getCurrentIndex(),
-                    avatarIndex,
-                    getStartingColor(),
-                    Config.instance().getConfigData().difficulties[difficulty.getCurrentIndex()],
-                    modes.get(mode.getCurrentIndex()), colorId.getCurrentIndex(),
-                    getStartingEdition(), 0);
-            GamePlayerUtil.getGuiPlayer().setName(selectedName.getText());
-            SoundSystem.instance.changeBackgroundTrack();
-            WorldStage.getInstance().enterSpawnPOI();
-            if (AdventurePlayer.current().getQuests().stream().noneMatch(q -> q.getID() == 28)) {
-                AdventurePlayer.current().addQuest("28", true); //Temporary link to Shandalar main questline
-            }
-            Forge.switchScene(GameScene.instance());
-        };
-        Forge.setTransitionScreen(new TransitionScreen(runnable, null, false, true, Forge.getLocalizer().getMessage("lblGeneratingWorld")));
+
+        TextField runName = Controls.newTextField(selectedName.getText());
+        runName.setMaxLength(80);
+        Dialog prompt = createGenericDialog(
+                Forge.getLocalizer().getMessageorUseDefault("lblNewPlaythrough", "New playthrough"),
+                null, Forge.getLocalizer().getMessage("lblStart"),
+                Forge.getLocalizer().getMessage("lblCancel"), () -> {
+                    String name = runName.getText().trim();
+                    removeDialog();
+                    createPlaythrough(name.isEmpty() ? selectedName.getText() : name);
+                }, () -> {
+                    started = false;
+                    removeDialog();
+                });
+        prompt.getContentTable().add(Controls.newLabel(campaign.getTitle())).colspan(2).width(220).pad(5);
+        prompt.getContentTable().row();
+        prompt.getContentTable().add(Controls.newLabel(
+                Forge.getLocalizer().getMessageorUseDefault("lblPlaythroughName", "Playthrough name"))).pad(5);
+        prompt.getContentTable().row();
+        prompt.getContentTable().add(runName).width(220).pad(5);
+        showDialog(prompt);
+        stage.setKeyboardFocus(runName);
         return true;
     }
 
+    private void createPlaythrough(String runName) {
+        // Capture all options before campaign activation invalidates scene caches.
+        final String characterName = selectedName.getText().trim();
+        final boolean male = gender.getCurrentIndex() == 0;
+        final int selectedRace = race.getCurrentIndex();
+        final int selectedAvatar = avatarIndex;
+        final ColorSet color = getStartingColor();
+        final DifficultyData selectedDifficulty = previewConfig.getConfigData().difficulties[difficulty.getCurrentIndex()];
+        final AdventureModes selectedMode = modes.get(mode.getCurrentIndex());
+        final int deckIndex = colorId.getCurrentIndex();
+        final CardEdition edition = getStartingEdition();
+        if (!WorldSave.checkpointAndSuspend()) {
+            started = false;
+            showDialog(createGenericDialog(Forge.getLocalizer().getMessage("lblError"),
+                    WorldSave.getLastError(), Forge.getLocalizer().getMessage("lblOK"),
+                    null, this::removeDialog, null, false, "", true));
+            return;
+        }
+        Runnable runnable = () -> {
+            try {
+                CampaignManager.activate(campaign);
+                WorldSave.beginPlaythrough(campaign, runName, characterName);
+                WorldSave.generateNewWorld(characterName, male, selectedRace, selectedAvatar, color,
+                        selectedDifficulty, selectedMode, deckIndex, edition, 0);
+                GamePlayerUtil.getGuiPlayer().setName(characterName);
+                CampaignManager.applyStartingQuests();
+                if (!WorldSave.saveInitialSnapshot()) {
+                    Forge.clearTransitionScreen();
+                    StartScene menu = StartScene.instance();
+                    Forge.switchScene(menu);
+                    menu.showError(Forge.getLocalizer().getMessageorUseDefault("lblInitialSaveFailed",
+                            "Your new playthrough is active, but its first save failed. Resume or try saving again.")
+                            + "\n" + WorldSave.getLastError());
+                    return;
+                }
+                SoundSystem.instance.changeBackgroundTrack();
+                WorldStage.getInstance().enterSpawnPOI();
+                Forge.switchScene(GameScene.instance());
+            } catch (Exception e) {
+                String error = e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage();
+                WorldSave.discardFailedPlaythrough();
+                if (WorldSave.canContinue())
+                    WorldSave.loadContinue();
+                Forge.clearTransitionScreen();
+                StartScene menu = StartScene.instance();
+                Forge.switchScene(menu);
+                menu.showError(error);
+            } finally {
+                started = false;
+            }
+        };
+        Forge.setTransitionScreen(new TransitionScreen(runnable, null, false, true,
+                Forge.getLocalizer().getMessage("lblGeneratingWorld")));
+    }
+
     public boolean back() {
-        Forge.switchScene(StartScene.instance());
+        Forge.switchScene(CampaignSelectionScene.instance());
         return true;
     }
 
@@ -372,7 +447,7 @@ public class NewGameScene extends MenuScene {
     }
 
     private boolean updateAvatar() {
-        avatarImage.setDrawable(new TextureRegionDrawable(HeroListData.instance().getAvatar(race.getCurrentIndex(), gender.getCurrentIndex() != 0, avatarIndex)));
+        avatarImage.setDrawable(new TextureRegionDrawable(previewHeroes.getAvatar(race.getCurrentIndex(), gender.getCurrentIndex() != 0, avatarIndex)));
         return false;
     }
 
@@ -380,19 +455,6 @@ public class NewGameScene extends MenuScene {
     @Override
     public void enter() {
         updateAvatar();
-        if (Forge.createNewAdventureMap) {
-            FModel.getPreferences().setPref(ForgePreferences.FPref.UI_ENABLE_MUSIC, false);
-            WorldSave.generateNewWorld(selectedName.getText(),
-                    gender.getCurrentIndex() == 0,
-                    race.getCurrentIndex(),
-                    avatarIndex,
-                    getStartingColor(),
-                    Config.instance().getConfigData().difficulties[difficulty.getCurrentIndex()],
-                    modes.get(mode.getCurrentIndex()), colorId.getCurrentIndex(),
-                    getStartingEdition(), 0);
-            GamePlayerUtil.getGuiPlayer().setName(selectedName.getText());
-            Forge.switchScene(GameScene.instance());
-        }
 
         unselectActors();
         super.enter();
@@ -400,8 +462,8 @@ public class NewGameScene extends MenuScene {
 
     private void showDifficultyHelp() {
         Localizer localizer = Forge.getLocalizer();
-        DifficultyData selectedDifficulty = Config.instance().getConfigData().difficulties[difficulty.getCurrentIndex()];
-        boolean enableGeneticAI = Config.instance().getConfigData().enableGeneticAI;
+        DifficultyData selectedDifficulty = previewConfig.getConfigData().difficulties[difficulty.getCurrentIndex()];
+        boolean enableGeneticAI = previewConfig.getConfigData().enableGeneticAI;
         String startingEquipment = selectedDifficulty.startItems == null || selectedDifficulty.startItems.length == 0
                 ? localizer.getMessage("lblNone")
                 : String.join(", ", selectedDifficulty.startItems);
@@ -462,8 +524,8 @@ public class NewGameScene extends MenuScene {
 
         Localizer localizer = Forge.getLocalizer();
         AdventureModes selectedMode = modes.get(mode.getCurrentIndex());
-        DifficultyData selectedDifficulty = Config.instance().getConfigData().difficulties[difficulty.getCurrentIndex()];
-        boolean enableGeneticAI = Config.instance().getConfigData().enableGeneticAI;
+        DifficultyData selectedDifficulty = previewConfig.getConfigData().difficulties[difficulty.getCurrentIndex()];
+        boolean enableGeneticAI = previewConfig.getConfigData().enableGeneticAI;
 
         modeSummary = new DialogData();
         modeSummary.name = localizer.getMessage("lblSummary");

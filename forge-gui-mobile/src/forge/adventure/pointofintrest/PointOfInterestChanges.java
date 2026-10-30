@@ -31,6 +31,30 @@ public class PointOfInterestChanges implements SaveFileContent  {
     private Boolean isVisited;
 
     public static class Map extends HashMap<String,PointOfInterestChanges> implements SaveFileContent {
+        /**
+         * Read a flag from this POI's root or one of its saved floors. Floor keys append
+         * a relative map path to the complete root ID; require that path boundary so a
+         * different POI whose ID merely begins with this ID cannot contribute progress.
+         */
+        public Integer getMapFlag(String poiRootId, String flagName) {
+            if (poiRootId == null || poiRootId.isEmpty() || flagName == null || flagName.isEmpty()) {
+                return null;
+            }
+            Integer value = null;
+            for (Map.Entry<String, PointOfInterestChanges> entry : entrySet()) {
+                String key = entry.getKey();
+                if (!key.equals(poiRootId) && !key.startsWith(poiRootId + "../")
+                        && !key.startsWith(poiRootId + "./") && !key.startsWith(poiRootId + "maps/")) {
+                    continue;
+                }
+                Byte candidate = entry.getValue().getMapFlags().get(flagName);
+                if (candidate != null && (value == null || candidate > value)) {
+                    value = (int) candidate;
+                }
+            }
+            return value;
+        }
+
         @Override
         public void load(SaveFileData data) {
             this.clear();

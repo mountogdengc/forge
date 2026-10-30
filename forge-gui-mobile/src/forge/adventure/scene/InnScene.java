@@ -19,6 +19,14 @@ import forge.model.CardBlock;
  */
 public class InnScene extends UIScene {
     private static InnScene object;
+
+    public static void resetForCampaign() {
+        Forge.retireAdventureResource(object);
+        object = null;
+        localEvent = null;
+        localPointOfInterestId = null;
+        changes = null;
+    }
     private static int localObjectId;
     private static String localPointOfInterestId;
     private static AdventureEventData localEvent;

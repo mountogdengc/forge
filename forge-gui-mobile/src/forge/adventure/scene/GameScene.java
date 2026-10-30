@@ -25,6 +25,10 @@ public class GameScene extends HudScene {
     }
 
     private static GameScene object;
+
+    public static void resetForCampaign() {
+        object = null;
+    }
     private String location = "";
     private String locationColorID = "[+c]";
     private static final HashMap<String, String> cachedHeaderNamesMap = new HashMap<>();

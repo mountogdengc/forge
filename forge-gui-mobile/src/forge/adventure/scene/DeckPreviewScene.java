@@ -1,5 +1,7 @@
 package forge.adventure.scene;
 
+import forge.Forge;
+
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import forge.Adventure;
 import forge.deck.Deck;
@@ -22,6 +24,11 @@ public class DeckPreviewScene extends ForgeScene {
     }
 
     private static DeckPreviewScene object;
+
+    public static void resetForCampaign() {
+        Forge.retireAdventureResource(object);
+        object = null;
+    }
 
     public static DeckPreviewScene getInstance(Deck deckToPreview) {
         if(object == null)

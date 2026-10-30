@@ -15,6 +15,7 @@ import forge.adventure.data.DialogData;
 import forge.adventure.data.RewardData;
 import forge.adventure.player.AdventurePlayer;
 import forge.adventure.util.Controls;
+import forge.adventure.util.Config;
 import forge.adventure.util.Current;
 import forge.adventure.util.Reward;
 import forge.card.ColorSet;
@@ -33,6 +34,11 @@ public class MenuScene extends UIScene {
 
     public MenuScene(String uiFilePath) {
         super(uiFilePath);
+        dialog = Controls.newDialog("");
+    }
+
+    protected MenuScene(String uiFilePath, Config resourceConfig) {
+        super(uiFilePath, resourceConfig);
         dialog = Controls.newDialog("");
     }
 

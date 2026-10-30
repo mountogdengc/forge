@@ -82,6 +82,11 @@ public class QuestLogScene extends UIScene {
 
     private static QuestLogScene object;
 
+    public static void resetForCampaign() {
+        Forge.retireAdventureResource(object);
+        object = null;
+    }
+
     public static QuestLogScene instance(Scene lastGameScene) {
         //if (object == null)
             object = new QuestLogScene();

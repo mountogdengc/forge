@@ -381,6 +381,12 @@ public class EventScene extends MenuScene implements IAfterMatch {
 
     private static EventScene object;
 
+    public static void resetForCampaign() {
+        Forge.retireAdventureResource(object);
+        object = null;
+        currentEvent = null;
+    }
+
     public static EventScene instance(Scene lastGameScene, AdventureEventData event, PointOfInterestChanges localChanges) {
         currentEvent = event;
         changes = localChanges;

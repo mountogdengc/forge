@@ -35,6 +35,11 @@ public class SpellSmithScene extends UIScene {
 
     private static SpellSmithScene object;
 
+    public static void resetForCampaign() {
+        Forge.retireAdventureResource(object);
+        object = null;
+    }
+
     public static SpellSmithScene instance() {
         if (object == null)
             object = new SpellSmithScene();

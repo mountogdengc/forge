@@ -7,6 +7,8 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import forge.Forge;
+import forge.adventure.campaign.CampaignDefinition;
+import forge.adventure.campaign.CampaignManager;
 import forge.adventure.character.CharacterSprite;
 import forge.adventure.character.EnemySprite;
 import forge.adventure.data.*;
@@ -67,6 +69,17 @@ public class WorldStage extends GameStage implements SaveFileContent {
 
     public static WorldStage getInstance() {
         return instance == null ? instance = new WorldStage() : instance;
+    }
+
+    public static void resetForCampaign() {
+        Forge.retireAdventureResource(instance);
+        instance = null;
+    }
+
+    @Override
+    public void dispose() {
+        background.dispose();
+        super.dispose();
     }
 
     @Override
@@ -413,7 +426,9 @@ public class WorldStage extends GameStage implements SaveFileContent {
         getPlayerSprite().setMovementDirection(Vector2.Zero);
         if (enterSpawnPOI) {
             enterSpawnPOI = false;
-            PointOfInterest poi = Current.world().findPointsOfInterest("Spawn");
+            CampaignDefinition campaign = CampaignManager.current();
+            String start = campaign == null ? "Spawn" : campaign.getStartingLocation();
+            PointOfInterest poi = start == null ? null : Current.world().findPointsOfInterest(start);
             if (poi != null) { //shouldn't be null
                 WorldStage.getInstance().loadPOI(poi);
                 // adjust player sprite to prevent triggering the poi collision point when leaving the spawn on New Game
@@ -441,7 +456,9 @@ public class WorldStage extends GameStage implements SaveFileContent {
 
     @Override
     public void leave() {
-        getPlayerSprite().storePos();
+        // A load can retire this stage before Forge calls the outgoing scene's leave hook.
+        // Its sprite must not overwrite the newly restored player's coordinates.
+        if (this == instance) getPlayerSprite().storePos();
         background.dispose();
     }
 
@@ -468,7 +485,7 @@ public class WorldStage extends GameStage implements SaveFileContent {
             }
             globalTimer = data.readFloat("globalTimer");
         } catch (Exception e) {
-
+            throw new IllegalStateException("Unable to restore overworld encounter state", e);
         }
     }
 

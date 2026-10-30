@@ -433,20 +433,14 @@ public class AdventureQuestData implements Serializable {
     }
 
     public void activateNextStages() {
-        boolean showNotification = false;
-        for (AdventureQuestStage s : stages) {
-            if (s.getStatus() == INACTIVE){
-                s.checkPrerequisites(getCompletedStageIDs());
-                if (s.getStatus() == ACTIVE) {
-                    if (s.hasRequiredFetchItems()) {
-                        s.handleEvent(new AdventureQuestEvent());
-                    }
-                    AdventureQuestController.instance().addQuestSprites(s);
-                    showNotification = true;
-                }
+        List<AdventureQuestStage> activated = AdventureQuestProgression.activateNextStages(
+                this, AdventureQuestStage::reconcilePersistentState);
+        for (AdventureQuestStage stage : activated) {
+            if (stage.getStatus() == ACTIVE && stage.getTargetSprite() != null) {
+                AdventureQuestController.instance().addQuestSprites(stage);
             }
         }
-        if (showNotification) {
+        if (!activated.isEmpty() && !getActiveStages().isEmpty()) {
             StringBuilder description = new StringBuilder();
             description.append("[!]").append(name).append("[]");
             for (AdventureQuestStage stage : getActiveStages()) {
