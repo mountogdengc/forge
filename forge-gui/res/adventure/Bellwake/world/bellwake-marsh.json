@@ -1,0 +1,8 @@
+{
+  "name": "black", "startPointX": 0.5, "startPointY": 0.5,
+  "width": 1, "height": 1, "noiseWeight": 0, "distWeight": 0,
+  "color": "413b46", "tilesetAtlas": "world/tilesets/terrain.atlas", "tilesetName": "Black",
+  "terrain": [{"spriteName": "Black_1", "min": 0.2, "max": 0.35, "resolution": 5}],
+  "spriteNames": ["Reed", "DarkGras"], "enemies": ["Reed Rat"],
+  "pointsOfInterest": ["Spawn", "Bellwake Tollhouse"]
+}

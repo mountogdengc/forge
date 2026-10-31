@@ -1,0 +1,26 @@
+[
+  {
+    "id": 7001, "isTemplate": true, "storyQuest": true, "autoTrack": true,
+    "name": "The Sixth Coat",
+    "description": "Recover the last ferry ticket from the Drowned Tollhouse and decide what Bellwake owes its dead.",
+    "prologue": {
+      "text": "Five people step off the night ferry. A sixth coat stays on the bench, water running from its cuffs. Mira, who runs the ferry, folds it over her arm. \"My mother went down in that coat. The keeper still has her ticket. Bring it back before he sells the seat again.\"",
+      "options": [{"name":"Continue."}]
+    },
+    "epilogue": {
+      "text":"Mira runs her thumb over the punch in the ticket. \"One crossing left. Ring her back to this bank, or let her take the boat on?\" She puts the rope in your hand.",
+      "options":[
+        {"name":"Ring her ashore.", "text":"Mira rings once. A woman on the landing asks for her coat. By breakfast they are arguing over the price of lamp oil, neither quite willing to go to bed.",
+         "action":[{"setCharacterFlag":{"key":"bellwakeEnding","val":1}}],
+         "options":[{"name":"Keep Ghoulcaller's Bell.","action":[{"grantRewards":[{"type":"card","cardName":"Ghoulcaller's Bell","count":1}]}]}]},
+        {"name":"Send the empty boat.", "text":"Mira buttons the coat around an empty seat. By the time the ferry turns at the far bank, someone is wearing it. A brass fare token rolls back down the mooring rope.",
+         "action":[{"setCharacterFlag":{"key":"bellwakeEnding","val":2}}],
+         "options":[{"name":"Keep Traveler's Amulet.","action":[{"grantRewards":[{"type":"card","cardName":"Traveler's Amulet","count":1}]}]}]}
+      ]
+    },
+    "stages":[
+      {"id":1,"name":"Recover the last ticket","description":"Leave the quay by its south exit. Go east to the Drowned Tollhouse and defeat the Keeper of Fares.","objective":"QuestFlag","POITags":["BellwakeToll"],"POIToken":"","mapFlag":"bellwakeFareReleased","mapFlagValue":1},
+      {"id":2,"name":"Bring the ticket to Mira","description":"Go west and enter Bellwake Quay. Mira is waiting with the sixth coat.","objective":"Travel","POITags":["BellwakeHome"],"POIToken":"","prerequisiteIDs":[1]}
+    ]
+  }
+]

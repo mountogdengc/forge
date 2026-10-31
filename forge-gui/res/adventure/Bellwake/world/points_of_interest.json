@@ -1,0 +1,8 @@
+[
+  {"name": "Spawn", "displayName": "Bellwake Quay", "type": "town", "count": 1,
+   "spriteAtlas": "maps/tileset/buildings.atlas", "sprite": "Spawn", "map": "../common/maps/map/bellwake/quay.tmx",
+   "radiusFactor": 0, "offsetX": 0, "questTags": ["BellwakeHome"]},
+  {"name": "Bellwake Tollhouse", "displayName": "Drowned Tollhouse", "type": "dungeon", "count": 1,
+   "spriteAtlas": "maps/tileset/buildings.atlas", "sprite": "Graveyard", "map": "../common/maps/map/bellwake/toll.tmx",
+   "radiusFactor": 0, "offsetX": 0.125, "questTags": ["BellwakeToll"]}
+]

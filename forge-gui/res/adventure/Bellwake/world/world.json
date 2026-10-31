@@ -1,0 +1,9 @@
+{
+  "width": 120, "height": 120,
+  "playerStartPosX": 0.5, "playerStartPosY": 0.5,
+  "noiseZoomBiome": 20, "miniMapTileSize": 4, "tileSize": 16,
+  "roadTileset": {"tilesetAtlas": "world/tilesets/terrain.atlas", "tilesetName": "Road", "color": "ffffff"},
+  "biomesSprites": "world/sprites/map_sprites.json",
+  "maxRoadDistance": 1000,
+  "biomesNames": ["world/bellwake-marsh.json"]
+}
