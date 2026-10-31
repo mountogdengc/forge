@@ -27,7 +27,7 @@ import java.util.UUID;
  * checkpoint or make a partial snapshot visible in the browser.
  */
 public final class PlaythroughRepository {
-    private static final int FORMAT_VERSION = 1;
+    private static final int METADATA_VERSION = 1;
     private static final int AUTOMATIC_HISTORY = 3;
     private final Path root;
 
@@ -61,7 +61,7 @@ public final class PlaythroughRepository {
         requireText(campaignVersion, "campaign version");
         requireText(plane, "campaign resource root");
         PlaythroughMetadata run = new PlaythroughMetadata();
-        run.formatVersion = FORMAT_VERSION;
+        run.formatVersion = METADATA_VERSION;
         run.playthroughId = UUID.randomUUID().toString();
         run.campaignId = campaignId;
         run.campaignVersion = campaignVersion;
@@ -124,13 +124,20 @@ public final class PlaythroughRepository {
     }
 
     public WriteRequest prepareSave(PlaythroughMetadata run, SaveKind kind, String label, String location) throws IOException {
+        return prepareSave(run, kind, label, location, 1);
+    }
+
+    /** The payload writer declares compatibility; unmodified legacy imports remain version 1. */
+    public WriteRequest prepareSave(PlaythroughMetadata run, SaveKind kind, String label, String location,
+            int snapshotVersion) throws IOException {
+        if (snapshotVersion != 1 && snapshotVersion != 2) throw new IOException("Unsupported snapshot format.");
         PlaythroughMetadata stored = readPlaythrough(run.playthroughId);
         if (!stored.campaignId.equals(run.campaignId) || !stored.campaignVersion.equals(run.campaignVersion)) {
             throw new IOException("Playthrough campaign identity does not match its stored metadata.");
         }
         if (kind == null) throw new IOException("A save kind is required.");
         SaveSnapshot snapshot = new SaveSnapshot();
-        snapshot.formatVersion = FORMAT_VERSION;
+        snapshot.formatVersion = snapshotVersion;
         snapshot.campaignId = stored.campaignId;
         snapshot.campaignVersion = stored.campaignVersion;
         snapshot.campaignTitle = stored.campaignTitle;
@@ -261,7 +268,7 @@ public final class PlaythroughRepository {
     }
 
     private static void validateRun(PlaythroughMetadata run, String id) throws IOException {
-        if (run == null || run.formatVersion != FORMAT_VERSION || !id.equals(run.playthroughId)) {
+        if (run == null || run.formatVersion != METADATA_VERSION || !id.equals(run.playthroughId)) {
             throw new IOException("Unsupported or mismatched playthrough metadata.");
         }
         requireUuid(run.playthroughId);
@@ -271,7 +278,7 @@ public final class PlaythroughRepository {
     }
 
     private static void validateSnapshot(SaveSnapshot snapshot, PlaythroughMetadata run) throws IOException {
-        if (snapshot == null || snapshot.formatVersion != FORMAT_VERSION || snapshot.kind == null
+        if (snapshot == null || (snapshot.formatVersion != 1 && snapshot.formatVersion != 2) || snapshot.kind == null
                 || !run.playthroughId.equals(snapshot.playthroughId)
                 || !run.campaignId.equals(snapshot.campaignId)
                 || !run.campaignVersion.equals(snapshot.campaignVersion)

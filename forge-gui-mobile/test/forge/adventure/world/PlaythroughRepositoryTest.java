@@ -22,6 +22,22 @@ import static org.testng.Assert.*;
 
 /** Exercises persistent isolation and failure boundaries without requiring native game graphics. */
 public class PlaythroughRepositoryTest {
+    @Test
+    public void currentCapturesAndUnmodifiedLegacyImportsUseExplicitCompatibleVersions() throws Exception {
+        PlaythroughMetadata run = run("campaign.a");
+        assertEquals(run.formatVersion, 1);
+        SaveSnapshot captured = write(repository.prepareSave(run, SaveKind.MANUAL, "new", "Quay", 2), "new");
+        SaveSnapshot imported = write(repository.prepareSave(run, SaveKind.IMPORTED, "old", "World", 1), "old");
+        assertEquals(repository.resolve(new SaveLocator(captured)).formatVersion, 2);
+        assertEquals(repository.resolve(new SaveLocator(imported)).formatVersion, 1);
+        assertEquals(repository.listSnapshots(run.playthroughId).size(), 2);
+    }
+
+    @Test(expectedExceptions = IOException.class)
+    public void unsupportedSnapshotVersionCannotBePublished() throws Exception {
+        repository.prepareSave(run("campaign.a"), SaveKind.MANUAL, "future", "Quay", 99);
+    }
+
     private Path root;
     private PlaythroughRepository repository;
 
