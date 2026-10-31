@@ -1,5 +1,41 @@
 # ⚔️  Forge: The Magic: The Gathering Rules Engine
 
+## Adventure development fork
+
+This fork develops a single-player Adventure game using Forge's shared foundation:
+dependable saves and quest progression, a coherent campaign, rewarding
+exploration, and tools for building more Adventure content. Multiplayer and
+standalone Duel modes are outside the fork's product scope. Adventure's own card
+battles continue to use the shared rules engine, computer opponent, and card data.
+
+Core requirements are campaign selection on every New Game and multiple
+independent playthroughs, with separate manual saves, autosaves, and quicksaves
+for each run. Campaign packages can provide distinct worlds and stories. See
+[Campaigns and saves](docs/Adventure/Campaigns-and-Saves.md) for the requirements,
+current limitations, and proposed implementation; these features are not yet
+implemented by the progression patch.
+
+The inherited Adventure campaign and systems will be assessed for reuse. Its
+story, setting, quests, maps, progression, and interface may be retained, reworked,
+or replaced completely to serve the experience we want to build. The next design
+milestone is an assessment and a playable example of the chosen direction;
+existing locations and campaign structure are optional.
+
+Development follows this fork's Adventure goals. Submitting changes upstream is
+not planned; useful upstream fixes can be selectively imported when they benefit
+Adventure. The planned application flow will center on starting or continuing an
+Adventure, managing saves, and adjusting settings.
+
+See the [Adventure roadmap](docs/Adventure/Fork-Roadmap.md) for priorities and the
+[progression validation guide](docs/Adventure/Progression-Validation.md) for the
+checks required before releasing progression changes.
+
+## Upstream project reference
+
+The following sections retain upstream project information for reference,
+including modes outside this fork's development scope. Upstream download links
+provide upstream builds; use this fork's source to build its Adventure changes.
+
 Join the **Forge community** on [Discord](https://discord.gg/HcPJNyD66a)!
 
 [![Test build](https://github.com/Card-Forge/forge/actions/workflows/test-build.yaml/badge.svg)](https://github.com/Card-Forge/forge/actions/workflows/test-build.yaml)

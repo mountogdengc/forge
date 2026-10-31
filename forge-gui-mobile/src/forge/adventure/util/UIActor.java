@@ -30,6 +30,7 @@ import java.util.regex.Pattern;
  * Group of controls that will be loaded from a configuration file
  */
 public class UIActor extends Group {
+    private final Config resourceConfig;
     UIData data;
     Actor lastActor = null;
     public Array<UIScene.Selectable> selectActors = new Array<>();
@@ -37,6 +38,11 @@ public class UIActor extends Group {
     public Array<KeyHintLabel> keyLabels = new Array<>();
 
     public UIActor(FileHandle handle) {
+        this(handle, Config.instance());
+    }
+
+    public UIActor(FileHandle handle, Config resourceConfig) {
+        this.resourceConfig = resourceConfig;
         data = (new Json()).fromJson(UIData.class, handle);
 
         setWidth(data.width);
@@ -294,11 +300,11 @@ public class UIActor extends Group {
             switch (property.key.toString()) {
                 case "image":
                     boolean is2D = property.value.toString().startsWith("ui");
-                    Texture t = Forge.getAssets().getTexture(Config.instance().getFile(property.value.toString()), is2D, false);
+                    Texture t = Forge.getAssets().getTexture(resourceConfig.getFile(property.value.toString()), is2D, false);
                     TextureRegion tr = new TextureRegion(t);
                     if (property.value.toString().contains("title_bg")) {
                         ShaderDrawable shaderDrawable = new ShaderDrawable(ShaderUtil.getInstance().getShaderNightDay());
-                        shaderDrawable.setCondition(() -> Config.instance().getSettingData().dayNightBG);
+                        shaderDrawable.setCondition(() -> resourceConfig.getSettingData().dayNightBG);
                         shaderDrawable.setUniformSetter(shader -> {
                             shader.setUniformf("u_timeOfDay", UIScene.getTimeOfDay());
                             shader.setUniformf("u_time", 0f);

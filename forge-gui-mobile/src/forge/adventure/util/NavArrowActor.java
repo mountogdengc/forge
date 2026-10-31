@@ -17,10 +17,12 @@ public class NavArrowActor extends Actor {
     public float navTargetAngle = 0.0f;
     private final Animation<TextureRegion> currentAnimation;
     private static Array<Sprite> sprites = null;
+    private static Config activeConfig;
     float timer;
 
     public NavArrowActor() {
-        if (sprites == null) {
+        if (sprites == null || activeConfig != Config.instance()) {
+            activeConfig = Config.instance();
             //TODO: Expand compass sprite to have color coded arrows, swap sprites based on distance to target
             sprites = Config.instance().getAtlas("maps/tileset/compass.atlas").createSprites();
             if (sprites.isEmpty()) {

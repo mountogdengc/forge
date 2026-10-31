@@ -54,6 +54,14 @@
       "action": [{"setQuestFlag": {"key":"defeatedLibraryOfVarsilBoss", "val": 1} }, {"deleteMapObject": -1}]
    }]
 },{
+   "condition": [{"checkQuestFlag": "exploreShand1", "not": true}],
+   "text": "The massive construct shudders and collapses, its gears grinding to a halt.",
+   "options": [{
+      "name": "(Continue)",
+      "action": [{"setQuestFlag": {"key":"defeatedLibraryOfVarsilBoss", "val": 1} }, {"deleteMapObject": -1}]
+   }]
+},{
+   "condition": [{"getQuestFlag": {"key": "exploreShand1", "op":"=", "val": 4}, "not": true}],
    "text": "The massive construct shudders and collapses, its gears grinding to a halt.",
    "options": [{
       "name": "(Continue)",
@@ -85,6 +93,14 @@
       "action": [{"setQuestFlag": {"key":"defeatedLibraryOfVarsilBoss", "val": 1} }, {"deleteMapObject": -1}]
    }]
 },{
+   "condition": [{"checkQuestFlag": "exploreShand1", "not": true}],
+   "text": "The massive construct shudders and collapses, its gears grinding to a halt.",
+   "options": [{
+      "name": "(Continue)",
+      "action": [{"setQuestFlag": {"key":"defeatedLibraryOfVarsilBoss", "val": 1} }, {"deleteMapObject": -1}]
+   }]
+},{
+   "condition": [{"getQuestFlag": {"key": "exploreShand1", "op":"=", "val": 4}, "not": true}],
    "text": "The massive construct shudders and collapses, its gears grinding to a halt.",
    "options": [{
       "name": "(Continue)",
@@ -117,6 +133,14 @@
       "action": [{"setQuestFlag": {"key":"defeatedLibraryOfVarsilBoss", "val": 1} }, {"deleteMapObject": -1}]
    }]
 },{
+   "condition": [{"checkQuestFlag": "exploreShand1", "not": true}],
+   "text": "The massive construct shudders and collapses, its gears grinding to a halt.",
+   "options": [{
+      "name": "(Continue)",
+      "action": [{"setQuestFlag": {"key":"defeatedLibraryOfVarsilBoss", "val": 1} }, {"deleteMapObject": -1}]
+   }]
+},{
+   "condition": [{"getQuestFlag": {"key": "exploreShand1", "op":"=", "val": 4}, "not": true}],
    "text": "The massive construct shudders and collapses, its gears grinding to a halt.",
    "options": [{
       "name": "(Continue)",

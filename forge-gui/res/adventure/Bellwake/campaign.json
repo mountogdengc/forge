@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "fork.bellwake",
+  "version": "0.1.0",
+  "title": "The Last Fare of Bellwake",
+  "description": "A ferry returns with six coats and five passengers. Take a deck east to the tollhouse and settle the fare for the missing sixth.",
+  "startingQuestIds": ["7001"],
+  "startingLocation": "Spawn",
+  "allowNewGamePlus": false,
+  "inheritCommonWorld": false,
+  "inheritCommonQuests": false,
+  "development": false
+}

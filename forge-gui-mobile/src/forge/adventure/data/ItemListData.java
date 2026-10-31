@@ -8,14 +8,19 @@ import forge.adventure.util.Paths;
 
 public class ItemListData {
     private static Array<ItemData> itemList;
-    static {
+    private static Config activeConfig;
+    private static void loadItems() {
+        if (activeConfig == Config.instance()) return;
+        activeConfig = Config.instance();
+        itemList = null;
         Json json = new Json();
         FileHandle handle = Config.instance().getFile(Paths.ITEMS);
-        if (handle.exists()) {
+        if (handle != null && handle.exists()) {
             itemList = json.fromJson(Array.class, ItemData.class, handle);
         }
     }
     public static ItemData getItem(String name) {
+        loadItems();
         if (itemList == null)
             return null;
         for (ItemData orig : new Array.ArrayIterator<>(itemList)) {
@@ -25,6 +30,7 @@ public class ItemListData {
         return null;
     }
     public static Array<ItemData> getSketchBooks() {
+        loadItems();
         Array<ItemData> sketchbooks = new Array<>();
         if (itemList == null)
             return sketchbooks;

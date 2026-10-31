@@ -1,5 +1,7 @@
 package forge.adventure.scene;
 
+import forge.Forge;
+
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import forge.Adventure;
@@ -14,6 +16,11 @@ public class ViewRewardsScene extends ForgeScene {
     private static List<?> list;
     private static int index;
     private static ViewRewardsScene object;
+
+    public static void resetForCampaign() {
+        Forge.retireAdventureResource(object);
+        object = null;
+    }
 
     public static ViewRewardsScene getInstance(List<?> list0, int index0) {
         if (object == null)

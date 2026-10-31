@@ -34,6 +34,7 @@ import forge.adventure.data.EffectData;
 import forge.adventure.data.PointOfInterestData;
 import forge.adventure.pointofintrest.PointOfInterest;
 import forge.adventure.scene.Scene;
+import forge.adventure.scene.GameScene;
 import forge.adventure.scene.StartScene;
 import forge.adventure.scene.TileMapScene;
 import forge.adventure.util.Config;
@@ -495,8 +496,15 @@ public abstract class GameStage extends Stage {
         if (keycode == Input.Keys.F8)//todo config
         {
             if (!TileMapScene.instance().currentMap().isInMap()) {
-                WorldSave.getCurrentSave().quickLoad();
-                enter();
+                if (WorldSave.getCurrentSave().quickLoad()) {
+                    Forge.switchScene(GameScene.instance());
+                } else {
+                    // Restoration may also have recreated the prior session's HUD and stages.
+                    StartScene menu = StartScene.instance();
+                    Forge.switchScene(menu);
+                    menu.showError(WorldSave.getLastError());
+                }
+                return true;
             }
         }
         if (keycode == Input.Keys.F11) {

@@ -57,6 +57,22 @@
       &quot;locname&quot;: &quot;adv.shared.continue_paren&quot;, 
       &quot;action&quot;: [{&quot;setQuestFlag&quot;: {&quot;key&quot;:&quot;defeatedLibraryOfVarsilBoss&quot;, &quot;val&quot;: 1} }, {&quot;deleteMapObject&quot;: -1}]
    }]
+},{
+   &quot;condition&quot;: [{&quot;checkQuestFlag&quot;: &quot;exploreShand1&quot;, &quot;not&quot;: true}],
+   &quot;text&quot;: &quot;The massive construct shudders and collapses, its gears grinding to a halt.&quot;,
+   &quot;options&quot;: [{
+      &quot;name&quot;: &quot;(Continue)&quot;,
+      &quot;locname&quot;: &quot;adv.shared.continue_paren&quot;,
+      &quot;action&quot;: [{&quot;setQuestFlag&quot;: {&quot;key&quot;:&quot;defeatedLibraryOfVarsilBoss&quot;, &quot;val&quot;: 1} }, {&quot;deleteMapObject&quot;: -1}]
+   }]
+},{
+   &quot;condition&quot;: [{&quot;getQuestFlag&quot;: {&quot;key&quot;: &quot;exploreShand1&quot;, &quot;op&quot;:&quot;=&quot;, &quot;val&quot;: 4}, &quot;not&quot;: true}],
+   &quot;text&quot;: &quot;The massive construct shudders and collapses, its gears grinding to a halt.&quot;,
+   &quot;options&quot;: [{
+      &quot;name&quot;: &quot;(Continue)&quot;,
+      &quot;locname&quot;: &quot;adv.shared.continue_paren&quot;,
+      &quot;action&quot;: [{&quot;setQuestFlag&quot;: {&quot;key&quot;:&quot;defeatedLibraryOfVarsilBoss&quot;, &quot;val&quot;: 1} }, {&quot;deleteMapObject&quot;: -1}]
+   }]
 }]</property>
     <property name="enemy" value="Myr Superion"/>
     <property name="pursueRange" type="int" value="200"/>
@@ -84,6 +100,22 @@
    &quot;options&quot;: [{
       &quot;name&quot;: &quot;(Continue)&quot;,
       &quot;locname&quot;: &quot;adv.shared.continue_paren&quot;, 
+      &quot;action&quot;: [{&quot;setQuestFlag&quot;: {&quot;key&quot;:&quot;defeatedLibraryOfVarsilBoss&quot;, &quot;val&quot;: 1} }, {&quot;deleteMapObject&quot;: -1}]
+   }]
+},{
+   &quot;condition&quot;: [{&quot;checkQuestFlag&quot;: &quot;exploreShand1&quot;, &quot;not&quot;: true}],
+   &quot;text&quot;: &quot;The massive construct shudders and collapses, its gears grinding to a halt.&quot;,
+   &quot;options&quot;: [{
+      &quot;name&quot;: &quot;(Continue)&quot;,
+      &quot;locname&quot;: &quot;adv.shared.continue_paren&quot;,
+      &quot;action&quot;: [{&quot;setQuestFlag&quot;: {&quot;key&quot;:&quot;defeatedLibraryOfVarsilBoss&quot;, &quot;val&quot;: 1} }, {&quot;deleteMapObject&quot;: -1}]
+   }]
+},{
+   &quot;condition&quot;: [{&quot;getQuestFlag&quot;: {&quot;key&quot;: &quot;exploreShand1&quot;, &quot;op&quot;:&quot;=&quot;, &quot;val&quot;: 4}, &quot;not&quot;: true}],
+   &quot;text&quot;: &quot;The massive construct shudders and collapses, its gears grinding to a halt.&quot;,
+   &quot;options&quot;: [{
+      &quot;name&quot;: &quot;(Continue)&quot;,
+      &quot;locname&quot;: &quot;adv.shared.continue_paren&quot;,
       &quot;action&quot;: [{&quot;setQuestFlag&quot;: {&quot;key&quot;:&quot;defeatedLibraryOfVarsilBoss&quot;, &quot;val&quot;: 1} }, {&quot;deleteMapObject&quot;: -1}]
    }]
 }]</property>
@@ -115,6 +147,22 @@
    &quot;options&quot;: [{
       &quot;name&quot;: &quot;(Continue)&quot;,
       &quot;locname&quot;: &quot;adv.shared.continue_paren&quot;, 
+      &quot;action&quot;: [{&quot;setQuestFlag&quot;: {&quot;key&quot;:&quot;defeatedLibraryOfVarsilBoss&quot;, &quot;val&quot;: 1} }, {&quot;deleteMapObject&quot;: -1}]
+   }]
+},{
+   &quot;condition&quot;: [{&quot;checkQuestFlag&quot;: &quot;exploreShand1&quot;, &quot;not&quot;: true}],
+   &quot;text&quot;: &quot;The massive construct shudders and collapses, its gears grinding to a halt.&quot;,
+   &quot;options&quot;: [{
+      &quot;name&quot;: &quot;(Continue)&quot;,
+      &quot;locname&quot;: &quot;adv.shared.continue_paren&quot;,
+      &quot;action&quot;: [{&quot;setQuestFlag&quot;: {&quot;key&quot;:&quot;defeatedLibraryOfVarsilBoss&quot;, &quot;val&quot;: 1} }, {&quot;deleteMapObject&quot;: -1}]
+   }]
+},{
+   &quot;condition&quot;: [{&quot;getQuestFlag&quot;: {&quot;key&quot;: &quot;exploreShand1&quot;, &quot;op&quot;:&quot;=&quot;, &quot;val&quot;: 4}, &quot;not&quot;: true}],
+   &quot;text&quot;: &quot;The massive construct shudders and collapses, its gears grinding to a halt.&quot;,
+   &quot;options&quot;: [{
+      &quot;name&quot;: &quot;(Continue)&quot;,
+      &quot;locname&quot;: &quot;adv.shared.continue_paren&quot;,
       &quot;action&quot;: [{&quot;setQuestFlag&quot;: {&quot;key&quot;:&quot;defeatedLibraryOfVarsilBoss&quot;, &quot;val&quot;: 1} }, {&quot;deleteMapObject&quot;: -1}]
    }]
 }]</property>

@@ -77,7 +77,10 @@ public class WorldSaveHeader implements java.io.Serializable, Disposable {
     }
 
     public void dispose() {
-        preview.dispose();
+        if (preview != null) {
+            preview.dispose();
+            preview = null;
+        }
     }
 
     public void createPreview() {

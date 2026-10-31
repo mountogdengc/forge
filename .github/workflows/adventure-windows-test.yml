@@ -1,0 +1,86 @@
+name: Adventure Windows test build
+
+on:
+  push:
+    branches: [adventure/progression-foundation]
+    paths:
+      - '.github/workflows/adventure-windows-test.yml'
+      - 'tools/adventure/**'
+      - 'forge-*/**'
+      - 'pom.xml'
+      - '.mvn/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: adventure-windows-test-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  windows-test:
+    if: github.repository == 'mountogdengc/forge'
+    runs-on: windows-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: pwsh
+    env:
+      MAVEN_OPTS: -Xmx3g -Dfile.encoding=UTF-8
+    steps:
+      - name: Enable long repository paths
+        run: git config --global core.longpaths true
+      - name: Check out the exact source revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Install Windows x64 Java 17
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6
+        with:
+          distribution: temurin
+          java-version: '17'
+          architecture: x64
+          cache: maven
+      - name: Verify the Adventure client and its dependencies
+        run: |
+          mvn -version
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          mvn -U -B -ntp -pl forge-gui-mobile-dev -am clean verify "-Drevision=2.0.16-GITWindowsTest"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Package the isolated portable test build
+        run: |
+          python tools/adventure/package_windows_test.py --output dist/adventure-windows
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Upload Windows test package
+        id: package
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: forge-adventure-windows-test-${{ github.sha }}
+          path: |
+            dist/adventure-windows/*.zip
+            dist/adventure-windows/*.zip.sha256
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 14
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: adventure-windows-test-reports-${{ github.sha }}
+          path: '**/target/surefire-reports/'
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Record download and testing instructions
+        env:
+          ARTIFACT_URL: ${{ steps.package.outputs.artifact-url }}
+        run: |
+          @"
+          ## Adventure Windows test package
+          Source: $env:GITHUB_SHA
+          Download: $env:ARTIFACT_URL
+          Extract the artifact ZIP, then extract the contained Forge-Adventure-Windows-Test ZIP.
+          Run Start-Adventure-Test.cmd from a new writable folder. Java is included.
+          Saves and caches stay in the test package folder. Do not overwrite a normal Forge install.
+          This job verifies compilation, tests, and package contents; graphical gameplay is not tested.
+          "@ | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Encoding utf8 -Append

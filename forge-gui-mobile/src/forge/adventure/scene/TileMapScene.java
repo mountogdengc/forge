@@ -33,6 +33,11 @@ public class TileMapScene extends HudScene {
 
     private static TileMapScene object;
 
+    public static void resetForCampaign() {
+        Forge.retireAdventureResource(object);
+        object = null;
+    }
+
     public static TileMapScene instance() {
         if (object == null)
             object = new TileMapScene();

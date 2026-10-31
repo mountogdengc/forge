@@ -699,58 +699,27 @@ public class AdventureDeckEditor extends FDeckEditor {
         }
     }
 
-    private static final FileHandle deckIcon = Config.instance().getFile("ui/maindeck.png");
-    private static final FImage MAIN_DECK_ICON = deckIcon.exists() ? new FImage() {
-        @Override
-        public float getWidth() {
-            return 100f;
-        }
+    private static FImage campaignIcon(String resource, FImage fallback) {
+        return new FImage() {
+            @Override public float getWidth() { return 100f; }
+            @Override public float getHeight() { return 100f; }
+            @Override
+            public void draw(Graphics g, float x, float y, float w, float h) {
+                FileHandle file = Config.instance().getFile(resource);
+                if (file != null && file.exists()) {
+                    g.drawImage(Forge.getAssets().getTexture(file), x, y, w, h);
+                } else {
+                    fallback.draw(g, x, y, w, h);
+                }
+            }
+        };
+    }
 
-        @Override
-        public float getHeight() {
-            return 100f;
-        }
-
-        @Override
-        public void draw(Graphics g, float x, float y, float w, float h) {
-            g.drawImage(Forge.getAssets().getTexture(deckIcon), x, y, w, h);
-        }
-    } : Forge.hdbuttons ? FSkinImage.HDLIBRARY : FSkinImage.DECKLIST;
-    private static final FileHandle sideIcon = Config.instance().getFile("ui/sideboard.png");
-    private static final FImage SIDEBOARD_ICON = sideIcon.exists() ? new FImage() {
-        @Override
-        public float getWidth() {
-            return 100f;
-        }
-
-        @Override
-        public float getHeight() {
-            return 100f;
-        }
-
-        @Override
-        public void draw(Graphics g, float x, float y, float w, float h) {
-            g.drawImage(Forge.getAssets().getTexture(sideIcon), x, y, w, h);
-        }
-    } : Forge.hdbuttons ? FSkinImage.HDSIDEBOARD : FSkinImage.FLASHBACK;
-
-    private static final FileHandle binderIcon = Config.instance().getFile("ui/binder.png");
-    private static final FImage CATALOG_ICON = binderIcon.exists() ? new FImage() {
-        @Override
-        public float getWidth() {
-            return 100f;
-        }
-
-        @Override
-        public float getHeight() {
-            return 100f;
-        }
-
-        @Override
-        public void draw(Graphics g, float x, float y, float w, float h) {
-            g.drawImage(Forge.getAssets().getTexture(binderIcon), x, y, w, h);
-        }
-    } : FSkinImage.QUEST_BOX;
+    private static final FImage MAIN_DECK_ICON = campaignIcon("ui/maindeck.png",
+            Forge.hdbuttons ? FSkinImage.HDLIBRARY : FSkinImage.DECKLIST);
+    private static final FImage SIDEBOARD_ICON = campaignIcon("ui/sideboard.png",
+            Forge.hdbuttons ? FSkinImage.HDSIDEBOARD : FSkinImage.FLASHBACK);
+    private static final FImage CATALOG_ICON = campaignIcon("ui/binder.png", FSkinImage.QUEST_BOX);
 
     private static final FImage AUTO_SELL_ICON = FSkinImage.HDEXILE; //to-maybe-do: Custom adventure icon for this? Adventure should really just have its own skin.
 
@@ -1001,17 +970,7 @@ public class AdventureDeckEditor extends FDeckEditor {
     }
 
     private static final HashMap<Integer, String> priceStringsMap = new HashMap<>(256);
-    // container to draw the sellIconFile
-    private static final FImage fImageSellIcon = new FImage() {
-        @Override public float getWidth() { return 100f; }
-        @Override public float getHeight() { return 100f; }
-        @Override
-        public void draw(Graphics g, float x, float y, float w, float h) {
-            if (AdventureDeckHeader.sellIconFile != null) {
-                g.drawImage(Forge.getAssets().getTexture(AdventureDeckHeader.sellIconFile), x, y, w, h);
-            }
-        }
-    };
+    private static final FImage fImageSellIcon = campaignIcon("ui/sell.png", FSkinImage.QUEST_COINSTACK);
     protected static class AdventureCardManager extends CardManager {
 
         public AdventureCardManager() {
@@ -1072,13 +1031,12 @@ public class AdventureDeckEditor extends FDeckEditor {
     }
 
     protected static class AdventureDeckHeader extends DeckHeader {
-        private static final FileHandle sellIconFile = Config.instance().getFile("ui/sell.png");
         public final FLabel lblGold;
 
         protected AdventureDeckHeader() {
             super();
             this.lblGold = new FLabel.Builder().text("0").icon(
-                    Forge.getAssets().getTexture(sellIconFile) == null ? FSkinImage.QUEST_COINSTACK : fImageSellIcon
+                    fImageSellIcon
             ).font(FSkinFont.get(16)).insets(new Vector2(Utils.scale(5), 0)).build();
             this.add(lblGold);
         }

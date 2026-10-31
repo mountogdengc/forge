@@ -1,5 +1,7 @@
 package forge.adventure.data;
 
+import forge.adventure.world.SaveLocator;
+
 import java.util.HashMap;
 
 /**
@@ -15,6 +17,7 @@ public class SettingData {
     public boolean fullScreen;
     public String videomode;
     public String lastActiveSave;
+    public SaveLocator lastAdventureSave;
     public Float rewardCardAdj;
     public Float cardTooltipAdj;
     public Float rewardCardAdjLandscape;

@@ -1,0 +1,11 @@
+{
+  "width": 480,
+  "height": 270,
+  "yDown": true,
+  "elements": [
+    { "type": "Image", "image": "ui/title_bg.png", "width": 480, "height": 270 },
+    { "type": "Window", "name": "content", "x": 15, "y": 15, "width": 450, "height": 197 },
+    { "type": "TextButton", "name": "back", "text": "tr(lblBack)", "binding": "Back", "x": 15, "y": 226, "width": 140, "height": 30 },
+    { "type": "TextButton", "name": "next", "binding": "Use", "x": 265, "y": 226, "width": 200, "height": 30 }
+  ]
+}

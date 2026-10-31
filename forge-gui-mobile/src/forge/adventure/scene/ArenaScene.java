@@ -30,6 +30,11 @@ import java.util.Random;
  */
 public class ArenaScene extends UIScene implements IAfterMatch {
     private static ArenaScene object;
+
+    public static void resetForCampaign() {
+        Forge.retireAdventureResource(object);
+        object = null;
+    }
     private final float gridSize;
     private ArenaData arenaData;
     private final TextraButton startButton;

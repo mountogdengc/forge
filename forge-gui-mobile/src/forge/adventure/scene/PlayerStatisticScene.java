@@ -127,6 +127,11 @@ public class PlayerStatisticScene extends UIScene {
 
     private static PlayerStatisticScene object;
 
+    public static void resetForCampaign() {
+        Forge.retireAdventureResource(object);
+        object = null;
+    }
+
     public static PlayerStatisticScene instance(Scene lastGameScene) {
         if (object == null)
             object = new PlayerStatisticScene();

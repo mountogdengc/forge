@@ -8301,6 +8301,7 @@
 				"mapFlagValue": 1,
 				"here": true,
 				"objective": "Travel",
+				"prerequisiteIDs": [ 1 ],
 				"prologue": {},
 				"epilogue": {},
 				"failureDialog": {},
