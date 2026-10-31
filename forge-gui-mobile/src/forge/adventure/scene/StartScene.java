@@ -12,7 +12,6 @@ import com.github.tommyettinger.textra.TypingLabel;
 import forge.Forge;
 import forge.adventure.stage.GameHUD;
 import forge.adventure.stage.GameStage;
-import forge.adventure.stage.MapStage;
 import forge.adventure.util.AdventureBackgroundDownloader;
 import forge.adventure.util.Config;
 import forge.adventure.util.Controls;
@@ -89,9 +88,9 @@ public class StartScene extends UIScene {
     }
 
     public boolean Save() {
-        if (TileMapScene.instance().currentMap().isInMap()) {
-            Dialog noSave = createGenericDialog("", Forge.getLocalizer().getMessage("lblGameNotSaved"), Forge.getLocalizer().getMessage("lblOK"),null, null, null);
-            showDialog(noSave);
+        String reason = WorldSave.explorationSaveBlockReason();
+        if (!reason.isEmpty()) {
+            showError(reason);
         } else {
             SaveLoadScene.instance().setMode(SaveLoadScene.Modes.Save);
             Forge.switchScene(SaveLoadScene.instance());
@@ -108,10 +107,7 @@ public class StartScene extends UIScene {
     public boolean Resume() {
         if (!WorldSave.hasActivePlaythrough())
             return Continue();
-        if (MapStage.getInstance().isInMap())
-            Forge.switchScene(TileMapScene.instance());
-        else
-            Forge.switchScene(GameScene.instance());
+        WorldSave.showRestoredExploration();
         GameHUD.getInstance().getTouchpad().setVisible(false);
         return true;
     }
@@ -127,7 +123,7 @@ public class StartScene extends UIScene {
                 try {
                     if (WorldSave.loadContinue()) {
                         SoundSystem.instance.changeBackgroundTrack();
-                        Forge.switchScene(GameScene.instance());
+                        WorldSave.showRestoredExploration();
                     } else {
                         Forge.clearTransitionScreen();
                         StartScene menu = StartScene.instance();
@@ -350,12 +346,8 @@ public class StartScene extends UIScene {
     @Override
     public void enter() {
         boolean hasSaveButton = WorldSave.hasActivePlaythrough() && WorldSave.getCurrentSave().getWorld().getData() != null;
-        if (hasSaveButton) {
-            TileMapScene scene = TileMapScene.instance();
-            hasSaveButton = !scene.currentMap().isInMap() || scene.isAutoHealLocation();
-        }
         saveButton.setVisible(hasSaveButton);
-        saveButton.setDisabled(TileMapScene.instance().currentMap().isInMap());
+        saveButton.setDisabled(!WorldSave.explorationSaveBlockReason().isEmpty());
         updateResumeContinue();
 
         FSkinTexture.invalidateAdventureTextures();

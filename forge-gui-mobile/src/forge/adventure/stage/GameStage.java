@@ -29,19 +29,16 @@ import forge.Graphics;
 import forge.adventure.character.CharacterSprite;
 import forge.adventure.character.MapActor;
 import forge.adventure.character.PlayerSprite;
-import forge.adventure.data.DialogData;
 import forge.adventure.data.EffectData;
 import forge.adventure.data.PointOfInterestData;
 import forge.adventure.pointofintrest.PointOfInterest;
 import forge.adventure.scene.Scene;
-import forge.adventure.scene.GameScene;
 import forge.adventure.scene.StartScene;
 import forge.adventure.scene.TileMapScene;
 import forge.adventure.util.Config;
 import forge.adventure.util.Controls;
 import forge.adventure.util.Current;
 import forge.adventure.util.KeyBinding;
-import forge.adventure.util.MapDialog;
 import forge.adventure.util.Paths;
 import forge.adventure.world.WorldSave;
 import forge.assets.FBufferedImage;
@@ -319,6 +316,10 @@ public abstract class GameStage extends Stage {
         return animationTimeout > 0;
     }
 
+    public boolean hasPendingStageAction() {
+        return forge.adventure.world.ExplorationSavePolicy.hasPendingAction(animationTimeout, onEndAction != null);
+    }
+
     public GameStage() {
         super(new ScalingViewport(Scaling.stretch, Scene.getIntendedWidth(), Scene.getIntendedHeight(), new OrthographicCamera()), Forge.getGraphics().getBatch());
         WorldSave.getCurrentSave().onLoad(() -> {
@@ -476,36 +477,27 @@ public abstract class GameStage extends Stage {
         if (KeyBinding.Down.isPressed(keycode)) {
             keyboardInput.y = -1;
         }
-        if (keycode == Input.Keys.F5)//todo config
-        {
-            if (TileMapScene.instance().currentMap().isInMap()) {
-                DialogData noQuicksave = new DialogData();
-                DialogData noQuicksaveOK = new DialogData();
-                noQuicksave.text = Forge.getLocalizer().getMessageorUseDefault("lblQuicksaveOnlyOnWorldMap", "Game not saved. Quicksave is only available on the world map.");
-                noQuicksaveOK.name = Forge.getLocalizer().getMessage("lblOK");
-                noQuicksave.options = new DialogData[]{noQuicksaveOK};
-                MapDialog noQuicksaveDialog = new MapDialog(noQuicksave, MapStage.getInstance(), -1, null);
-                showDialog();
-                noQuicksaveDialog.activate();
+        if (keycode == Input.Keys.F5) {
+            String reason = WorldSave.explorationSaveBlockReason();
+            if (!reason.isEmpty()) {
+                GameHUD.getInstance().addNotification(reason);
             } else {
-                getPlayerSprite().storePos();
+                if (!MapStage.getInstance().isInMap()) getPlayerSprite().storePos();
                 WorldSave.requestPreview();
-                WorldSave.getCurrentSave().quickSave();
+                if (!WorldSave.getCurrentSave().quickSave())
+                    GameHUD.getInstance().addNotification(WorldSave.getLastError());
             }
+            return true;
         }
-        if (keycode == Input.Keys.F8)//todo config
-        {
-            if (!TileMapScene.instance().currentMap().isInMap()) {
-                if (WorldSave.getCurrentSave().quickLoad()) {
-                    Forge.switchScene(GameScene.instance());
-                } else {
-                    // Restoration may also have recreated the prior session's HUD and stages.
-                    StartScene menu = StartScene.instance();
-                    Forge.switchScene(menu);
-                    menu.showError(WorldSave.getLastError());
-                }
-                return true;
+        if (keycode == Input.Keys.F8) {
+            if (WorldSave.getCurrentSave().quickLoad()) {
+                WorldSave.showRestoredExploration();
+            } else {
+                StartScene menu = StartScene.instance();
+                Forge.switchScene(menu);
+                menu.showError(WorldSave.getLastError());
             }
+            return true;
         }
         if (keycode == Input.Keys.F11) {
             debugCollision(false);
@@ -631,7 +623,9 @@ public abstract class GameStage extends Stage {
     }
 
     public void openMenu() {
-        if (Forge.advFreezePlayerControls)
+        // Exploration advances its pending callbacks in act(); opening a menu
+        // here would suspend them and leave Save disabled until the player resumes.
+        if (!WorldSave.explorationSaveBlockReason().isEmpty())
             return;
         WorldSave.requestPreview();
         Forge.switchScene(StartScene.instance());

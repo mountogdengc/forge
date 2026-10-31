@@ -472,6 +472,7 @@ public class MapDialog {
                 emitQuestAccepted();
             }
         }
+        if (data.length > 0) WorldSave.requestExplorationCheckpoint("After a story interaction");
     }
 
     public boolean canShow() {

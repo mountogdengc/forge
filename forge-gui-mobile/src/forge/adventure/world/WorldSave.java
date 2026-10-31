@@ -16,6 +16,7 @@ import forge.adventure.scene.TileMapScene;
 import forge.adventure.stage.GameHUD;
 import forge.adventure.stage.PointOfInterestMapSprite;
 import forge.adventure.stage.WorldStage;
+import forge.adventure.stage.MapStage;
 import forge.adventure.util.*;
 import forge.card.CardEdition;
 import forge.card.ColorSet;
@@ -58,6 +59,8 @@ public class WorldSave {
     private static boolean worldAvailable;
     private static boolean restoring;
     private static String lastError = "";
+    private static PlaythroughSession checkpointSession;
+    private static String checkpointReason;
 
     private static final class LoadedPayload {
         final WorldSaveHeader header;
@@ -115,6 +118,14 @@ public class WorldSave {
         return worldAvailable && activePlaythrough != null && !restoring;
     }
 
+    public static Object captureSessionToken() {
+        return activePlaythrough;
+    }
+
+    public static boolean isCurrentSession(Object token) {
+        return token != null && activePlaythrough == token && worldAvailable && !restoring;
+    }
+
     public static PlaythroughMetadata getCurrentPlaythrough() {
         return activePlaythrough == null ? null : activePlaythrough.metadata.copy();
     }
@@ -141,8 +152,8 @@ public class WorldSave {
     /** Preserve this run before a final New Game/campaign transition. */
     public static boolean checkpointAndSuspend() {
         if (!hasActivePlaythrough()) return true;
-        if (TileMapScene.instance().currentMap().isInMap()) {
-            lastError = "Return to the overworld before switching playthroughs; saving inside a location is not supported yet.";
+        if (!explorationSaveBlockReason().isEmpty()) {
+            lastError = explorationSaveBlockReason();
             return false;
         }
         if (!currentSave.saveSnapshot("Before switching playthroughs", SaveKind.AUTO)) return false;
@@ -161,6 +172,9 @@ public class WorldSave {
         if (!hasActivePlaythrough()) throw new IllegalStateException("Load a playthrough before starting New Game+.");
         String character = currentSave.player.getName();
         beginPlaythrough(CampaignManager.current(), runName, character);
+        // The next snapshot belongs to a newly generated world, never the
+        // source run's room (which can now be an interior checkpoint).
+        MapStage.getInstance().clearIsInMap();
         // The caller applies the campaign's reset policy to the already loaded
         // character/world. The source run and all of its snapshots are untouched.
         worldAvailable = true;
@@ -229,8 +243,8 @@ public class WorldSave {
 
     public static boolean loadSnapshot(SaveSnapshot selection) {
         lastError = "";
-        if (hasActivePlaythrough() && TileMapScene.instance().currentMap().isInMap()) {
-            lastError = "Return to the overworld before loading another checkpoint; the current interior state cannot yet be restored safely if loading fails.";
+        if (hasActivePlaythrough() && !explorationSaveBlockReason().isEmpty()) {
+            lastError = explorationSaveBlockReason();
             return false;
         }
         LoadedPayload incoming = null;
@@ -251,6 +265,7 @@ public class WorldSave {
             Path payload = REPOSITORY.validatedPayload(snapshot);
             incoming = readPayload(payload.toFile());
             validatePayload(incoming.data);
+            if (snapshot.formatVersion == 2) ExplorationSnapshot.fromSaveData(incoming.data.readSubData("exploration"));
             PlaythroughMetadata targetRun = REPOSITORY.readPlaythrough(snapshot.playthroughId);
             // Validate and capture before replacing any live configuration. The
             // detached old state lets a later resource/scene restoration failure
@@ -394,6 +409,7 @@ public class WorldSave {
             String sectionError = sectionData.readString("IOException");
             if (sectionError != null) throw new IOException("Damaged " + section + " data: " + sectionError);
         }
+        if (data.containsKey("exploration")) ExplorationSnapshot.fromSaveData(data.readSubData("exploration"));
     }
 
     private static void restorePayload(LoadedPayload payload) throws IOException {
@@ -409,6 +425,9 @@ public class WorldSave {
         GamePlayerUtil.getGuiPlayer().setName(currentSave.player.getName());
         GameHUD.getInstance();
         currentSave.onLoadList.emit();
+        // Stage load listeners recreate player sprites; apply interior positions only afterward.
+        restoreExploration(payload.data.containsKey("exploration")
+                ? ExplorationSnapshot.fromSaveData(payload.data.readSubData("exploration")) : new ExplorationSnapshot());
         try { AdventureQuestController.instance().activateNextStages(); }
         catch (RuntimeException e) {
             System.err.println("Unable to reconcile saved quest progress; restored world retained.");
@@ -428,9 +447,73 @@ public class WorldSave {
         data.store("world", world);
         data.store("worldStage", stage);
         data.store("pointOfInterestChanges", changes);
+        data.store("exploration", captureExploration().toSaveData());
         String error = data.readString("IOException");
         if (error != null) throw new IOException(error);
         return data;
+    }
+
+    public static ExplorationSnapshot captureExploration() throws IOException {
+        ExplorationSnapshot state = new ExplorationSnapshot();
+        state.interior = MapStage.getInstance().isInMap();
+        state.random = currentSave.world.getRandom();
+        if (state.interior) {
+            state.poiId = TileMapScene.instance().rootPoint.getID();
+            MapStage.getInstance().captureExploration(state);
+        }
+        // Always detach; callers may encode after live simulation has resumed.
+        return ExplorationSnapshot.fromSaveData(state.toSaveData());
+    }
+
+    public static void restoreExploration(ExplorationSnapshot state) throws IOException {
+        if (state.interior) TileMapScene.instance().restoreExploration(state);
+        else MapStage.getInstance().clearIsInMap();
+        currentSave.world.restoreRandom(state.random);
+    }
+
+    public static void showRestoredExploration() {
+        // Overworld entry used to clear the loading overlay implicitly. Interior
+        // Continue/load paths must finish that transition themselves as well.
+        Forge.clearTransitionScreen();
+        Forge.clearCurrentScreen();
+        if (MapStage.getInstance().isInMap()) {
+            TileMapScene.instance().prepareRestoredEntry();
+            Forge.switchScene(TileMapScene.instance());
+        } else Forge.switchScene(GameScene.instance());
+    }
+
+    public static String explorationSaveBlockReason() {
+        forge.adventure.scene.Scene scene = Forge.getCurrentScene();
+        boolean interior = MapStage.getInstance().isInMap();
+        boolean busy = Forge.getTransitionScreen() != null || Forge.advFreezePlayerControls
+                || (interior && TileMapScene.instance().hasPendingMapTransition())
+                || (interior ? MapStage.getInstance().hasPendingAction() : WorldStage.getInstance().hasPendingStageAction());
+        boolean dialogue = (interior ? MapStage.getInstance().isDialogOnlyInput() : WorldStage.getInstance().isDialogOnlyInput())
+                || AdventureQuestController.instance().hasPendingDialogs();
+        return ExplorationSavePolicy.blockReason(restoring, busy, dialogue,
+                scene instanceof forge.adventure.scene.DuelScene || scene instanceof forge.adventure.scene.RewardScene);
+    }
+
+    public static void requestExplorationCheckpoint(String reason) {
+        if (!hasActivePlaythrough()) return;
+        checkpointSession = activePlaythrough;
+        checkpointReason = reason == null || reason.isEmpty() ? "Autosave" : reason;
+    }
+
+    /** Called only from exploration scenes, after pending actions have advanced. */
+    public static void processExplorationCheckpoint() {
+        if (checkpointSession == null) return;
+        if (checkpointSession != activePlaythrough) {
+            checkpointSession = null;
+            checkpointReason = null;
+            return;
+        }
+        if (!(Forge.getCurrentScene() instanceof GameScene || Forge.getCurrentScene() instanceof TileMapScene)
+                || !explorationSaveBlockReason().isEmpty()) return;
+        String reason = checkpointReason;
+        checkpointSession = null;
+        checkpointReason = null;
+        currentSave.autoSaveAsync(reason);
     }
 
     public static boolean isSafeFile(String name) {
@@ -501,8 +584,8 @@ public class WorldSave {
             lastError = "There is no complete active playthrough to save.";
             return false;
         }
-        if (TileMapScene.instance().currentMap().isInMap()) {
-            lastError = "Return to the overworld before saving; exact interior-map restoration is not supported yet.";
+        if (kind != SaveKind.INITIAL && !explorationSaveBlockReason().isEmpty()) {
+            lastError = explorationSaveBlockReason();
             return false;
         }
         PlaythroughSession session = activePlaythrough;
@@ -511,7 +594,7 @@ public class WorldSave {
             // Initial saves precede entering the world stage, whose sprite has
             // not yet loaded the character's coordinates for location lookup.
             String location = kind == SaveKind.INITIAL ? "Campaign opening" : currentLocation();
-            PlaythroughRepository.WriteRequest request = REPOSITORY.prepareSave(session.metadata, kind, text, location);
+            PlaythroughRepository.WriteRequest request = REPOSITORY.prepareSave(session.metadata, kind, text, location, 2);
             header.name = text;
             header.saveDate = new Date();
             WorldSaveHeader capturedHeader = header.snapshotForAsyncSave();
@@ -519,6 +602,7 @@ public class WorldSave {
             SaveSnapshot saved = session.writeSnapshot(REPOSITORY, request,
                     temporary -> writePayload(temporary, capturedHeader, capturedData), WorldSave::validateSaveFile, sequence);
             rememberContinue(saved, session, sequence);
+            if (kind != SaveKind.INITIAL) GameHUD.getInstance().addNotification("Game saved.");
             return true;
         } catch (Exception e) {
             lastError = "Could not save the playthrough: " + e.getMessage();
@@ -564,6 +648,10 @@ public class WorldSave {
     }
 
     public boolean autoSaveAsync() {
+        return autoSaveAsync("Autosave");
+    }
+
+    private boolean autoSaveAsync(String reason) {
         if (!hasActivePlaythrough()) return false;
         final PlaythroughSession capturedSession = activePlaythrough;
         final long sequence = capturedSession.nextRequestSequence();
@@ -573,11 +661,13 @@ public class WorldSave {
         final SaveFileData worldStageData;
         final SaveFileData poiData;
         final World.AsyncSaveSnapshot worldSnapshot;
+        final SaveFileData exploration;
         World.AsyncSaveSnapshot capturedWorld = null;
         try {
-            if (TileMapScene.instance().currentMap().isInMap()) return false;
-            final String text = "Autosave";
-            request = REPOSITORY.prepareSave(capturedSession.metadata, SaveKind.AUTO, text, currentLocation());
+            if (!explorationSaveBlockReason().isEmpty()) return false;
+            final String text = reason;
+            request = REPOSITORY.prepareSave(capturedSession.metadata, SaveKind.AUTO, text, currentLocation(), 2);
+            exploration = captureExploration().toSaveData();
             header.name = text;
             playerData = currentSave.player.save();
             capturedWorld = currentSave.world.snapshotForAsyncSave();
@@ -608,6 +698,7 @@ public class WorldSave {
                     data.store("world", worldData);
                     data.store("worldStage", worldStageData);
                     data.store("pointOfInterestChanges", poiData);
+                    data.store("exploration", exploration);
                     if (data.readString("IOException") != null) throw new IOException("Could not assemble save data.");
                     saved = capturedSession.writeSnapshot(REPOSITORY, request,
                             temporary -> writePayload(temporary, saveHeader, data), WorldSave::validateSaveFile, sequence);
@@ -620,7 +711,10 @@ public class WorldSave {
                 Gdx.app.postRunnable(() -> {
                     if (activePlaythrough != capturedSession) return;
                     if (result == null) {
-                        try { rememberContinue(completed, capturedSession, sequence); }
+                        try {
+                            rememberContinue(completed, capturedSession, sequence);
+                            GameHUD.getInstance().addNotification("Game saved.");
+                        }
                         catch (IOException e) { lastError = e.getMessage(); finish(lastError); }
                     } else { lastError = result; finish(result); }
                 });

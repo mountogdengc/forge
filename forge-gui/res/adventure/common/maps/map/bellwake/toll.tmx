@@ -1,4 +1,5 @@
-<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="30" height="17" tilewidth="16" tileheight="16" infinite="0" nextlayerid="8" nextobjectid="61">
+<?xml version='1.0' encoding='utf-8'?>
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="30" height="17" tilewidth="16" tileheight="16" infinite="0" nextlayerid="8" nextobjectid="62">
  <tileset firstgid="1" source="../../tileset/main.tsx" />
  <tileset firstgid="10113" source="../../tileset/buildings.tsx" />
  <tileset firstgid="11905" source="../../tileset/main-nocollide.tsx" />
@@ -29,7 +30,13 @@
   <object id="60" template="../../obj/enemy.tx" x="214" y="103">
    <properties>
     <property name="enemy" value="Keeper of Fares" />
-    <property name="defeatDialog">[{"text":"The keeper opens his fist. Inside is a ticket punched so many times that only the name is left: Ada Vale. No one has bought her seat. She has paid for it every night.","options":[{"name":"Take Ada's ticket.","action":[{"deleteMapObject":-1},{"setQuestFlag":{"key":"bellwakeFareReleased","val":1}}]}]}]</property>
+    <property name="defeatDialog">[{"text": "The keeper opens his fist. Inside is a ticket punched so many times that only the name is left: Ada Vale. No one has bought her seat. She has paid for it every night.", "options": [{"name": "Take Ada's ticket.", "action": [{"deleteMapObject": -1}, {"setQuestFlag": {"key": "bellwakeFareReleased", "val": 1}}]}]}]</property>
+   </properties>
+  </object>
+  <object id="61" template="../../obj/dialog.tx" x="160" y="232">
+   <properties>
+    <property name="hidden" type="bool" value="false" />
+    <property name="dialog">[{"text": "The fare book lies open beneath a stone. Every night has the same entry: Ada Vale, one crossing unpaid. Beneath it, in a different hand: \"Keep the seat until she chooses a bank.\"", "options": [{"name": "Remember the entry.", "action": [{"setQuestFlag": {"key": "bellwakeClueRead", "val": 1}}]}]}]</property>
    </properties>
   </object>
  </objectgroup>

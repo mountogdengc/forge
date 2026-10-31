@@ -18,6 +18,16 @@ public class ConfigData {
     public float playerBaseSpeed;
     public String[] colorIds;
     public String[] colorIdNames;
+    // Null preserves inherited campaign options; explicit campaigns can curate their starts.
+    public String[] allowedStarterModes;
+    public String chapterCompletionQuestFlag;
+    public String chapterCompletionText;
+
+    public boolean allowsStarterMode(String mode) {
+        if (allowedStarterModes == null) return true;
+        for (String allowed : allowedStarterModes) if (mode.equals(allowed)) return true;
+        return false;
+    }
     public String[] starterEditions;
     public String[] starterEditionNames;
     public ObjectMap<String, ObjectMap<String, String>> starterDecksByEdition;

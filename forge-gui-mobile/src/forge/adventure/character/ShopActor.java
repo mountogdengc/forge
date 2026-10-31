@@ -74,6 +74,10 @@ public class ShopActor extends MapActor {
         return shopData;
     }
 
+    public boolean hasGeneratedStock() {
+        return rewardData != null;
+    }
+
     public void setRewardData(Array<Reward> data) {
         rewardData = data;
     }

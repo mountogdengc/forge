@@ -57,7 +57,7 @@ public class MapActor extends Actor {
 
     Texture debugTexture;
     protected float collisionHeight = 0.4f;
-    final int objectId;
+    int objectId;
     Array<CurrentEffect> effects = new Array<>();
 
     public void removeEffect(String effectFly) {
@@ -107,6 +107,12 @@ public class MapActor extends Actor {
 
     public int getObjectId() {
         return objectId;
+    }
+
+    /** Anonymous interactive wrappers receive the stable ID of their authored TMX object. */
+    public void bindMapObjectId(int id) {
+        if (id <= 0 || (objectId != 0 && objectId != id)) throw new IllegalArgumentException("Cannot rebind a map object's identity.");
+        objectId = id;
     }
 
     private Texture getDebugTexture() {
@@ -214,7 +220,21 @@ public class MapActor extends Actor {
     }
 
     public boolean collideWithPlayer(PlayerSprite other) {
-        boolean newIsColliding = collideWith(other);
+        return acceptContact(collideWith(other));
+    }
+
+    private boolean suppressRestoredContact;
+
+    public void suppressContactUntilSeparation() {
+        suppressRestoredContact = true;
+    }
+
+    protected boolean acceptContact(boolean newIsColliding) {
+        if (suppressRestoredContact) {
+            if (!newIsColliding) suppressRestoredContact = false;
+            isCollidingWithPlayer = false;
+            return false;
+        }
         if (newIsColliding) {
             if (!isCollidingWithPlayer)
                 onPlayerCollide();

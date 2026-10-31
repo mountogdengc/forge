@@ -144,6 +144,11 @@ public class PointOfInterestChanges implements SaveFileContent  {
         return shopSeeds.get(objectID);
     }
 
+    /** Inspect persisted stock without allocating a new seed or clearing purchase slots. */
+    public Long findShopSeed(int objectID) {
+        return shopSeeds.get(objectID);
+    }
+
     public void generateNewShopSeed(int objectID){
         shopSeeds.put(objectID, shopSeeds.containsKey(objectID)? new Random(shopSeeds.get(objectID)).nextLong() : Current.world().getRandom().nextLong());
         cardsBought.put(objectID, new HashSet<>()); //Allows cards to appear in slots of previous purchases

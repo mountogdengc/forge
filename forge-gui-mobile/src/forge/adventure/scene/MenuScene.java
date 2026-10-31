@@ -11,6 +11,7 @@ import com.github.tommyettinger.textra.TextraButton;
 import com.github.tommyettinger.textra.TypingAdapter;
 import com.github.tommyettinger.textra.TypingLabel;
 import forge.Forge;
+import forge.adventure.world.WorldSave;
 import forge.adventure.data.DialogData;
 import forge.adventure.data.RewardData;
 import forge.adventure.player.AdventurePlayer;
@@ -112,6 +113,7 @@ public class MenuScene extends UIScene {
 //                emitQuestAccepted();
 //            }
         }
+        if (data.length > 0) WorldSave.requestExplorationCheckpoint("After a story interaction");
     }
 
     void loadDialog(DialogData dialog) { //Displays a dialog with dialogue and possible choices.

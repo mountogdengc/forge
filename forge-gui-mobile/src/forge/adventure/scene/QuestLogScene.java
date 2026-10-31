@@ -16,6 +16,7 @@ import forge.adventure.stage.MapStage;
 import forge.adventure.util.AdventureQuestController;
 import forge.adventure.util.Controls;
 import forge.adventure.util.Current;
+import forge.adventure.util.Config;
 
 public class QuestLogScene extends UIScene {
     private Table scrollContainer, detailScrollContainer;
@@ -108,6 +109,18 @@ public class QuestLogScene extends UIScene {
         backToList();
 
         scrollContainer.clear();
+
+        var config = Config.instance().getConfigData();
+        if (config.chapterCompletionQuestFlag != null && Current.player().checkQuestFlag(config.chapterCompletionQuestFlag)
+                && config.chapterCompletionText != null && !config.chapterCompletionText.isBlank()) {
+            TypingLabel completion = Controls.newTypingLabel(config.chapterCompletionText);
+            completion.setName("chapter-complete");
+            completion.skipToTheEnd();
+            completion.setWrap(true);
+            completion.setColor(Color.BLACK);
+            scrollContainer.add(completion).colspan(2).width(Math.max(140f, root.getWidth() - 20f)).pad(8f).left();
+            scrollContainer.row();
+        }
 
         for (AdventureQuestData quest : Current.player().getQuests()) {
             String headerCode = quest.isTracked ? "{GRADIENT=CYAN;BLUE;1;1}•{ENDGRADIENT}[BLACK]" : "[BLACK]";

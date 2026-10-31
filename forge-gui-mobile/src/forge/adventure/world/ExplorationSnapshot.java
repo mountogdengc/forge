@@ -13,7 +13,7 @@ import java.util.Set;
 /** Detached gameplay values only; scenes, native resources and callbacks are rebuilt on load. */
 public final class ExplorationSnapshot implements Serializable {
     private static final long serialVersionUID = 1L;
-    public int version = 1;
+    public int version = 2;
     public boolean interior;
     public String poiId = "";
     public String map = "";
@@ -23,6 +23,7 @@ public final class ExplorationSnapshot implements Serializable {
     public String facing = "None";
     public Random random;
     public List<ActorState> actors = new ArrayList<>();
+    public Set<Integer> absentActorIds = new HashSet<>();
 
     public static final class MovementState implements Serializable {
         private static final long serialVersionUID = 1L;
@@ -43,6 +44,12 @@ public final class ExplorationSnapshot implements Serializable {
         public boolean aggro;
         public boolean hidden;
         public boolean inactive;
+        public boolean visible = true;
+        public boolean blocking = true;
+        public String portalAnimation = "";
+        public String shopDataJson = "";
+        public long shopSeed;
+        public boolean shopStockGenerated;
         public float movementTimer;
         public List<MovementState> movements = new ArrayList<>();
     }
@@ -67,23 +74,44 @@ public final class ExplorationSnapshot implements Serializable {
         return state;
     }
 
+    public void validateActorIds(Set<Integer> loadedIds) throws IOException {
+        Set<Integer> savedIds = new HashSet<>();
+        for (ActorState actor : actors) savedIds.add(actor.id);
+        Set<Integer> present = new HashSet<>(loadedIds);
+        if (!present.containsAll(absentActorIds)) throw new IOException("A saved temporary defeat is missing from this location's content.");
+        present.removeAll(absentActorIds);
+        if (!savedIds.equals(present)) throw new IOException("Saved actors do not match this location's content.");
+    }
+
+    public void validateMapDimensions(float width, float height) throws IOException {
+        requirePosition(playerX, playerY);
+        if (playerX < 0 || playerY < 0 || playerX >= width || playerY >= height) {
+            throw new IOException("Saved position is outside this location.");
+        }
+    }
+
     private void validate() throws IOException {
-        if (version != 1) throw new IOException("Unsupported exploration snapshot version.");
+        if (version != 2) throw new IOException("Unsupported exploration snapshot version.");
         requirePosition(playerX, playerY);
         requireFacing(facing);
-        if (actors == null) throw new IOException("Missing actor state.");
+        if (actors == null || absentActorIds == null) throw new IOException("Missing actor state.");
         if (interior) {
             if (poiId == null || poiId.isEmpty()) throw new IOException("Missing interior location.");
             requireMap(map, false);
             requireMap(sourceMap, true);
-        } else if (!actors.isEmpty()) {
+        } else if (!actors.isEmpty() || !absentActorIds.isEmpty()) {
             throw new IOException("Interior actors cannot belong to an overworld snapshot.");
         }
         Set<Integer> ids = new HashSet<>();
         for (ActorState actor : actors) {
             if (actor == null || !ids.add(actor.id)) throw new IOException("Missing or duplicate map actor.");
+            if (actor.id <= 0 || absentActorIds.contains(actor.id)) throw new IOException("Invalid live map actor identity.");
             requirePosition(actor.x, actor.y);
             requireFacing(actor.facing);
+            if (actor.portalAnimation == null || !actor.portalAnimation.matches("|active|closed|inactive")) {
+                throw new IOException("Invalid or unfinished portal state.");
+            }
+            if (actor.shopDataJson == null) throw new IOException("Invalid shop snapshot.");
             if (!Float.isFinite(actor.movementTimer) || actor.movementTimer < 0 || actor.movements == null) {
                 throw new IOException("Invalid actor movement state.");
             }
@@ -93,6 +121,7 @@ public final class ExplorationSnapshot implements Serializable {
                 requirePosition(movement.targetX, movement.targetY);
             }
         }
+        for (Integer id : absentActorIds) if (id == null || id <= 0) throw new IOException("Invalid temporary defeat identity.");
     }
 
     private static void requirePosition(float x, float y) throws IOException {

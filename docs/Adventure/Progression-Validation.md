@@ -6,6 +6,62 @@ This checklist validates the current progression patch and the inherited content
 
 The campaign picker and independent-playthrough architecture are implemented as described in [Campaigns and saves](Campaigns-and-Saves.md). The campaign gate below records their automated and interactive coverage separately from the earlier progression fixes. Partial coverage does not turn an entire acceptance case into a pass.
 
+## Bellwake 0.2.0 candidate, October 31, 2026
+
+Implementation is on `codex/bellwake-chapter-polish`, based on
+`22f5f1f8b7c3089978014b2e405f90377eceb184`. The snapshot model/version change
+was committed as `6f650c675a255b0e8985f03d6d1ed15a5573c323`; integration evidence
+below includes subsequent source and content changes. Final package identity belongs
+in its `BUILD-INFO.json`.
+
+Runtime: Windows 11 amd64, Oracle JDK 26 compiling with Java release 17, Maven
+3.9.9, native GLFW/libGDX client. Tests use disposable profiles and never import
+normal player saves. The focused gate passed 27 save/restoration/content cases
+with zero failures or skips; the starter reward-copy regression additionally
+failed before adjustment and passed afterward (4 content cases).
+
+| Gate | Evidence/status |
+| --- | --- |
+| Interior reconstruction | Native quay/tollhouse saves restore pose, life without entry healing, currency, and encounter state; F5 preserves the overworld return position. |
+| Restore failure | A valid payload referencing a missing map in another campaign fails after activation and restores the outgoing interior, run and Continue selection. |
+| Connected rooms | Disposable map fixture checks return exits, per-visit defeated ordinary enemies, respawn on a later visit, anonymous interactive IDs, two signed shops, rotating identity, opened stock, and the saved random stream. |
+| Story interactions | Assisted real dialogue/reward actions cover first/repeat practice rewards, ticket acquisition, both ending branches, no partial ending checkpoints, reload/revisit without duplicate cards, and the persistent completed journal. Victories are supplied. |
+| Fresh process | Second application process loads Continue and checks saved position, currency, life, deck, ending, reward count, and absent Keeper. The actual StartScene Continue action passes, including clearing its loading overlay. |
+| Write failure / async isolation | Repository fixtures inject interrupted writes and invalid payloads; retain previous snapshots/Continue; test out-of-order saves and retired-run publication. This is not a native full-disk/permissions UI test. |
+| Presentation | 1280x720 and 1920x1080 quay screenshots inspected. Existing town/dungeon art remains; a stronger ferry/quay identity and ambient polish remain open. Portrait functional regression is recorded separately when run. |
+| Real gameplay acceptance | Pending: played practice and Keeper matches with both starters; practice skipped; deliberate loss/rematch; physical controller focus; dialogue/card inspection readability; measured chapter duration and confusion. No unassisted finish or balance claim. |
+
+Reproducible runner: [Windows test build](Windows-Test-Build.md). Initial full
+assisted evidence is `dist/bellwake-smoke/20261031-150838-59f1a4/` (local logs,
+screenshot and isolated profile). The runner requires separate first-process and
+fresh-process PASS markers. Failed earlier attempts are retained separately;
+they are not counted as passing acceptance. Final 1920x1080 evidence is
+`dist/bellwake-smoke/20261031-151527-c454cf/`: both first-process PASS markers
+and `BELLWAKE_FRESH_CONTINUE_PASS` passed after fixing the menu-during-action
+and stale loading-overlay regressions.
+
+### Automated integration gate
+
+The full default reactor completed `mvn -U -B -ntp clean test` at
+`2026-10-31T15:24:33-06:00`, exit 0, **BUILD SUCCESS** in 7 minutes 15 seconds.
+All 12 modules succeeded. Surefire reported **1,415 cases, zero failures/errors,
+and six existing desktop network-harness skips**. Adventure contributed **70
+passing cases with no skips**. No modules were excluded. Log:
+`.bellwake-full-reactor.log` (local).
+
+The six skipped `NetworkPlayIntegrationTest` methods are `analyzeLog`,
+`runComprehensiveDeltaSyncTest`, `runQuickDeltaSyncTest`,
+`testConfigurableParallel`, `testConfigurableSequential`, and
+`testUnifiedHarnessLocalMode`.
+
+During the full run, a native probe reproduced the shared New Game+ API retaining
+its source interior. The final fix clears that context before generation and uses
+normal overworld entry for NG+. Its native regression went RED then GREEN and
+reloads the original source checkpoint. Bellwake itself does not offer NG+.
+The full reactor compiled before that small compatibility fix; the final affected
+clean verify below rebuilds it. Other modules were unchanged. Complete inherited
+campaign NG+ gameplay remains unverified.
+
 ## Build and save identity
 
 The foundation baseline is upstream commit `4fcb76673693cb21fd0e31e50b72774fc02053a1`, whose parent POM specifies `2.0.16-SNAPSHOT` and Java release 17. The working branch is `adventure/progression-foundation`. These identify the starting point, not a tested finished build.

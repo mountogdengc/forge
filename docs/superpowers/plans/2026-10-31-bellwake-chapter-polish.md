@@ -58,6 +58,21 @@ Validation: new focused tests next to existing suites under `forge-gui-mobile/te
 
 Execute Tasks 1–3 in order, then 4–6, then 7. Do not ship interior saving after Task 1 alone.
 
+## Execution status (October 31, 2026)
+
+Approved for implementation. Snapshot model/versioning is committed; integration,
+authored content, stable interior controls, diagnostics and native regression
+fixtures are implemented on `codex/bellwake-chapter-polish`. See
+[the validation record](../../Adventure/Progression-Validation.md) for evidence.
+The original task checklists below remain the acceptance specification; unchecked
+multi-part tasks are not a claim that no code exists.
+
+Automated/native checks and a local candidate package are being prepared.
+Acceptance remains open for played matches and both starters, deliberate
+loss/rematch, physical controller navigation, measured duration, complete display
+readability, and the stronger quay art/ambient pass. Supplied victories do not
+satisfy those gates. This is a candidate, not a fully accepted polished release.
+
 ## Task 1: Define a versioned exploration snapshot
 
 **Deliverable:** A serializable, detached representation of where exploration resumes; existing saves remain readable.
@@ -66,10 +81,10 @@ Execute Tasks 1–3 in order, then 4–6, then 7. Do not ship interior saving af
 
 **Interfaces (new):** `ExplorationSnapshot.toSaveData(): SaveFileData`; `ExplorationSnapshot.fromSaveData(SaveFileData): ExplorationSnapshot`. Representation includes version, overworld/interior discriminator, root POI ID, current/source map resource identities, return/entry context, player position/facing, live mobile-actor state keyed by TMX object ID, and random state needed by resumed exploration. Keep graphics, Box2D bodies, scene instances, listeners, and timers out of serialization. Existing player/world/POI payload sections continue to own quests, collection, deleted objects, flags, shops, and world state.
 
-- [ ] Add failing round-trip tests for overworld, quay, tollhouse, and a connected-floor fixture. Assert actor IDs/positions and return context survive; malformed version, non-finite coordinates, invalid map identity, and absent interior POI fail explicitly.
-- [ ] Add repository tests: accept old envelope 1 and new envelope 2; new captures use 2; unmodified legacy imports use 1; run metadata stays 1; reject future envelope versions. Verify snapshot validation agrees with payload requirements and import remains compatible with old overworld payloads. Make the capture/import writer specify its envelope version explicitly rather than infer compatibility from missing fields.
-- [ ] Implement the snapshot codec and split metadata/snapshot version checks. Missing exploration data means overworld only for old-format saves; malformed new-format data never silently becomes overworld.
-- [ ] Run focused world tests, confirm new cases fail before implementation and pass afterward, and commit this isolated model/version change.
+- [x] Add failing round-trip tests for overworld, quay, tollhouse, and a connected-floor fixture. Assert actor IDs/positions and return context survive; malformed version, non-finite coordinates, invalid map identity, and absent interior POI fail explicitly.
+- [x] Add repository tests: accept old envelope 1 and new envelope 2; new captures use 2; unmodified legacy imports use 1; run metadata stays 1; reject future envelope versions. Verify snapshot validation agrees with payload requirements and import remains compatible with old overworld payloads. Make the capture/import writer specify its envelope version explicitly rather than infer compatibility from missing fields.
+- [x] Implement the snapshot codec and split metadata/snapshot version checks. Missing exploration data means overworld only for old-format saves; malformed new-format data never silently becomes overworld.
+- [x] Run focused world tests, confirm new cases fail before implementation and pass afterward, and commit this isolated model/version change.
 
 ## Task 2: Capture and restore interior exploration safely
 
@@ -159,4 +174,4 @@ Execute Tasks 1–3 in order, then 4–6, then 7. Do not ship interior saving af
 
 The chapter is complete when both curated starts support an unassisted finish, optional preparation teaches a useful deck improvement, exploration and objectives are readable, both endings have persistent consequences, losses allow recovery, and location saves restore correctly after a fresh launch. All automated gates and native Windows acceptance must have recorded results; remaining limitations must be explicit.
 
-This turn creates the plan only. Review the proposed defaults before implementation, especially the two starter archetypes, single forgiving difficulty, optional practice duel, and exploration-only scope of saving anywhere. Implementation should proceed task-by-task in this session unless a different execution method is requested.
+The original plan selected two starter archetypes, a single forgiving difficulty, optional practice, and stable-exploration saving. The user approved implementation. Current execution and remaining acceptance are recorded above and in the validation guide.

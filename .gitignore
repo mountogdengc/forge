@@ -108,3 +108,5 @@ forge-gui-ios/robovm.properties
 /.build-cache/
 /.bellwake-*.log
 /.superpowers/
+/dist/bellwake-smoke/
+/dist/adventure-windows/

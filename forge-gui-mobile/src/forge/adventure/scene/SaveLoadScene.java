@@ -297,7 +297,7 @@ public class SaveLoadScene extends UIScene {
                     if (label.isEmpty()) label = text("lblCheckpoint", "Checkpoint");
                     boolean saved = replace == null ? WorldSave.saveManual(label) : WorldSave.replaceManual(replace, label);
                     removeDialog();
-                    if (saved) Forge.switchScene(GameScene.instance());
+                    if (saved) WorldSave.showRestoredExploration();
                     else error(WorldSave.getLastError());
                 }, this::removeDialog);
         addPromptField(prompt, help, name);
@@ -336,7 +336,7 @@ public class SaveLoadScene extends UIScene {
             try {
                 if (WorldSave.loadSnapshot(snapshot)) {
                     SoundSystem.instance.changeBackgroundTrack();
-                    Forge.switchScene(GameScene.instance());
+                    WorldSave.showRestoredExploration();
                 } else loadFailed(WorldSave.getLastError());
             } catch (RuntimeException e) {
                 loadFailed(e.getMessage());

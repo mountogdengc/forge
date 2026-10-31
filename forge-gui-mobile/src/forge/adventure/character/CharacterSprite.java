@@ -193,6 +193,10 @@ public class CharacterSprite extends MapActor {
         }
     }
 
+    public AnimationDirections getDirection() {
+        return currentAnimationDir;
+    }
+
 
     @Override
     protected void positionChanged() {

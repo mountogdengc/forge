@@ -11,6 +11,7 @@ import forge.adventure.stage.PointOfInterestMapRenderer;
 import forge.adventure.stage.WorldStage;
 import forge.adventure.util.*;
 import forge.adventure.world.WorldSave;
+import forge.adventure.world.ExplorationSnapshot;
 import forge.sound.SoundEffectType;
 import forge.sound.SoundSystem;
 
@@ -24,6 +25,7 @@ public class TileMapScene extends HudScene {
     private String nextMap;
     private int nextSpawnPoint;
     private boolean autoheal = false;
+    private boolean resumeRestoredExploration;
 
     private TileMapScene() {
         super(MapStage.getInstance());
@@ -48,9 +50,14 @@ public class TileMapScene extends HudScene {
         return (MapStage) stage;
     }
 
+    public boolean hasPendingMapTransition() {
+        return nextMap != null;
+    }
+
     private PointOfInterestMapRenderer getTiledMapRenderer() {
         if (tiledMapRenderer == null) {
             tiledMapRenderer = new PointOfInterestMapRenderer((MapStage) stage);
+            if (map != null) tiledMapRenderer.setMap(map);
         }
         return tiledMapRenderer;
     }
@@ -61,6 +68,7 @@ public class TileMapScene extends HudScene {
 
     private void disposeRenderer() {
         Forge.safeDispose(tiledMapRenderer);
+        tiledMapRenderer = null;
     }
 
     @Override
@@ -82,6 +90,7 @@ public class TileMapScene extends HudScene {
         }
         stage.act(Gdx.graphics.getDeltaTime());
         hud.act(Gdx.graphics.getDeltaTime());
+        WorldSave.processExplorationCheckpoint();
         if (autoheal) {
             stage.getPlayerSprite().playEffect(Paths.EFFECT_HEAL, 2);
             SoundSystem.instance.play(SoundEffectType.Enchantment, false);
@@ -115,6 +124,10 @@ public class TileMapScene extends HudScene {
     @Override
     public void enter() {
         super.enter();
+        if (resumeRestoredExploration) {
+            resumeRestoredExploration = false;
+            return;
+        }
         if (isAutoHealLocation()) {
             // auto heal
             if (Current.player().fullHeal())
@@ -172,6 +185,47 @@ public class TileMapScene extends HudScene {
 
     public PointOfInterest rootPoint;
     String oldMap;
+
+    public void prepareRestoredEntry() {
+        resumeRestoredExploration = true;
+    }
+
+    /** Rebuild resources without normal POI entry events, healing or starting dialogue. */
+    public void restoreExploration(ExplorationSnapshot snapshot) throws java.io.IOException {
+        PointOfInterest point = null;
+        for (PointOfInterest candidate : Current.world().getAllPointOfInterest()) {
+            if (candidate.getID().equals(snapshot.poiId)) { point = candidate; break; }
+        }
+        if (point == null) throw new java.io.IOException("The saved location is not present in this world.");
+        boolean rootMap = snapshot.map.equals(point.getData().map);
+        String resource = rootMap ? Config.instance().getCommonFilePath(snapshot.map)
+                : Config.instance().getFilePath(snapshot.map);
+        java.io.File file = new java.io.File(resource).getCanonicalFile();
+        java.nio.file.Path path = file.toPath();
+        java.nio.file.Path campaignRoot = new java.io.File(Config.instance().getFilePath("")).getCanonicalFile().toPath();
+        java.nio.file.Path commonRoot = new java.io.File(Config.instance().getCommonFilePath("")).getCanonicalFile().toPath();
+        if ((!path.startsWith(campaignRoot) && !path.startsWith(commonRoot)) || !file.isFile()) {
+            throw new java.io.IOException("The saved map resource is missing or outside the campaign.");
+        }
+        rootPoint = point;
+        oldMap = snapshot.map;
+        nextMap = null;
+        nextSpawnPoint = 0;
+        autoheal = false;
+        AdventureQuestController.instance().mostRecentPOI = point;
+        MapStage restored = currentMap();
+        restored.setPointOfInterest(rootMap ? getPointOfInterestChanges() : getPointOfInterestChanges(snapshot.map));
+        restored.setRestoringExploration(snapshot);
+        try {
+            map = new TemplateTmxMapLoader().load(file.getPath());
+            Current.world().setSeed(point.getSeedOffset());
+            getTiledMapRenderer().loadMap(map, snapshot.sourceMap, snapshot.map, 0);
+            restored.restoreExploration(snapshot);
+        } catch (RuntimeException e) {
+            throw new java.io.IOException("Could not restore map " + snapshot.map + ".", e);
+        } finally { restored.setRestoringExploration(null); }
+        resumeRestoredExploration = true;
+    }
     private final static String[] AUTO_HEAL_LOCATIONS = { "capital", "town" };
     public boolean isAutoHealLocation() {
         if (rootPoint == null || rootPoint.getData() == null) {

@@ -34,6 +34,7 @@ import forge.adventure.util.pathfinding.NavigationMap;
 import forge.adventure.util.pathfinding.NavigationVertex;
 import forge.adventure.util.pathfinding.ProgressableGraphPath;
 import forge.adventure.world.WorldSave;
+import forge.adventure.world.ExplorationSnapshot;
 import forge.gui.FThreads;
 import forge.haptic.HapticEngine;
 import forge.localinstance.properties.ForgePreferences.FPref;
@@ -72,6 +73,10 @@ public class MapStage extends GameStage {
     private EffectData effect;             //"Dungeon Effect": Character Effect applied to all adversaries within the map.
     private String battleBackground;       //Optional battle background folder for this map or floor.
     private String currentMap;
+    private String sourceMap = "";
+    private boolean restoringExploration;
+    private ExplorationSnapshot reconstructionSnapshot;
+    private final Set<Integer> removedForVisit = new HashSet<>();
     private boolean preventEscape = false; //Prevents player from escaping the dungeon by any means that aren't an exit.
 
     public InputEvent eventTouchDown, eventTouchUp;
@@ -162,6 +167,7 @@ public class MapStage extends GameStage {
     }
 
     public void addMapActor(MapObject obj, MapActor newActor) {
+        newActor.bindMapObjectId(obj.getProperties().get("id", Integer.class));
         newActor.setWidth(Float.parseFloat(obj.getProperties().get("width").toString()));
         newActor.setHeight(Float.parseFloat(obj.getProperties().get("height").toString()));
         newActor.setX(Float.parseFloat(obj.getProperties().get("x").toString()));
@@ -236,6 +242,7 @@ public class MapStage extends GameStage {
         isLoadingMatch = false;
         isInMap = true;
         currentMap = targetMap;
+        this.sourceMap = sourceMap;
         GameHUD.getInstance().showHideMap(false);
         this.tiledMap = map;
         for (MapActor actor : new Array.ArrayIterator<>(actors)) {
@@ -244,6 +251,7 @@ public class MapStage extends GameStage {
         }
         positions.clear();
         actors.clear();
+        removedForVisit.clear();
         collisionRect.clear();
         waypoints.clear();
 
@@ -300,7 +308,7 @@ public class MapStage extends GameStage {
         }
         spawn(spawnTargetId);
 
-        if (effect != null && enemies.size() > 0) {
+        if (!restoringExploration && effect != null && enemies.size() > 0) {
             effectDialog(effect);
         }
 
@@ -679,7 +687,7 @@ public class MapStage extends GameStage {
 
                         Array<String> possibleShops = new Array<>(rotation.split(","));
 
-                        if (possibleShops.size > 0) {
+                        if (!restoringExploration && possibleShops.size > 0) {
                             long rotatingRandomSeed = WorldSave.getCurrentSave().getWorld().getRandom().nextLong() + LocalDate.now().toEpochDay();
                             Random rotatingShopRandom = new Random(rotatingRandomSeed);
                             rotatingShop = possibleShops.get(rotatingShopRandom.nextInt(possibleShops.size));
@@ -690,75 +698,94 @@ public class MapStage extends GameStage {
                         //Flow continues into "shop" case with above data overriding base logic.
 
                     case "shop":
-                        int restockPrice = 0;
-                        String shopList = "";
-
-                        boolean isRotatingShop = !rotatingShop.isEmpty();
-
-                        if (isRotatingShop) {
-                            shopList = rotatingShop;
-                            restockPrice = 7;
+                        ShopData data;
+                        if (restoringExploration) {
+                            ExplorationSnapshot.ActorState saved = null;
+                            for (ExplorationSnapshot.ActorState state : reconstructionSnapshot.actors)
+                                if (state.id == id) { saved = state; break; }
+                            if (saved == null || saved.shopDataJson.isEmpty())
+                                throw new IllegalStateException("Missing saved shop identity for object " + id);
+                            Long savedSeed = changes.findShopSeed(id);
+                            if (savedSeed == null || savedSeed.longValue() != saved.shopSeed)
+                                throw new IllegalStateException("Missing or mismatched saved stock seed for object " + id);
+                            data = new com.badlogic.gdx.utils.Json().fromJson(ShopData.class, saved.shopDataJson);
                         } else {
-                            int rarity = WorldSave.getCurrentSave().getWorld().getRandom().nextInt(100);
-                            if (rarity > 95 & prop.containsKey("mythicShopList")) {
-                                shopList = prop.get("mythicShopList").toString();
-                                restockPrice = 5;
-                            }
-                            if (shopList.isEmpty() && (rarity > 85 & prop.containsKey("rareShopList"))) {
-                                shopList = prop.get("rareShopList").toString();
-                                restockPrice = 4;
-                            }
-                            if (shopList.isEmpty() && (rarity > 55 & prop.containsKey("uncommonShopList"))) {
-                                shopList = prop.get("uncommonShopList").toString();
-                                restockPrice = 3;
-                            }
-                            if (shopList.isEmpty() && prop.containsKey("commonShopList")) {
-                                shopList = prop.get("commonShopList").toString();
-                                restockPrice = 2;
-                            }
-                            if (shopList.trim().isEmpty() && prop.containsKey("shopList")) {
-                                shopList = prop.get("shopList").toString(); //removed but included to not break existing custom planes
-                                restockPrice = 0; //Tied to restock button
-                            }
-                            shopList = shopList.replaceAll("\\s", "");
-                        }
+                            int restockPrice = 0;
+                            String shopList = "";
 
-                        if (prop.containsKey("noRestock") && (boolean) prop.get("noRestock")) {
-                            restockPrice = 0;
-                        }
+                            boolean isRotatingShop = !rotatingShop.isEmpty();
 
-                        possibleShops = new Array<String>(shopList.split(","));
-                        Array<String> filteredPossibleShops = new Array<>();
-                        if (!isRotatingShop) {
-                            for (String candidate : possibleShops) {
-                                if (!shopsAlreadyPresent.contains(candidate, false))
-                                    filteredPossibleShops.add(candidate);
+                            if (isRotatingShop) {
+                                shopList = rotatingShop;
+                                restockPrice = 7;
+                            } else {
+                                int rarity = WorldSave.getCurrentSave().getWorld().getRandom().nextInt(100);
+                                if (rarity > 95 & prop.containsKey("mythicShopList")) {
+                                    shopList = prop.get("mythicShopList").toString();
+                                    restockPrice = 5;
+                                }
+                                if (shopList.isEmpty() && (rarity > 85 & prop.containsKey("rareShopList"))) {
+                                    shopList = prop.get("rareShopList").toString();
+                                    restockPrice = 4;
+                                }
+                                if (shopList.isEmpty() && (rarity > 55 & prop.containsKey("uncommonShopList"))) {
+                                    shopList = prop.get("uncommonShopList").toString();
+                                    restockPrice = 3;
+                                }
+                                if (shopList.isEmpty() && prop.containsKey("commonShopList")) {
+                                    shopList = prop.get("commonShopList").toString();
+                                    restockPrice = 2;
+                                }
+                                if (shopList.trim().isEmpty() && prop.containsKey("shopList")) {
+                                    shopList = prop.get("shopList").toString(); //removed but included to not break existing custom planes
+                                    restockPrice = 0; //Tied to restock button
+                                }
+                                shopList = shopList.replaceAll("\\s", "");
                             }
-                        }
-                        if (filteredPossibleShops.isEmpty()) {
-                            filteredPossibleShops = possibleShops;
-                        }
-                        Array<ShopData> shops;
-                        if (filteredPossibleShops.size == 0 || shopList.isEmpty())
-                            shops = WorldData.getShopList();
-                        else {
-                            shops = new Array<>();
-                            for (ShopData data : new Array.ArrayIterator<>(WorldData.getShopList())) {
-                                if (filteredPossibleShops.contains(data.name, false)) {
-                                    data.restockPrice = restockPrice;
-                                    shops.add(data);
+
+                            if (prop.containsKey("noRestock") && (boolean) prop.get("noRestock")) {
+                                restockPrice = 0;
+                            }
+
+                            possibleShops = new Array<String>(shopList.split(","));
+                            Array<String> filteredPossibleShops = new Array<>();
+                            if (!isRotatingShop) {
+                                for (String candidate : possibleShops) {
+                                    if (!shopsAlreadyPresent.contains(candidate, false))
+                                        filteredPossibleShops.add(candidate);
                                 }
                             }
-                        }
-                        if (shops.size == 0) continue;
+                            if (filteredPossibleShops.isEmpty()) {
+                                filteredPossibleShops = possibleShops;
+                            }
+                            Array<ShopData> shops;
+                            if (filteredPossibleShops.size == 0 || shopList.isEmpty())
+                                shops = WorldData.getShopList();
+                            else {
+                                shops = new Array<>();
+                                for (ShopData candidate : new Array.ArrayIterator<>(WorldData.getShopList())) {
+                                    if (filteredPossibleShops.contains(candidate.name, false)) {
+                                        candidate.restockPrice = restockPrice;
+                                        shops.add(candidate);
+                                    }
+                                }
+                            }
+                            if (shops.size == 0) continue;
 
-                        ShopData data = shops.get(WorldSave.getCurrentSave().getWorld().getRandom().nextInt(shops.size));
-                        shopsAlreadyPresent.add(data.name);
-                        //Make sure the seed exists now (it is created from the world random the first time), but don't
-                        //generate the shop's cards until the player actually opens it. See ShopActor.getRewardData.
-                        changes.getShopSeed(id);
+                            data = shops.get(WorldSave.getCurrentSave().getWorld().getRandom().nextInt(shops.size));
+                            shopsAlreadyPresent.add(data.name);
+                            //Make sure the seed exists now (it is created from the world random the first time), but don't
+                            //generate the shop's cards until the player actually opens it. See ShopActor.getRewardData.
+                            changes.getShopSeed(id);
+
+                        }
                         ShopActor actor = new ShopActor(this, id, data, changes);
                         addMapActor(obj, actor);
+                        if (restoringExploration) {
+                            for (ExplorationSnapshot.ActorState saved : reconstructionSnapshot.actors) {
+                                if (saved.id == id && saved.shopStockGenerated) actor.getRewardData();
+                            }
+                        }
                         if (prop.containsKey("hasSign") && (boolean) prop.get("hasSign") && prop.containsKey("signYOffset") && prop.containsKey("signXOffset")) {
                             try {
                                 TextureSprite sprite = new TextureSprite(Config.instance().getAtlasSprite(data.spriteAtlas, data.sprite));
@@ -816,7 +843,9 @@ public class MapStage extends GameStage {
 
     @Override
     public void setWinner(boolean playerWins, boolean isArena) {
-        isLoadingMatch = false;
+        WorldSave.requestExplorationCheckpoint(playerWins ? "After a battle" : "After defeat recovery");
+        final Object session = WorldSave.captureSessionToken();
+        isLoadingMatch = true; // Includes the outer victory timer, before its stage callback exists.
         freezeAllEnemyBehaviors = true;
         if (playerWins) {
             currentMob.clearCollisionHeight();
@@ -824,14 +853,17 @@ public class MapStage extends GameStage {
             player.setAnimation(CharacterSprite.AnimationTypes.Attack);
             float attackDuration = Math.max(1f,
                     player.getActionAnimationDuration(CharacterSprite.AnimationTypes.Attack, 1f));
+            startPause(attackDuration);
             currentMob.playEffect(Paths.EFFECT_BLOOD, 0.5f);
             Timer.schedule(new Timer.Task() {
                 @Override
                 public void run() {
+                    if (!WorldSave.isCurrentSession(session) || instance != MapStage.this) return;
                     currentMob.setAnimation(CharacterSprite.AnimationTypes.Death);
                     currentMob.resetCollisionHeight();
                     float deathDuration = currentMob.getActionAnimationDuration(CharacterSprite.AnimationTypes.Death, 0.3f);
                     startPause(deathDuration, () -> {
+                        if (!WorldSave.isCurrentSession(session) || instance != MapStage.this) return;
                         MapStage.this.getReward();
                         AdventureQuestController.instance().updateQuestsWin(currentMob,enemies);
                         AdventureQuestController.instance().showQuestDialogs(MapStage.this);
@@ -848,6 +880,7 @@ public class MapStage extends GameStage {
                     player.getActionAnimationDuration(CharacterSprite.AnimationTypes.Hit, 0.3f),
                     currentMob.getActionAnimationDuration(CharacterSprite.AnimationTypes.Attack, 0.3f));
             startPause(resultAnimationDuration, () -> {
+                if (!WorldSave.isCurrentSession(session) || instance != MapStage.this) return;
                 player.setAnimation(CharacterSprite.AnimationTypes.Idle);
                 currentMob.setAnimation(CharacterSprite.AnimationTypes.Idle);
                 currentMob.resetCollisionHeight();
@@ -899,6 +932,7 @@ public class MapStage extends GameStage {
     }
 
     public boolean deleteObject(int id) {
+        removedForVisit.remove(id);
         changes.deleteObject(id);
         for (int i = 0; i < actors.size; i++) {
             if (actors.get(i).getObjectId() == id && id > 0) {
@@ -981,7 +1015,8 @@ public class MapStage extends GameStage {
             actors.removeValue(currentMob, true);
             if (!respawnEnemies || currentMob.getData().boss)
                 changes.deleteObject(currentMob.getId());
-                enemies.remove(currentMob);
+            else removedForVisit.add(currentMob.getId());
+            enemies.remove(currentMob);
         } else {
             currentMob.defeatDialog.activate();
             player.setAnimation(CharacterSprite.AnimationTypes.Idle);
@@ -1153,7 +1188,7 @@ public class MapStage extends GameStage {
     }
 
     boolean started = false;
-    
+
     public void beginDuel(EnemySprite mob) {
         if (mob == null) return;
         mob.clearCollisionHeight();
@@ -1204,6 +1239,102 @@ public class MapStage extends GameStage {
 
     public String getCurrentMap() {
         return currentMap;
+    }
+
+    public boolean hasPendingAction() {
+        for (MapActor actor : actors) if (actor instanceof PortalActor) {
+            String animation = ((PortalActor) actor).getAnimation();
+            if (animation.equals("opening") || animation.equals("closing")) return true;
+        }
+        return isLoadingMatch || isPlayerLeavingDungeon || started || hasPendingStageAction();
+    }
+
+    public void setRestoringExploration(ExplorationSnapshot snapshot) {
+        restoringExploration = snapshot != null;
+        reconstructionSnapshot = snapshot;
+    }
+
+    public void captureExploration(ExplorationSnapshot snapshot) {
+        snapshot.sourceMap = sourceMap;
+        snapshot.map = currentMap;
+        snapshot.playerX = getPlayerSprite().getX();
+        snapshot.playerY = getPlayerSprite().getY();
+        snapshot.facing = getPlayerSprite().getDirection().name();
+        snapshot.absentActorIds.addAll(removedForVisit);
+        for (MapActor actor : actors) {
+            if (actor.getId() <= 0) continue; // Shop signs and other derived decoration are rebuilt from content.
+            ExplorationSnapshot.ActorState saved = new ExplorationSnapshot.ActorState();
+            saved.id = actor.getId();
+            saved.x = actor.getX();
+            saved.y = actor.getY();
+            saved.visible = actor.isVisible();
+            if (actor instanceof CharacterSprite) {
+                CharacterSprite sprite = (CharacterSprite) actor;
+                saved.facing = sprite.getDirection().name();
+                saved.hidden = sprite.hidden;
+                saved.inactive = sprite.inactive;
+            }
+            if (actor instanceof EnemySprite) ((EnemySprite) actor).captureMovement(saved);
+            if (actor instanceof PortalActor) saved.portalAnimation = ((PortalActor) actor).getAnimation();
+            if (actor instanceof DummySprite) saved.blocking = ((DummySprite) actor).blocking;
+            if (actor instanceof ShopActor) {
+                saved.shopDataJson = new com.badlogic.gdx.utils.Json().toJson(((ShopActor) actor).getShopData());
+                saved.shopSeed = changes.getShopSeed(actor.getId());
+                saved.shopStockGenerated = ((ShopActor) actor).hasGeneratedStock();
+            }
+            snapshot.actors.add(saved);
+        }
+    }
+
+    public void restoreExploration(ExplorationSnapshot snapshot) throws java.io.IOException {
+        Set<Integer> ids = new HashSet<>();
+        for (MapActor actor : actors) if (actor.getId() > 0) ids.add(actor.getId());
+        snapshot.validateActorIds(ids);
+        for (int id : snapshot.absentActorIds) {
+            EnemySprite enemy = getEnemyByID(id);
+            if (!respawnEnemies || enemy == null || enemy.getData().boss) {
+                throw new java.io.IOException("Invalid per-visit defeated encounter " + id + ".");
+            }
+            enemy.remove();
+            actors.removeValue(enemy, true);
+            enemies.remove(enemy);
+            removedForVisit.add(id);
+        }
+        snapshot.validateMapDimensions(
+                Float.parseFloat(tiledMap.getProperties().get("width").toString())
+                        * Float.parseFloat(tiledMap.getProperties().get("tilewidth").toString()),
+                Float.parseFloat(tiledMap.getProperties().get("height").toString())
+                        * Float.parseFloat(tiledMap.getProperties().get("tileheight").toString()));
+        java.util.Map<Integer, ExplorationSnapshot.ActorState> savedActors = new HashMap<>();
+        for (ExplorationSnapshot.ActorState saved : snapshot.actors) savedActors.put(saved.id, saved);
+        for (MapActor actor : actors) {
+            ExplorationSnapshot.ActorState saved = savedActors.get(actor.getId());
+            if (saved == null) {
+                actor.suppressContactUntilSeparation();
+                continue;
+            }
+            actor.setPosition(saved.x, saved.y);
+            actor.setVisible(saved.visible);
+            if (actor instanceof PortalActor) ((PortalActor) actor).setAnimation(saved.portalAnimation);
+            if (actor instanceof DummySprite) ((DummySprite) actor).blocking = saved.blocking;
+            if (saved != null && actor instanceof CharacterSprite) {
+                CharacterSprite sprite = (CharacterSprite) actor;
+                sprite.setDirection(CharacterSprite.AnimationDirections.valueOf(saved.facing));
+                sprite.hidden = saved.hidden;
+                sprite.inactive = saved.inactive;
+                if (saved.inactive) sprite.clearCollisionHeight();
+                else sprite.resetCollisionHeight();
+                sprite.setAnimation(saved.hidden ? CharacterSprite.AnimationTypes.Hidden : CharacterSprite.AnimationTypes.Idle);
+                if (sprite instanceof EnemySprite) ((EnemySprite) sprite).restoreMovement(saved);
+            }
+            actor.suppressContactUntilSeparation();
+        }
+        getPlayerSprite().setPosition(snapshot.playerX, snapshot.playerY);
+        getPlayerSprite().setDirection(CharacterSprite.AnimationDirections.valueOf(snapshot.facing));
+        positions.clear();
+        positions.add(new Vector2(snapshot.playerX, snapshot.playerY));
+        freezeAllEnemyBehaviors = false;
+        stop();
     }
 
     public void onBeginLeavingDungeon() {

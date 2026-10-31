@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import static forge.adventure.util.AdventureQuestController.QuestStatus.*;
 
 public class AdventureQuestController implements Serializable {
+    private static final long serialVersionUID = 9037330116470199350L;
 
     public static void trackQuest(AdventureQuestData quest) {
         for (AdventureQuestData q: Current.player().getQuests()){
@@ -213,6 +214,10 @@ public class AdventureQuestController implements Serializable {
             Current.player().removeQuest(toRemove);
             //Todo: Add quest to a separate "completed / failed" log?
         }
+    }
+
+    public boolean hasPendingDialogs() {
+        return activeDialog != null || !dialogQueue.isEmpty();
     }
 
     public boolean locationHasMoreQuests(){

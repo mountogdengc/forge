@@ -46,7 +46,7 @@ public class World implements Disposable, SaveFileContent {
     private PointOfInterestMap mapPoiIds;
     private BiomeTexture[] biomeTexture;
     private long seed;
-    private final Random random = new Random();
+    private Random random = new Random();
     private boolean worldDataLoaded = false;
     private Texture globalTexture = null;
     private final ArrayList<DrawingInformation> drawingInfoCache = new ArrayList<>(32);
@@ -55,6 +55,10 @@ public class World implements Disposable, SaveFileContent {
 
     public Random getRandom() {
         return random;
+    }
+
+    public void restoreRandom(Random restored) {
+        if (restored != null) random = restored;
     }
 
     static public int highestBiome(long biome) {

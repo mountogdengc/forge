@@ -157,6 +157,7 @@ public class RewardScene extends UIScene {
             this.collectionPool = null;
         }
         Forge.switchToLast();
+        WorldSave.requestExplorationCheckpoint("After collecting rewards");
     }
 
     public void reactivateInputs() {

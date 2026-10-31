@@ -27,6 +27,7 @@ import forge.adventure.util.Reward;
 import forge.adventure.util.pathfinding.MovementBehavior;
 import forge.adventure.util.pathfinding.NavigationVertex;
 import forge.adventure.util.pathfinding.ProgressableGraphPath;
+import forge.adventure.world.ExplorationSnapshot;
 import forge.card.CardRarity;
 import forge.card.CardRulesPredicates;
 import forge.deck.CardPool;
@@ -711,5 +712,39 @@ public class EnemySprite extends CharacterSprite implements Steerable<Vector2> {
 
     public boolean isFrozen() {
         return _freeze;
+    }
+
+    public void captureMovement(ExplorationSnapshot.ActorState state) {
+        state.frozen = _freeze;
+        state.aggro = aggro;
+        state.movementTimer = timer;
+        for (MovementBehavior movement : movementBehaviors) {
+            ExplorationSnapshot.MovementState saved = new ExplorationSnapshot.MovementState();
+            saved.destination = movement.destination;
+            saved.duration = movement.duration;
+            saved.hasTarget = movement.currentTargetVector != null;
+            if (saved.hasTarget) {
+                saved.targetX = movement.currentTargetVector.x;
+                saved.targetY = movement.currentTargetVector.y;
+            }
+            state.movements.add(saved);
+        }
+    }
+
+    public void restoreMovement(ExplorationSnapshot.ActorState state) {
+        _freeze = state.frozen;
+        aggro = state.aggro;
+        timer = state.movementTimer;
+        movementBehaviors.clear();
+        for (ExplorationSnapshot.MovementState saved : state.movements) {
+            MovementBehavior movement = new MovementBehavior();
+            movement.destination = saved.destination;
+            movement.duration = saved.duration;
+            if (saved.hasTarget) movement.currentTargetVector = new Vector2(saved.targetX, saved.targetY);
+            movementBehaviors.add(movement);
+        }
+        navPath = null; // Rebuild navigation from the restored location geometry.
+        targetVector = null;
+        initializeBaseMovementBehavior();
     }
 }

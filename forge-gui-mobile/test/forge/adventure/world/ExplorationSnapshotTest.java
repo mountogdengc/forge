@@ -52,6 +52,40 @@ public class ExplorationSnapshotTest {
     }
 
     @Test
+    public void interactiveObjectStateSurvivesRoundTrip() throws Exception {
+        ExplorationSnapshot state = interior();
+        state.actors.get(0).portalAnimation = "active";
+        state.actors.get(0).visible = false;
+        state.actors.get(0).blocking = false;
+        ExplorationSnapshot restored = ExplorationSnapshot.fromSaveData(state.toSaveData());
+        assertEquals(restored.actors.get(0).portalAnimation, "active");
+        assertFalse(restored.actors.get(0).visible);
+        assertFalse(restored.actors.get(0).blocking);
+    }
+
+    @Test
+    public void perVisitDefeatsRemainAbsentUntilLeavingTheMap() throws Exception {
+        ExplorationSnapshot state = interior();
+        state.actors.clear();
+        state.absentActorIds.add(60);
+        ExplorationSnapshot restored = ExplorationSnapshot.fromSaveData(state.toSaveData());
+        restored.validateActorIds(java.util.Set.of(60));
+        assertEquals(restored.absentActorIds, java.util.Set.of(60));
+    }
+
+    @Test
+    public void selectedShopAndSeedSurviveIndependentlyOfSubsequentRandomDraws() throws Exception {
+        ExplorationSnapshot state = interior();
+        state.actors.get(0).shopDataJson = "{name:Curios,restockPrice:4,rewards:[]}";
+        state.actors.get(0).shopSeed = 1729L;
+        state.actors.get(0).shopStockGenerated = true;
+        ExplorationSnapshot restored = ExplorationSnapshot.fromSaveData(state.toSaveData());
+        assertEquals(restored.actors.get(0).shopSeed, 1729L);
+        assertTrue(restored.actors.get(0).shopDataJson.contains("Curios"));
+        assertTrue(restored.actors.get(0).shopStockGenerated);
+    }
+
+    @Test
     public void overworldRoundTripDoesNotRequireAnInterior() throws Exception {
         ExplorationSnapshot state = new ExplorationSnapshot();
         assertFalse(ExplorationSnapshot.fromSaveData(state.toSaveData()).interior);

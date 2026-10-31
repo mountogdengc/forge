@@ -41,11 +41,27 @@ the assembled JAR and the resulting ZIP. Action dependencies are pinned to commi
 SHAs. The job has read-only repository permissions and does not need publishing
 credentials. Artifacts are retained for 14 days.
 
-Build success does not establish graphical compatibility. Initial player testing
-should use two Shandalar runs and one Shandalar Old Border run, named checkpoints,
-F5/F8, campaign switching, and a full exit/restart/Continue. Return to the overworld
-before saving or switching. Historical save import, New Game+, interior saving,
-and a full campaign remain separate acceptance items.
+Build success does not establish graphical compatibility. Bellwake 0.2.0 is the
+current chapter candidate. Start a fresh run with each offered starter and test
+both endings, practice skipped, a Keeper loss/rematch, and exit/restart/Continue.
+Stable exploration saves include interiors. Save requests wait until dialogue,
+rewards, battle resolution, and room transitions finish. Bellwake 0.1.0 saves are
+not migrated; campaign content versions must match exactly.
+
+For a local graphical regression using a disposable profile, first build the
+Adventure reactor and its exact dependency classpath:
+
+```powershell
+mvn -B -ntp -pl forge-gui-mobile-dev -am test dependency:build-classpath "-Dmdep.outputFile=target/smoke-classpath.txt"
+./tools/adventure/run_bellwake_smoke.ps1 -JavaHome $env:JAVA_HOME
+```
+
+The runner opens a native window, checks room/shop/enemy restoration and story
+interactions, exits, then starts a second process to check Continue. Evidence is
+written under `dist/bellwake-smoke/`. Optional `-Width` and `-Height` select a
+window size; `-StarterColor R` exercises Ember Crew and its practice reward. Victories are supplied by the fixture: this verifies state and
+reward sequencing, not match balance or an unassisted completion. Physical
+controller navigation and visual readability require a player check.
 
 The workflow is triggered by relevant pushes to `adventure/progression-foundation`.
 A manual dispatch is also declared; GitHub's web Run workflow control normally

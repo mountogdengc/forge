@@ -25,6 +25,9 @@ REQUIRED_CLASSES = (
     "forge/adventure/scene/CampaignSelectionScene.class",
     "forge/adventure/campaign/CampaignRegistry.class",
     "forge/adventure/world/PlaythroughRepository.class",
+    "forge/adventure/world/ExplorationSnapshot.class",
+    "forge/adventure/world/ExplorationSavePolicy.class",
+    "forge/adventure/campaign/CampaignContentValidator.class",
 )
 REQUIRED_RESOURCES = (
     "adventure/common/ui/campaign_select.json",
@@ -32,6 +35,8 @@ REQUIRED_RESOURCES = (
     "adventure/common/ui/campaign_select_portrait.json",
     "adventure/common/ui/campaign_saves_portrait.json",
     "skins/default/adv_bg_texture.jpg",
+    "adventure/Bellwake/campaign.json",
+    "adventure/Bellwake/config.json",
 )
 PROFILE = (
     "# Portable test profile. Never redirect this to a production profile.\n"
@@ -98,24 +103,29 @@ redirected for this process only. It does not import or copy your normal Forge p
 Do not edit these settings during initial testing. Deleting this folder deletes its
 TEST saves too. Copy test-profile/ before removing a test installation you wish to keep.
 
-FIRST TEST
-[ ] New Game shows the campaign picker before character creation.
-[ ] Create Shandalar Alpha. Reach the overworld and save a named checkpoint.
-[ ] Preview a different campaign and cancel. Alpha is unchanged.
-[ ] Create Shandalar Beta. Both Shandalar runs appear in Load Game.
-[ ] Create Old Border Gamma in Shandalar Old Border. All three runs remain available.
-[ ] Alternate between runs. Character, deck, gold, map and quests match each run.
-[ ] In each run, make a manual save, press F5 to quicksave, and trigger an autosave by
-    entering a location. Return to the overworld before loading another run.
-[ ] Press F8 on the overworld. It restores the CURRENT run's quicksave.
-[ ] Exit normally after Gamma, relaunch, and Continue. It restores Gamma.
+FIRST TEST -- BELLWAKE 0.2.0
+[ ] New Game shows the campaign picker. Choose The Last Fare of Bellwake.
+[ ] Choose Lantern Watch or Ember Crew. Check 20 life and a 40-card starting deck.
+[ ] Speak to Mira. Optionally practice with Tor and collect the first-win reward.
+[ ] Practice again: no duplicate card reward. Inspect the cards and try editing the deck.
+[ ] Make a named save and use F5/F8 inside the quay. Position, life and cards restore.
+[ ] Leave south and travel east to the tollhouse. Read its optional clue.
+[ ] Play a full Keeper match. Test a loss/rematch separately and recover at Mira's stove.
+[ ] Win, take the ticket, and save a named checkpoint before choosing an ending.
+[ ] Return to Mira and choose an ending. Collect its card, then finish the dialogue.
+[ ] Save inside, exit normally, relaunch, and Continue. The ending and location restore.
+[ ] Revisit both locations: no repeated Keeper fight or ending reward.
+[ ] Load the pre-choice checkpoint and test the other ending independently.
+[ ] Create another Bellwake run and confirm its saves, collection and progress stay separate.
 
 LIMITS
-Test build, not a stable release. Saving/switching inside interiors remains blocked.
-Campaign content versions must match exactly; there is no content-version migration.
-Historical-save import, New Game+ gameplay and a complete campaign need further testing.
-No Curse of Strahd campaign is included. Start with fresh characters for this test.
-Automated build/package checks are not a Windows graphical gameplay pass.
+This is a test candidate, not a stable release. Saving/loading works during stable
+exploration, including interiors. Finish battles, conversations, reward collection and
+transitions first. The brief result animation must settle before saving/loading.
+Campaign content versions must match exactly; Bellwake 0.1.0 saves are not migrated.
+Historical-save import, New Game+ gameplay and other campaigns need separate acceptance.
+Automated and assisted progression checks do not establish match balance or a full
+unassisted Windows playthrough. Keep normal player profiles separate from this package.
 
 REPORTING A PROBLEM
 Keep BUILD-INFO.json, logs/launcher.log and test-profile/forge.log. Record the campaign,
@@ -154,12 +164,21 @@ def test_evidence(root: Path) -> dict:
             for case in suite.findall("testcase"):
                 if not any(case.find(tag) is not None for tag in ("skipped", "error", "failure")):
                     classes.add(case.get("classname", ""))
-    required = {"forge.adventure.campaign.CampaignRegistryTest", "forge.adventure.world.PlaythroughRepositoryTest"}
+    required = {
+        "forge.adventure.campaign.CampaignRegistryTest",
+        "forge.adventure.world.PlaythroughRepositoryTest",
+        "forge.adventure.world.ExplorationSnapshotTest",
+        "forge.adventure.world.InteriorRestorationTest",
+        "forge.adventure.world.ExplorationSavePolicyTest",
+        "forge.adventure.data.BellwakeContentTest",
+        "forge.adventure.campaign.CampaignContentValidatorTest",
+    }
     if totals["tests"] == 0 or totals["failures"] or totals["errors"]:
         raise RuntimeError(f"Tests did not pass: {totals}")
     if not required.issubset(classes):
         raise RuntimeError(f"Missing passing campaign/save suites: {sorted(required - classes)}")
-    return {**totals, "report_files": len(reports), "scope": "forge-gui-mobile-dev and required reactor modules"}
+    return {**totals, "report_files": len(reports), "scope": "reported reactor modules",
+            "modules": sorted({report.relative_to(root).parts[0] for report in reports})}
 
 
 def check_jar(jar: Path) -> None:
@@ -250,6 +269,7 @@ def main() -> None:
         "java": (version.stderr + version.stdout).strip(), "tests": evidence,
         "jar_sha256": sha256(package / "forge-adventure-test.jar"),
         "profile": "test-profile", "cache": "test-cache",
+        "bellwake_content_version": json.loads((resources / "adventure/Bellwake/campaign.json").read_text(encoding="utf-8"))["version"],
         "windows_graphical_playtest": "Not performed by this packaging workflow",
     }
     (package / "BUILD-INFO.json").write_text(json.dumps(info, indent=2) + "\n", encoding="utf-8")

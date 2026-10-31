@@ -154,6 +154,10 @@ public class NewGameScene extends MenuScene {
             AdventureModes.Custom.setModes(custom);
         }
 
+        for (int i = modes.size - 1; i >= 0; i--) {
+            if (!previewConfig.getConfigData().allowsStarterMode(modes.get(i).name())) modes.removeIndex(i);
+        }
+        if (modes.isEmpty()) throw new IllegalArgumentException("This campaign has no supported starting deck mode.");
         String[] modeNames = new String[modes.size];
         int constructedIndex = -1;
 

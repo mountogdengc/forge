@@ -72,7 +72,7 @@ This is a descriptor example, not a complete playable content package. Supply `w
 
 IDs and versions use 1–128 letters, digits, periods, underscores, or hyphens, beginning with a letter or digit. An explicit campaign keeps its ID and version when its title or installation folder is renamed. Duplicate installed campaign IDs are reported as ambiguous and excluded, rather than selecting an arbitrary copy. Only one installed version per campaign ID is supported in this first implementation.
 
-Descriptor schema and save-envelope format are both version 1. Loads require an exact campaign-content version match. Dependency declarations, version migrations, preview artwork, arbitrary initialization hooks, and custom New Game+ carryover rules are extension work; they are not implied by the descriptor above.
+Descriptor schema and playthrough metadata remain version 1. New save envelopes use version 2 and carry a versioned exploration section; legacy version-1 overworld envelopes remain readable. Loads require an exact campaign-content version match. Dependency declarations, version migrations, preview artwork, arbitrary initialization hooks, and custom New Game+ carryover rules are extension work; they are not implied by the descriptor above.
 
 Shared Java startup code reads opening quests from the descriptor for both New Game and New Game+. Explicit campaigns receive no automatic Shandalar opening.
 
@@ -112,7 +112,7 @@ Load in this order:
 
 A JSON envelope supports listing snapshots without eagerly constructing every native preview image. The existing custom binary header layout and its explicit serialization identifier are retained.
 
-Saving and loading while inside a town, dungeon, or other interior map remain blocked. Return to the overworld before saving or switching playthroughs. This boundary protects rollback while exact interior restoration is not implemented; independent saves do not promise saving anywhere.
+The Bellwake polish implementation adds saving, loading, quickload, Continue, and playthrough switching during stable exploration inside locations. Interior capture and rollback use the same location snapshot: root POI, current/source room, player pose, stable map-object identities, per-visit defeated encounters, persistent map changes, shop identity/seed, and random state. Derived decorations are rebuilt. Restoration suppresses entry triggers, opening conversations, and town healing. Open battles, conversations, reward collection, queued room changes, and unresolved action callbacks block capture and loading; automatic checkpoints wait for a stable boundary. See Progression-Validation.md for actual coverage rather than assuming every inherited map or device is verified.
 
 ## Save integrity and version policy
 
@@ -134,6 +134,7 @@ Load Game includes **Import old saves**. It lists supported old numbered, auto, 
 | Live game capture, restore, Continue, and import | `world/WorldSave` |
 | Campaign picker and character preview | `scene/CampaignSelectionScene`, `NewGameScene` |
 | Run browser, named checkpoints, and New Game+ | `scene/SaveLoadScene`, `StartScene` |
+| Interior capture and reconstruction | `world/ExplorationSnapshot`, `world/ExplorationSavePolicy`, `MapStage`, `TileMapScene` |
 | Regression coverage | `test/forge/adventure/campaign/CampaignRegistryTest`, `test/forge/adventure/world/PlaythroughRepositoryTest` |
 
 Campaign content assessment can proceed alongside this work. The selectable-campaign foundation precedes committing substantial content to a single campaign. A full Curse of Strahd adaptation is not needed to prove the architecture.

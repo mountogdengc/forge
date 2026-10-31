@@ -794,6 +794,8 @@ public class Controls {
         }
 
         private void replaceLabel(TextraLabel newLabel) {
+            // A queued currency animation can outlive the screen that owned it.
+            if (placeholder.getStage() == null) return;
             newLabel.setName(label.getName());
             newLabel.style = placeholder.style;
             newLabel.setBounds(placeholder.getX(), placeholder.getY(), label.getWidth(), placeholder.getHeight());

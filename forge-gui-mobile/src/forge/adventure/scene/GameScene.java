@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.math.Vector2;
 import forge.Forge;
+import forge.adventure.world.WorldSave;
 import forge.adventure.data.BiomeData;
 import forge.adventure.pointofintrest.PointOfInterest;
 import forge.adventure.stage.MapStage;
@@ -64,6 +65,7 @@ public class GameScene extends HudScene {
     @Override
     public void act(float delta) {
         stage.act(delta);
+        WorldSave.processExplorationCheckpoint();
     }
 
     @Override
@@ -79,10 +81,8 @@ public class GameScene extends HudScene {
         Forge.clearTransitionScreen();
         Forge.clearCurrentScreen();
         super.enter();
-        // This causes the infinite load of POI if the two collision point is too close.
-        // IIRC This is used before and the player will start inside the POI.
-        // but we don't allow saving inside the POI anymore.
-        // WorldStage.getInstance().handlePointsOfInterestCollision();
+        // Interior saves resume through WorldSave.showRestoredExploration().
+        // Do not probe POI collisions here: nearby entry points can cause an entry loop.
     }
 
     public String getLocationColorID() {
