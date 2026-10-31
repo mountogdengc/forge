@@ -1,5 +1,9 @@
 # ⚔️  Forge: The Magic: The Gathering Rules Engine
 
+<p align="center">
+  <img src="quest-logo.png" alt="Quest: The Gathering" width="640" />
+</p>
+
 ## Adventure development fork
 
 This fork develops a single-player Adventure game using Forge's shared foundation:
