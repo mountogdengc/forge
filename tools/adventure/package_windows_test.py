@@ -249,8 +249,10 @@ def main() -> None:
         raise RuntimeError("Output exists; refusing to overwrite a package or test profile.")
     package.mkdir()
     shutil.copy2(jars[0], package / "forge-adventure-test.jar")
-    shutil.copytree(resources, package / "res")
-    shutil.copytree(jdk, package / "runtime")
+    # Windows does not need source timestamps/attributes to run these files.
+    # copy2's per-file metadata work is costly across the full card database.
+    shutil.copytree(resources, package / "res", copy_function=shutil.copyfile)
+    shutil.copytree(jdk, package / "runtime", copy_function=shutil.copyfile)
     shutil.copy2(license_file, package / "LICENSE.txt")
     for name in ("NOTICE", "NOTICE.txt", "CHANGES.txt"):
         if (root / name).is_file():

@@ -26,6 +26,7 @@ import java.util.Map;
 /** Disposable connected-room fixture: respawning enemy, two signed shops, rotating stock and anonymous exit. */
 final class InteriorFixtureSmoke {
     private int step;
+    private int lastPrintedStep = -1;
     private SaveSnapshot original;
     private Map<Integer, String> stock;
     private long expectedRandomDraw;
@@ -74,6 +75,11 @@ final class InteriorFixtureSmoke {
     }
 
     boolean tick() throws Exception {
+        if (step != lastPrintedStep) {
+            lastPrintedStep = step;
+            System.out.println("CONNECTED_FIXTURE_STEP=" + step + " scene=" + Forge.getCurrentScene().getClass().getSimpleName()
+                    + " policy=" + WorldSave.explorationSaveBlockReason());
+        }
         switch (step) {
             case 0:
                 if (TileMapScene.instance().hasPendingMapTransition()) return false;

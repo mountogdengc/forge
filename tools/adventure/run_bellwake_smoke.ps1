@@ -1,6 +1,7 @@
 param(
     [string]$JavaHome = $env:JAVA_HOME,
     [string]$OutputPath = "",
+    [string]$AssemblyJar = "",
     [ValidateRange(320, 3840)][int]$Width = 1280,
     [ValidateRange(240, 2160)][int]$Height = 720,
     [ValidateSet('W', 'R')][string]$StarterColor = 'W'
@@ -12,7 +13,7 @@ if (-not $JavaHome -or -not (Test-Path (Join-Path $JavaHome 'bin/javac.exe'))) {
     throw 'Set JAVA_HOME or pass -JavaHome with a Windows JDK (17 or newer).'
 }
 $dependencyFile = Join-Path $repository 'forge-gui-mobile-dev/target/smoke-classpath.txt'
-if (-not (Test-Path $dependencyFile)) {
+if (-not $AssemblyJar -and -not (Test-Path $dependencyFile)) {
     throw 'First run: mvn -B -ntp -pl forge-gui-mobile-dev -am test dependency:build-classpath -Dmdep.outputFile=target/smoke-classpath.txt'
 }
 if (Test-Path (Join-Path $repository 'forge-gui/forge.profile.properties')) {
@@ -30,7 +31,11 @@ New-Item -ItemType Directory -Force $classes, "$profile/roaming/Forge/preference
 $reactor = @('forge-core', 'forge-game', 'forge-ai', 'forge-gui', 'forge-gui-mobile', 'forge-gui-mobile-dev' | ForEach-Object {
     Join-Path $repository "$_/target/classes"
 }) -join ';'
-$classpath = ($reactor + ';' + (Get-Content $dependencyFile -Raw).Trim()).Replace('\', '/')
+if ($AssemblyJar) {
+    $classpath = (Resolve-Path -LiteralPath $AssemblyJar).Path.Replace('\', '/')
+} else {
+    $classpath = ($reactor + ';' + (Get-Content $dependencyFile -Raw).Trim()).Replace('\', '/')
+}
 $sources = Get-ChildItem (Join-Path $repository 'forge-gui-mobile-dev/test/forge/app') -Filter '*.java' | ForEach-Object {
     '"' + $_.FullName.Replace('\', '/') + '"'
 }

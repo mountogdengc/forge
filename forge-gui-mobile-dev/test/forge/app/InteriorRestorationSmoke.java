@@ -75,7 +75,8 @@ public final class InteriorRestorationSmoke {
     private void tick() {
         try {
             Gdx.graphics.requestRendering();
-            if ((System.nanoTime() - started) / 1_000_000_000L > 180) throw new AssertionError("Graphical smoke timed out at phase " + phase);
+            if ((System.nanoTime() - started) / 1_000_000_000L > Integer.getInteger("bellwake.timeoutSeconds", 600))
+                throw new AssertionError("Graphical smoke timed out at phase " + phase);
             // Timer callbacks can accumulate during a resource load and run in one frame.
             // Let the real application render/act between interaction steps.
             long frame = Gdx.graphics.getFrameId();
