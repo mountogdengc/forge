@@ -67,11 +67,21 @@ fixtures are implemented on `codex/bellwake-chapter-polish`. See
 The original task checklists below remain the acceptance specification; unchecked
 multi-part tasks are not a claim that no code exists.
 
-Automated/native checks and a local candidate package are being prepared.
+Automated/native checks passed and the local Windows candidate ZIP is built and integrity-checked.
 Acceptance remains open for played matches and both starters, deliberate
 loss/rematch, physical controller navigation, measured duration, complete display
 readability, and the stronger quay art/ambient pass. Supplied victories do not
 satisfy those gates. This is a candidate, not a fully accepted polished release.
+
+| Task | Implementation result / remaining gate |
+| --- | --- |
+| 1 | Snapshot model, codec and explicit envelope versions complete. |
+| 2 | Interior/room restoration and rollback implemented; native connected-room, shops and per-visit enemies verified. Wider inherited-campaign acceptance remains separate. |
+| 3 | Stable interior save/load/Continue and deferred checkpoints implemented and verified, including failed-load recovery and in-flight action guards. |
+| 4 | Briefing, clue, ticket, interaction endings and persistent consequences implemented; both branches passed assisted interactions. Player walkthrough remains open. |
+| 5 | Two curated starts, optional one-time upgrade and free recovery implemented; actual match balance and deliberate loss/rematch remain open. |
+| 6 | Content diagnostics, orientation text and completed journal implemented; final art/ambient, physical focus and presentation acceptance remain open. |
+| 7 | Full reactor and final affected build passed; local Windows ZIP and packaged-runtime Continue passed. Human gameplay acceptance remains open. |
 
 ## Task 1: Define a versioned exploration snapshot
 

@@ -62,6 +62,89 @@ The full reactor compiled before that small compatibility fix; the final affecte
 clean verify below rebuilds it. Other modules were unchanged. Complete inherited
 campaign NG+ gameplay remains unverified.
 
+### Windows assembly gate
+
+The committed application source `6747fa4da56e340e8b6031f5000f994c536ac293`
+completed the final affected build with **BUILD SUCCESS** at
+`2026-10-31T15:38:21-06:00` in 12 minutes 53 seconds. All seven affected reactor
+modules succeeded, including **87 passing cases and no skips** (70 Adventure,
+14 GUI, 3 game cases). The Windows launcher and the
+`2.0.16-GITWindowsTest-jar-with-dependencies.jar` were produced. Command:
+
+```powershell
+mvn -U -B -ntp -pl forge-gui-mobile-dev -am clean verify dependency:build-classpath `
+  "-Drevision=2.0.16-GITWindowsTest" "-Dmdep.outputFile=target/smoke-classpath.txt"
+```
+
+The session also supplied a workspace Maven dependency cache. This rebuild
+includes the final New Game+ context fix. The later packaging/test-only commit
+`df6180c96bfb09a565bd6fea01b5f3d808e96016` adds an assembled-JAR smoke option,
+step diagnostics, a bounded ten-minute comprehensive test budget, and faster
+byte-only Windows copying. The application source is identical to the assembly
+commit. Metadata-preserving copying of 20 card scripts took 0.367 seconds;
+content-only copying took 0.017 seconds. All package content hashes and archive
+integrity checks remain enabled.
+
+Earlier portrait attempts reached the connected-room checks and then the first
+red-starter ending, but exceeded three-/five-minute global test deadlines while
+asset loading and packaging competed for I/O. They remain failed attempts, not
+passing portrait acceptance. The final assembled-JAR run is recorded separately.
+
+### Assembled-JAR native gate
+
+`tools/adventure/run_bellwake_smoke.ps1 -JavaHome "C:/Program Files/Java/jdk-26"`
+with `-AssemblyJar forge-gui-mobile-dev/target/forge-gui-mobile-dev-2.0.16-GITWindowsTest-jar-with-dependencies.jar`
+and `-Width 720 -Height 1280 -StarterColor R` passed both full first-process
+markers and `BELLWAKE_FRESH_CONTINUE_PASS`, exit 0. Evidence:
+`dist/bellwake-smoke/20261031-155452-fb272e/`. This uses the merged distribution
+JAR, matching checkout resources, and an isolated profile. It exercises Ember
+Crew, both copies of the Lightning Strike preparation reward, both endings,
+repeat interactions, connected-room/shop restoration, and the actual Continue
+menu action. Expected life was deliberately reduced to **17** before exit;
+Continue retained **17**, so town healing was not replayed. The source-context
+New Game+ probe and reloading its source checkpoint passed as well.
+
+The 720x1280 quay screenshot was inspected. The short landscape map leaves
+unused vertical space in portrait. This functional pass is not approval of the
+portrait presentation; Windows landscape remains the first acceptance target.
+Wins were supplied. No actual match, balance, physical-controller or unassisted
+chapter acceptance is inferred from these passes.
+
+### Local Windows candidate
+
+Final archive:
+`dist/adventure-windows/ready/Forge-Adventure-Windows-Test-6747fa4da56e.zip`
+(**476,490,133 bytes**, approximately 454 MiB). Packaging exited 0 after JAR
+validation, required class/resource/native-library checks, full content checksums,
+and ZIP CRC validation. SHA-256:
+
+```text
+c417bc4d7b61b6f57ddbf56da8aaca8646a35cf224d3b07c80fd2da93551f75f
+```
+
+`BUILD-INFO.json` records application source `6747fa4da56e340e8b6031f5000f994c536ac293`,
+Bellwake content `0.2.0`, Windows x64, the copied Oracle JDK 26, and the final
+available Surefire totals (1,415 cases, zero failures/errors, six existing skips).
+The JAR SHA-256 is
+`d63e21139095faec06d4f12c1083c3bf27f166a2bebff526ccdb230e0ca33236`.
+The packaged test profile remains fresh; native fixtures use their own disposable
+profiles. Earlier incomplete package directories were retained separately and
+are not deliverables; use the `ready/` archive above.
+
+A further process using **the copied runtime executable and packaged JAR**
+passed the actual Continue menu action and all fresh-load assertions, exit 0
+(`.bellwake-bundled-runtime.log`). It used the previously verified disposable
+Ember Crew profile and matching checkout resources, preserving the deliverable's
+fresh profile and content hashes. This is a packaged-binary/runtime check, not a
+played match or approval of every launcher/input/presentation path.
+
+The candidate is ready for Windows player testing. Remaining acceptance is the
+actual practice/Keeper matches with both starters, practice skipped, deliberate
+loss/rematch, physical controller focus, dialogue/card readability, measured
+chapter duration/confusion, stronger quay art and ambient treatment, and the
+portrait space issue above. Bellwake 0.1.0 runs are not migrated. No completed
+polished-release acceptance or unassisted finish is claimed.
+
 ## Build and save identity
 
 The foundation baseline is upstream commit `4fcb76673693cb21fd0e31e50b72774fc02053a1`, whose parent POM specifies `2.0.16-SNAPSHOT` and Java release 17. The working branch is `adventure/progression-foundation`. These identify the starting point, not a tested finished build.

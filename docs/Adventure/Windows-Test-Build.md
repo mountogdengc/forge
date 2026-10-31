@@ -56,6 +56,11 @@ mvn -B -ntp -pl forge-gui-mobile-dev -am test dependency:build-classpath "-Dmdep
 ./tools/adventure/run_bellwake_smoke.ps1 -JavaHome $env:JAVA_HOME
 ```
 
+Pass `-AssemblyJar path/to/the-jar-with-dependencies.jar` to test the assembled
+binary rather than reactor class directories. The harness still uses this
+checkout's matching resources and its disposable profile. Its ten-minute process
+budget includes initial card/asset loading; state assertions still fail immediately.
+
 The runner opens a native window, checks room/shop/enemy restoration and story
 interactions, exits, then starts a second process to check Continue. Evidence is
 written under `dist/bellwake-smoke/`. Optional `-Width` and `-Height` select a

@@ -26,6 +26,15 @@ The implementation plan is [Bellwake chapter polish](../superpowers/plans/2026-1
 
 The explicit graphical runner is `tools/adventure/run_bellwake_smoke.ps1`. It compiles the desktop test fixtures, starts a native libGDX client with a disposable profile, and retains its log and screenshot. It checks restoration, rollback, connected rooms, respawning encounters, shops, and assisted chapter interactions. It supplies victories; it is not a played match or balance test. See the validation guide for invocation and actual results.
 
+The local Windows candidate is
+`dist/adventure-windows/ready/Forge-Adventure-Windows-Test-6747fa4da56e.zip`
+(about 454 MiB). Extract the entire ZIP to a new writable folder and run
+`Start-Adventure-Test.cmd`. Java and a fresh isolated test profile are included.
+Its archive integrity checks passed. Both starter/resource checks, assisted story
+branches, and fresh-process Continue are recorded in the validation guide. Actual
+matches, controller testing, measured pacing, and the final art/ambient pass remain
+acceptance work; this is a test candidate.
+
 ## Historical 0.1.0 record
 
 The following records the earlier data-only chapter, not the behavior or verification of 0.2.0.
