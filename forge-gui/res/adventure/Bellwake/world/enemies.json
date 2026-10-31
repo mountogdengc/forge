@@ -1,0 +1,8 @@
+[
+  {"name":"Reed Rat", "sprite":"sprites/enemy/beast/smallmammals/wildrat.atlas", "deck":["decks/standard/ratswarm.dck"],
+   "life":5, "speed":11, "spawnRate":1, "difficulty":0.1, "colors":"B", "questTags":["Rat"], "rewards":[{"type":"gold","count":5}]},
+  {"name":"Keeper of Fares", "sprite":"sprites/enemy/undead/skeleton.atlas", "deck":["decks/last-fare.dck"],
+   "boss":true, "ai":"Cautious", "life":12, "speed":16, "spawnRate":0, "difficulty":0.2, "colors":"B",
+   "bossIntro":"Five got off. Six fares are due. Which one are you paying?", "bossInsult":"I'll keep her ticket dry. I always have.",
+   "questTags":["TollKeeper"], "rewards":[{"type":"gold","count":12}]}
+]
