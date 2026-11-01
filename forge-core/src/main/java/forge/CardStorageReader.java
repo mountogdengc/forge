@@ -29,6 +29,7 @@ import org.apache.commons.lang3.time.StopWatch;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.BiFunction;
@@ -76,8 +77,16 @@ public class CardStorageReader {
     private final transient Charset charset;
 
     private final boolean loadCardsLazily;
+    private String nameIndexCacheStatus = "disabled";
+    private int nameIndexParseCount;
+    private boolean nameIndexBuildComplete = true;
 
     public CardStorageReader(final String cardDataDir, final CardStorageReader.ProgressObserver progressObserver, boolean loadCardsLazily) {
+        this(cardDataDir, progressObserver, loadCardsLazily, null);
+    }
+
+    public CardStorageReader(final String cardDataDir, final CardStorageReader.ProgressObserver progressObserver,
+                             boolean loadCardsLazily, Path indexCacheDirectory) {
         this.progressObserver = progressObserver != null ? progressObserver : CardStorageReader.ProgressObserver.emptyObserver;
         this.cardsfolder = new File(cardDataDir);
 
@@ -107,14 +116,63 @@ public class CardStorageReader {
         this.charset = Charset.forName(CardStorageReader.DEFAULT_CHARSET_NAME);
 
         if (loadCardsLazily) {
-            zipEntriesByCardName = zip == null ? Collections.emptyNavigableMap()
-                    : buildCardNameIndex(getZipEntries(), this::loadCard);
-            cardFilesByCardName = buildCardNameIndex(collectCardFiles(new ArrayList<>(), cardsfolder), this::loadCard);
+            final List<ZipEntry> archiveSources = zip == null ? Collections.emptyList() : getZipEntries();
+            final List<File> looseSources = collectCardFiles(new ArrayList<>(), cardsfolder);
+            byte[] fingerprint = null;
+            if (indexCacheDirectory != null) {
+                nameIndexCacheStatus = "unavailable";
+                try {
+                    java.nio.file.Files.createDirectories(indexCacheDirectory);
+                    fingerprint = CardNameIndexCache.fingerprint(cardsfolder, looseSources, zip);
+                } catch (IOException | RuntimeException unavailable) { /* disposable cache */ }
+            }
+            CardNameIndexCache.Index cached = fingerprint == null ? null
+                    : CardNameIndexCache.read(indexCacheDirectory, fingerprint, archiveSources.size(), looseSources.size());
+            if (cached != null) {
+                zipEntriesByCardName = restoreIndex(cached.archive, archiveSources);
+                cardFilesByCardName = restoreIndex(cached.loose, looseSources);
+                nameIndexCacheStatus = "hit";
+            } else {
+                zipEntriesByCardName = buildCardNameIndex(archiveSources, this::loadCard);
+                cardFilesByCardName = buildCardNameIndex(looseSources, this::loadCard);
+                if (fingerprint != null) {
+                    nameIndexCacheStatus = nameIndexBuildComplete ? "rebuilt" : "incomplete";
+                    try {
+                        // Failed reads can recover without changing inventory metadata (for example a released lock).
+                        // Persist only complete builds whose scripts also stayed unchanged during the cold parse.
+                        if (nameIndexBuildComplete && Arrays.equals(fingerprint, CardNameIndexCache.fingerprint(cardsfolder, looseSources, zip))) {
+                            CardNameIndexCache.write(indexCacheDirectory, fingerprint, new CardNameIndexCache.Index(
+                                    sourceOrdinals(zipEntriesByCardName, archiveSources), sourceOrdinals(cardFilesByCardName, looseSources)));
+                        }
+                    } catch (IOException | RuntimeException unavailable) { /* disposable cache */ }
+                }
+            }
+            System.out.printf("Lazy card name index cache: %s, %d names, %d scripts parsed%n",
+                    nameIndexCacheStatus, zipEntriesByCardName.size() + cardFilesByCardName.size(), nameIndexParseCount);
         } else {
             zipEntriesByCardName = Collections.emptyNavigableMap();
             cardFilesByCardName = Collections.emptyNavigableMap();
         }
     } // CardReader()
+
+    public String getNameIndexCacheStatus() { return nameIndexCacheStatus; }
+
+    /** Number of scripts parsed to build the name index, excluding requested card loads. */
+    public int getNameIndexParseCount() { return nameIndexParseCount; }
+
+    private static <T> NavigableMap<String, T> restoreIndex(Map<String, Integer> index, List<T> sources) {
+        NavigableMap<String, T> result = new TreeMap<>();
+        for (Map.Entry<String, Integer> entry : index.entrySet()) result.put(entry.getKey(), sources.get(entry.getValue()));
+        return result;
+    }
+
+    private static <T> NavigableMap<String, Integer> sourceOrdinals(Map<String, T> index, List<T> sources) {
+        Map<T, Integer> positions = new IdentityHashMap<>();
+        for (int i = 0; i < sources.size(); i++) positions.put(sources.get(i), i);
+        NavigableMap<String, Integer> result = new TreeMap<>();
+        for (Map.Entry<String, T> entry : index.entrySet()) result.put(entry.getKey(), positions.get(entry.getValue()));
+        return result;
+    }
 
     boolean isLoadingCardsLazily() {
         return loadCardsLazily;
@@ -199,13 +257,16 @@ public class CardStorageReader {
         final Map<String, T> placeholderNames = new TreeMap<>();
         final CardRules.Reader rulesReader = new CardRules.Reader();
         for (T source : sources) {
+            nameIndexParseCount++;
             final CardRules rules;
             try {
                 rules = loader.apply(rulesReader, source);
             } catch (RuntimeException e) {
+                nameIndexBuildComplete = false;
                 continue; // a script that cannot be parsed cannot satisfy a lookup either
             }
             if (rules == null) {
+                nameIndexBuildComplete = false;
                 continue;
             }
             for (String name : primaryNamesOf(rules)) {
@@ -279,7 +340,7 @@ public class CardStorageReader {
             sw.start();
             executeLoadTask(result, taskFiles, cdlFiles);
             sw.stop();
-            final long timeOnParse = sw.getTime(TimeUnit.SECONDS);
+            final long timeOnParse = sw.getTime(TimeUnit.MILLISECONDS);
             System.out.printf("Read cards: %s files in %d ms (%d parts) %s%n", allFiles.size(), timeOnParse, taskFiles.size(), useThreadPool ? "using thread pool" : "in same thread");
         }
 
@@ -293,7 +354,7 @@ public class CardStorageReader {
             sw.start();
             executeLoadTask(result, taskZip, cdlZip);
             sw.stop();
-            final long timeOnParse = sw.getTime(TimeUnit.SECONDS);
+            final long timeOnParse = sw.getTime(TimeUnit.MILLISECONDS);
             System.out.printf("Read cards: %s archived files in %d ms (%d parts) %s%n", this.zip.size(), timeOnParse, taskZip.size(), useThreadPool ? "using thread pool" : "in same thread");
         }
 

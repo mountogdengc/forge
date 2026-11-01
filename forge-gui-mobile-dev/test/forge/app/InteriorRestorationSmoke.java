@@ -50,14 +50,18 @@ public final class InteriorRestorationSmoke {
     private InteriorFixtureSmoke interiorFixture;
     private int helpTopic;
     private boolean keptOpeningHand;
+    private boolean deferredMatchChecked;
 
     public static void main(String[] args) {
         if (!Boolean.getBoolean("bellwake.isolatedProfile")) throw new IllegalStateException("An isolated profile is required.");
         Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
         config.setTitle("Bellwake interior restoration smoke");
         config.setWindowedMode(Integer.getInteger("bellwake.width", 1280), Integer.getInteger("bellwake.height", 720));
-        config.setInitialVisible(true);
+        config.setInitialVisible(!Boolean.getBoolean("bellwake.hidden"));
         config.setForegroundFPS(60);
+        config.setIdleFPS(60);
+        config.setPauseWhenLostFocus(false);
+        config.setPauseWhenMinimized(false);
         config.disableAudio(true);
         InteriorRestorationSmoke smoke = new InteriorRestorationSmoke();
         config.setWindowListener(new Lwjgl3WindowAdapter() {
@@ -70,6 +74,14 @@ public final class InteriorRestorationSmoke {
         String assetsDir = java.nio.file.Files.isDirectory(java.nio.file.Path.of("res")) ? "./" : "../forge-gui/";
         ApplicationListener game = Forge.getApp(null, new Lwjgl3Clipboard(), new Main.DesktopAdapter(assetsDir + "switch_orientation.ini") {
             @Override public String getVersionString() { return "2.0.16-GITBellwakeSmoke"; }
+            @Override public boolean isConnectedToInternet() { return false; }
+            @Override public boolean isConnectedToWifi() { return false; }
+            @Override public void setMouseConfined(boolean confined) {
+                if (!Boolean.getBoolean("bellwake.hidden")) super.setMouseConfined(confined);
+            }
+            @Override public void preventSystemSleep(boolean prevent) {
+                if (!Boolean.getBoolean("bellwake.hidden")) super.preventSystemSleep(prevent);
+            }
         }, assetsDir, Integer.getInteger("bellwake.height", 720) > Integer.getInteger("bellwake.width", 1280), false, 0);
         Forge.selector = "Adventure";
         new Lwjgl3Application(game, config);
@@ -77,6 +89,13 @@ public final class InteriorRestorationSmoke {
 
     private void tick() {
         try {
+            if (Boolean.getBoolean("bellwake.hidden")) {
+                long handle = ((com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics) Gdx.graphics).getWindow().getWindowHandle();
+                require(org.lwjgl.glfw.GLFW.glfwGetWindowAttrib(handle, org.lwjgl.glfw.GLFW.GLFW_VISIBLE) == org.lwjgl.glfw.GLFW.GLFW_FALSE,
+                        "Hidden smoke window became visible");
+                require(org.lwjgl.glfw.GLFW.glfwGetWindowAttrib(handle, org.lwjgl.glfw.GLFW.GLFW_FOCUSED) == org.lwjgl.glfw.GLFW.GLFW_FALSE,
+                        "Hidden smoke window acquired focus");
+            }
             Gdx.graphics.requestRendering();
             if ((System.nanoTime() - started) / 1_000_000_000L > Integer.getInteger("bellwake.timeoutSeconds", 600))
                 throw new AssertionError("Graphical smoke timed out at phase " + phase);
@@ -102,6 +121,7 @@ public final class InteriorRestorationSmoke {
             if (++frames < 2 || Forge.getTransitionScreen() != null) return;
             frames = 0;
             if (phase == 1) {
+                if (Boolean.getBoolean("bellwake.requireDeferred")) verifyDeferredCatalog("menu");
                 if (Boolean.getBoolean("bellwake.packagedProbe") && !Boolean.getBoolean("bellwake.resume")) {
                     require(CampaignManager.current() != null && CampaignManager.current().getId().equals("fork.bellwake"),
                             "Portable build did not default to Bellwake");
@@ -138,12 +158,13 @@ public final class InteriorRestorationSmoke {
                 if (Boolean.getBoolean("bellwake.presentationProbe")) verifyPresentationAudio();
                 WorldSave.beginPlaythrough(campaign, "Interior smoke", "Smoke");
                 Config config = Config.instance();
-                WorldSave.generateNewWorld("Smoke", true, 0, 0, ColorSet.fromNames("W"),
+                WorldSave.generateNewWorld("Smoke", true, 0, 0, ColorSet.fromNames(System.getProperty("bellwake.starter", "W")),
                         config.getConfigData().difficulties[0], AdventureModes.Constructed, 0, null, 0);
                 require(WorldSave.saveInitialSnapshot(), WorldSave.getLastError());
                 Forge.clearTransitionScreen();
                 Forge.switchScene(GameScene.instance());
                 enter("Spawn");
+                if (Boolean.getBoolean("bellwake.requireDeferred")) verifyDeferredCatalog("starter");
                 phase = 2;
             } else if (phase == 2) {
                 if (Boolean.getBoolean("bellwake.presentationProbe")) verifyPresentationGeometry();
@@ -200,6 +221,11 @@ public final class InteriorRestorationSmoke {
                 enter("Bellwake Tollhouse");
                 phase = 4;
             } else if (phase == 120) {
+                if (Boolean.getBoolean("bellwake.requireDeferred") && Forge.getCurrentScreen() instanceof forge.screens.match.MatchScreen
+                        && !deferredMatchChecked) {
+                    verifyDeferredCatalog("first duel");
+                    deferredMatchChecked = true;
+                }
                 if (!(Forge.getCurrentScreen() instanceof forge.screens.match.MatchScreen)) return;
                 var log = forge.screens.match.MatchController.instance.getGameView().getGameLog();
                 var detailed = (java.util.List<?>) log.getClass().getMethod("getPostGameEntries").invoke(log);
@@ -372,6 +398,12 @@ public final class InteriorRestorationSmoke {
             System.err.println("BELLWAKE_INTERIOR_SMOKE_FAIL phase=" + phase);
             System.exit(1);
         }
+    }
+
+    private static void verifyDeferredCatalog(String stage) {
+        int loaded = forge.model.FModel.getMagicDb().getCommonCards().getLoadedUniqueCards().size();
+        require(loaded < 500, "Bellwake " + stage + " unexpectedly materialized the full catalog: " + loaded);
+        System.out.println("BELLWAKE_DEFERRED_CATALOG_PASS: " + stage + " loaded " + loaded + " unique cards");
     }
 
     private static void enter(String name) {

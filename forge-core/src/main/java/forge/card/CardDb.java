@@ -363,6 +363,17 @@ public final class CardDb implements ICardDatabase, IDeckGenPool {
         }
     }
 
+    private Runnable fullCatalogLoader;
+
+    /** Bound to the owning StaticData; ordinary collection APIs always describe the complete catalog. */
+    public void setFullCatalogLoader(Runnable loader) {
+        fullCatalogLoader = loader;
+    }
+
+    private void ensureFullCatalog() {
+        if (fullCatalogLoader != null) fullCatalogLoader.run();
+    }
+
     public CardDb(Map<String, CardRules> rules, CardEdition.Collection editions0, Set<String> filteredCards) {
         this.filtered = filteredCards;
         this.rulesByPrimaryName = rules;
@@ -668,16 +679,23 @@ public final class CardDb implements ICardDatabase, IDeckGenPool {
     }
 
     public void addUnassignedCardPrints(boolean enableUnknownCards) {
-        CardEdition upcomingSet = null;
+        addUnassignedCardPrints(enableUnknownCards, getUpcomingSet());
+    }
+
+    private CardEdition getUpcomingSet() {
         Date today = new Date();
         for (CardEdition e : editions.getOrderedEditions()) {
             boolean coreOrExpSet = e.getType() == CardEdition.Type.CORE || e.getType() == CardEdition.Type.EXPANSION;
             if (coreOrExpSet && e.getDate().after(today)) {
-                upcomingSet = e;
-                break;
+                return e;
             }
         }
-        addUnassignedCardPrints(enableUnknownCards, upcomingSet);
+        return null;
+    }
+
+    /** Called after a named lookup searched all editions, including saved UNKNOWN printings. */
+    public void addUnassignedCardPrint(CardRules rules, boolean enableUnknownCards) {
+        addUnassignedCardPrint(rules, enableUnknownCards, getUpcomingSet());
     }
 
     private void addUnassignedCardPrints(boolean enableUnknownCards, CardEdition upcomingSet) {
@@ -686,21 +704,25 @@ public final class CardDb implements ICardDatabase, IDeckGenPool {
         }
 
         for (CardRules cr : rulesByPrimaryName.values()) {
-            if (!contains(cr.getName())) {
-                if (!cr.isCustom()) {
-                    if (upcomingSet != null && cr.getPath() != null && cr.getPath().contains("upcoming/")) {
-                        addCard(new PaperCard(cr, upcomingSet.getCode(), CardRarity.Unknown));
-                        reIndex(cr);
-                    } else if (enableUnknownCards && !this.filtered.contains(cr.getName())) {
-                        System.err.println("The card " + cr.getName() + " was not assigned to any set. Adding it to UNKNOWN set... to fix see res/editions/ folder. ");
-                        addCard(new PaperCard(cr, CardEdition.UNKNOWN_CODE, CardRarity.Special));
-                        reIndex(cr);
-                    }
-                } else {
-                    System.err.println("The custom card " + cr.getName() + " was not assigned to any set. Adding it to custom USER set, and will try to load custom art from USER edition.");
-                    addCard(new PaperCard(cr, "USER", CardRarity.Special));
+            addUnassignedCardPrint(cr, enableUnknownCards, upcomingSet);
+        }
+    }
+
+    private void addUnassignedCardPrint(CardRules cr, boolean enableUnknownCards, CardEdition upcomingSet) {
+        if (!contains(cr.getName())) {
+            if (!cr.isCustom()) {
+                if (upcomingSet != null && cr.getPath() != null && cr.getPath().contains("upcoming/")) {
+                    addCard(new PaperCard(cr, upcomingSet.getCode(), CardRarity.Unknown));
+                    reIndex(cr);
+                } else if (enableUnknownCards && !this.filtered.contains(cr.getName())) {
+                    System.err.println("The card " + cr.getName() + " was not assigned to any set. Adding it to UNKNOWN set... to fix see res/editions/ folder. ");
+                    addCard(new PaperCard(cr, CardEdition.UNKNOWN_CODE, CardRarity.Special));
                     reIndex(cr);
                 }
+            } else {
+                System.err.println("The custom card " + cr.getName() + " was not assigned to any set. Adding it to custom USER set, and will try to load custom art from USER edition.");
+                addCard(new PaperCard(cr, "USER", CardRarity.Special));
+                reIndex(cr);
             }
         }
     }
@@ -1268,30 +1290,45 @@ public final class CardDb implements ICardDatabase, IDeckGenPool {
 
     @Override
     public Collection<PaperCard> getAllCards() {
+        ensureFullCatalog();
         return Collections.unmodifiableCollection(allCardsByRules.values());
     }
 
     // returns a list of all cards from their respective latest (or preferred) editions
     @Override
     public Collection<PaperCard> getUniqueCards() {
+        ensureFullCatalog();
         return uniqueCardsByRules.values();
     }
     @Override
     public Collection<ICardFace> getAllFaces() {
+        ensureFullCatalog();
         return facesByName.values();
     }
 
     @Override
     public Stream<PaperCard> streamAllCards() {
+        ensureFullCatalog();
         return allCardsByRules.values().stream();
     }
     @Override
     public Stream<PaperCard> streamUniqueCards() {
+        ensureFullCatalog();
         return uniqueCardsByRules.values().stream();
     }
     @Override
     public Stream<ICardFace> streamAllFaces() {
+        ensureFullCatalog();
         return facesByName.values().stream();
+    }
+
+    /** Snapshot for a caller that explicitly prepared a subset, such as a campaign's allowed editions. */
+    public Collection<PaperCard> getLoadedAllCards() {
+        return Collections.unmodifiableList(new ArrayList<>(allCardsByRules.values()));
+    }
+
+    public Collection<PaperCard> getLoadedUniqueCards() {
+        return Collections.unmodifiableList(new ArrayList<>(uniqueCardsByRules.values()));
     }
 
     public static final Predicate<PaperCard> EDITION_NON_PROMO = paperCard -> {

@@ -231,9 +231,13 @@ public final class FModel {
         // Custom cards and tokens always load eagerly: StaticData.attemptToLoadCard only
         // consults the main card reader, so a lazy custom reader would never be read.
         // NOTE: UNLESS PROVEN to work on mobile version with no hitches or bugs, don't remove this check.
-        final boolean loadCardsLazily = GuiBase.isMobile() ? false : getPreferences().getPrefBoolean(FPref.LOAD_CARD_SCRIPTS_LAZILY);
+        final boolean loadCardsLazily = CardLoadingPolicy.useLazyScripts(GuiBase.isMobile(),
+                GuiBase.getInterface().isLibgdxPort(), getPreferences().getPref(FPref.UI_SELECTOR_MODE),
+                getPreferences().getPrefBoolean(FPref.LOAD_CARD_SCRIPTS_LAZILY),
+                Boolean.getBoolean("forge.cards.forceEager"));
+        System.out.println("Card scripts: " + (loadCardsLazily ? "deferred" : "eager"));
         reader = new CardStorageReader(ForgeConstants.CARD_DATA_DIR, progressBarBridge,
-                loadCardsLazily);
+                loadCardsLazily, java.nio.file.Path.of(ForgeConstants.CACHE_DIR, "card-index", "common"));
         tokenReader = new CardStorageReader(ForgeConstants.TOKEN_DATA_DIR, progressBarBridge,
                 false);
 

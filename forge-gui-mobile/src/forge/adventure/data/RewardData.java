@@ -175,7 +175,6 @@ public class RewardData implements Serializable {
         Random rewardRandom = useSeedlessRandom ? new Random() : WorldSave.getCurrentSave().getWorld().getRandom();
         //Keep using same generation method for shop rewards, but fully randomize loot drops by not using the instance pre-seeded by the map
 
-        getAllCards();
         Array<Reward> ret=new Array<>();
 
         if (probability == 0 || rewardRandom.nextFloat() <= probability) {
@@ -203,7 +202,7 @@ public class RewardData implements Serializable {
                         } else if (r.sourceDeck != null && !r.sourceDeck.isEmpty() ) {
                             pool.addAll(CardUtil.getDeck(r.sourceDeck, false, false, "", false, false).getAllCardsInASinglePool().toFlatList());
                         } else {
-                            pool.addAll(CardUtil.getPredicateResult(allCards, r));
+                            pool.addAll(CardUtil.getPredicateResult(getAllCards(), r));
                         }
                     }
                     ArrayList<PaperCard> finalPool = new ArrayList<>(pool);
@@ -255,6 +254,7 @@ public class RewardData implements Serializable {
                                 ret.add(new Reward(card, isNoSell));
                         }
                     } else {
+                        getAllCards();
                         for (PaperCard card : CardUtil.generateCards(isForEnemy ? allEnemyCards:allCards,this, count + addedCount, rewardRandom)) {
                             if (card != null)
                                 ret.add(new Reward(card, isNoSell));

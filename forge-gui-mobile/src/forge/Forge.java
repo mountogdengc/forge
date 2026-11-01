@@ -443,7 +443,7 @@ public class Forge implements ApplicationListener {
     private static void loadAdventureResources(boolean startScene) {
         try {
             Config.instance().loadResources();
-            SpellSmithScene.instance().loadEditions();
+            // The smith prepares its acquisition pool in enter(); visiting the menu needs no full catalog.
             SoundSystem.instance.stopBackgroundMusic();
             MusicPlaylist.invalidateMusicPlaylist();
             if (startScene) {

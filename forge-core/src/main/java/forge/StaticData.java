@@ -168,6 +168,9 @@ public class StaticData {
                 }
             }
         }
+        // Install only after construction: initialization itself must not force the lazy catalog.
+        commonCards.setFullCatalogLoader(this::ensureAllCardsLoaded);
+        variantCards.setFullCatalogLoader(this::ensureAllCardsLoaded);
     }
 
     public static StaticData instance() {
@@ -264,12 +267,24 @@ public class StaticData {
         this.attemptToLoadCard(cardName, null);
     }
 
+    /** Prepare every name in selected editions without restricting later named lookups. */
+    public void preloadEditionCards(Collection<String> codes) {
+        if (codes == null) return;
+        Set<String> names = new LinkedHashSet<>();
+        for (String code : codes) {
+            CardEdition edition = getCardEdition(code);
+            if (edition == null) continue;
+            for (CardEdition.EditionEntry entry : edition.getAllCardsInSet()) names.add(entry.name());
+        }
+        for (String name : names) attemptToLoadCard(name);
+    }
+
     public void ensureAllCardsLoaded() {
         if (allCardsLoaded || !cardReader.isLoadingCardsLazily()) {
             return;
         }
         synchronized (lazyLoadLock) {
-            if (allCardsLoaded) {
+            if (allCardsLoaded || lazyLoadDepth > 0) {
                 return;
             }
             System.out.println("Lazy card database: loading all remaining cards");
@@ -300,9 +315,11 @@ public class StaticData {
 
     private void loadAllCardsEntry(CardRules rules) {
         final String cardName = rules.getPreInitName();
-        if (commonCards.getRules(cardName, false) != null || variantCards.getRules(cardName, false) != null) {
-            return;
-        }
+        // A previous explicit-set lookup can leave only one printing loaded. Complete it too,
+        // using the existing rules object so decks and placeholder faces retain their identity.
+        CardRules existing = commonCards.getRules(cardName, false);
+        if (existing == null) existing = variantCards.getRules(cardName, false);
+        if (existing != null) rules = existing;
         if (!loadNonLegalCards && funnyCards.contains(cardName) && !rules.getType().isBasicLand()) {
             filtered.add(cardName);
         }
@@ -413,10 +430,11 @@ public class StaticData {
         if (!loadNonLegalCards && funnyCards.contains(rules.getPreInitName()) && !rules.getType().isBasicLand()) {
             filtered.add(rules.getPreInitName());
         }
-        if (rules.isVariant()) {
-            variantCards.loadCard(cardName, setCode, rules);
-        } else {
-            commonCards.loadCard(cardName, setCode, rules);
+        CardDb target = rules.isVariant() ? variantCards : commonCards;
+        target.loadCard(cardName, setCode, rules);
+        CardEdition requested = editions.get(setCode);
+        if (!target.contains(rules.getName()) && (requested == null || requested.equals(CardEdition.UNKNOWN))) {
+            target.addUnassignedCardPrint(rules, enableUnknownCards);
         }
     }
 

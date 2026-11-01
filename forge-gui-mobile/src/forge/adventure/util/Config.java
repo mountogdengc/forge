@@ -741,7 +741,7 @@ public class Config {
     public void loadResources() {
         AdventureOverrides.instance().load(prefix, FModel.getMagicDb().getEditions(), configData);
         applyTokenEditionFilter();
-        RewardData.getAllCards();//initialize before loading custom cards
+        // Random reward pools are built on demand; fixed chapter cards resolve by name.
         final CardRules.Reader rulesReader = new CardRules.Reader();
         ImageKeys.ADVENTURE_CARD_PICS_DIR = getCommonFilePath(forge.adventure.util.Paths.CUSTOM_CARDS_PICS);
         if (registeredCustomCardDatabase != FModel.getMagicDb()) {

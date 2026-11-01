@@ -1001,14 +1001,15 @@ public class CardUtil {
         ConfigData configData = Config.instance().getConfigData();
         if (configData.allowedEditions != null && configData.allowedEditions.length > 0) {
             Set<String> allowed = new HashSet<>(Arrays.asList(configData.allowedEditions));
+            FModel.getMagicDb().preloadEditionCards(allowed);
             if (allCardVariants) {
-                return FModel.getMagicDb().getCommonCards().getAllCards().stream()
+                return FModel.getMagicDb().getCommonCards().getLoadedAllCards().stream()
                     .filter(card -> allowed.contains(card.getEdition()))
                     .collect(Collectors.toList());
             }
             // For unique cards, replace non-allowed printings with allowed ones.
             List<PaperCard> filtered = new ArrayList<>();
-            for (PaperCard card : FModel.getMagicDb().getCommonCards().getUniqueCards()) {
+            for (PaperCard card : FModel.getMagicDb().getCommonCards().getLoadedUniqueCards()) {
                 if (card == null) continue;
                 if (allowed.contains(card.getEdition())) {
                     filtered.add(card);
@@ -1023,6 +1024,7 @@ public class CardUtil {
             }
             return filtered;
         }
+        FModel.getMagicDb().ensureAllCardsLoaded();
         return allCardVariants
             ? FModel.getMagicDb().getCommonCards().getAllCards()
             : FModel.getMagicDb().getCommonCards().getUniqueCards();

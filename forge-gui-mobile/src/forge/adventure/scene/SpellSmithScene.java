@@ -316,7 +316,7 @@ public class SpellSmithScene extends UIScene {
     @Override
     public void enter() {
         reset();
-        loadEditions(); //just to be safe since it's preloaded, if somehow edition is null, then reload it
+        loadEditions(); // Prepare the campaign's acquisition pool only when the smith is visited.
         editionList.clearListeners();
         editionList.clearItems();
         editionList.setItems(editions.toArray(new CardEdition[0]));

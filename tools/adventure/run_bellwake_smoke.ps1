@@ -7,6 +7,8 @@ param(
     [switch]$PresentationProbe,
     [switch]$HelpProbe,
     [switch]$PromptProbe,
+    [switch]$Hidden,
+    [switch]$RequireDeferred,
     [ValidateRange(320, 3840)][int]$Width = 1280,
     [ValidateRange(240, 2160)][int]$Height = 720,
     [ValidateSet('W', 'R')][string]$StarterColor = 'W'
@@ -50,7 +52,7 @@ if (Test-Path $output) { throw 'Output already exists; choose a new directory to
 $classes = Join-Path $output 'classes'
 $profile = Join-Path $output 'profile'
 New-Item -ItemType Directory -Force $classes, "$profile/roaming/Forge/preferences", "$profile/local" | Out-Null
-[IO.File]::WriteAllText((Join-Path $profile 'roaming/Forge/preferences/forge.preferences'), "UI_SELECTOR_MODE=Adventure`n")
+[IO.File]::WriteAllText((Join-Path $profile 'roaming/Forge/preferences/forge.preferences'), "UI_SELECTOR_MODE=Adventure`nUI_ENABLE_ONLINE_IMAGE_FETCHER=false`n")
 if ($ResumeFrom) {
     $prior = (Resolve-Path -LiteralPath $ResumeFrom).Path
     if (-not (Test-Path (Join-Path $prior 'expected.properties')) -or -not (Test-Path (Join-Path $prior 'profile/roaming/Forge/adventure'))) {
@@ -77,7 +79,7 @@ $compileFile = Join-Path $output 'compile.args'
 if ($LASTEXITCODE -ne 0) { throw "Graphical fixture compilation failed; see $output" }
 [xml]$pom = Get-Content (Join-Path $repository 'forge-gui-mobile-dev/pom.xml')
 $mandatory = $pom.project.properties.'mandatory.java.args'.Split(' ', [StringSplitOptions]::RemoveEmptyEntries)
-$runtimeArgs = ($mandatory -join "`n") + "`n-Xmx4g`n-Dbellwake.isolatedProfile=true`n-Dbellwake.width=$Width`n-Dbellwake.height=$Height`n-Dbellwake.starter=$StarterColor`n" +
+$runtimeArgs = ($mandatory -join "`n") + "`n-Xmx2g`n-XX:ActiveProcessorCount=4`n-Dbellwake.isolatedProfile=true`n-Dbellwake.width=$Width`n-Dbellwake.height=$Height`n-Dbellwake.starter=$StarterColor`n" +
     '"-Dbellwake.expected=' + (Join-Path $output 'expected.properties').Replace('\', '/') + '"' + "`n" +
     '"-Duser.home=' + $profile.Replace('\', '/') + '"' + "`n" +
     '"-Dbellwake.screenshot=' + (Join-Path $output 'quay-restored.png').Replace('\', '/') + '"' + "`n-cp`n" +
@@ -88,6 +90,8 @@ if ($HelpProbe) { $runtimeArgs = "-Dbellwake.helpProbe=true`n" + $runtimeArgs }
 if ($PromptProbe) { $runtimeArgs = "-Dbellwake.promptProbe=true`n" + $runtimeArgs }
 if ($ResumeFrom) { $runtimeArgs = "-Dbellwake.resume=true`n" + $runtimeArgs }
 if ($PackageRoot) { $runtimeArgs = "-Dbellwake.packagedProbe=true`n" + $runtimeArgs }
+if ($Hidden) { $runtimeArgs = "-Dbellwake.hidden=true`n" + $runtimeArgs }
+if ($RequireDeferred) { $runtimeArgs = "-Dbellwake.requireDeferred=true`n" + $runtimeArgs }
 [IO.File]::WriteAllText($runtimeFile, $runtimeArgs)
 $priorAppData = $env:APPDATA
 $priorLocalAppData = $env:LOCALAPPDATA

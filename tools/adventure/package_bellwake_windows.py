@@ -61,13 +61,22 @@ def main():
     parser.add_argument("--verify-dir", type=Path, required=True)
     parser.add_argument("--client-jar", type=Path,
                         help="Fresh tested full reactor assembly, plus current compatible Bellwake enemy definitions")
+    parser.add_argument("--editor-jar", type=Path, help="Matching tested Adventure Editor assembly, with allowed-set selection")
     args = parser.parse_args()
     client_tests = None
+    if args.editor_jar and not args.client_jar:
+        raise ValueError("The editor must accompany its matching tested client")
     if args.client_jar:
         if subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT, text=True).strip():
             raise ValueError("Commit reviewed sources before recording the replacement client's identity")
         check_jar(args.client_jar)
         client_tests = test_evidence(ROOT)
+    if args.editor_jar:
+        with zipfile.ZipFile(args.editor_jar) as editor:
+            if editor.testzip() or "forge/adventure/editor/AllowedSetsEditor.class" not in editor.namelist():
+                raise ValueError("Missing or corrupt allowed-set editor assembly")
+            if b"Main-Class: forge.adventure.Main" not in editor.read("META-INF/MANIFEST.MF"):
+                raise ValueError("Unexpected editor main class")
     for path, expected in ((args.base_zip, BASE_SHA), (args.update_zip, UPDATE_SHA)):
         if digest(path) != expected:
             raise ValueError("Input archive checksum mismatch: " + str(path))
@@ -108,7 +117,7 @@ def main():
             info["source_commit"] = info["packaging_source_commit"]
             info["jar_sha256"] = digest(args.client_jar)
             info["tests"] = client_tests
-            info["client_build"] = "Full clean Maven reactor assembly; playtest fixes, not a one-class patch"
+            info["client_build"] = "Full Maven reactor assembly; tested card-loading and playtest fixes"
             info["verification"] = "Fresh reactor test results above; see Progression-Validation.md for native/UI proof."
             info.pop("changed_client_entries", None)
             info.pop("class_sha256", None)
@@ -146,8 +155,11 @@ SHA256SUMS.txt covers pristine package files; settings/saves/logs change in play
 Preserve all included license notices. Client source identities are recorded in
 BUILD-INFO.json; modified client sources accompany the build under source/.
 """
+        launcher = LAUNCHER.replace("Starting Forge Adventure", "Starting Bellwake").replace("-Xmx4g", "-Xmx2g -XX:ActiveProcessorCount=4")
         replacement = {
-            "Start-Bellwake.cmd": LAUNCHER.replace("Starting Forge Adventure", "Starting Bellwake").replace("\n", "\r\n").encode("ascii"),
+            "Start-Bellwake.cmd": launcher.replace("\n", "\r\n").encode("ascii"),
+            "Start-Adventure-Test.cmd": launcher.replace("\n", "\r\n").encode("ascii"),
+            "Start-Bellwake-Eager.cmd": launcher.replace("-Xms256m", "-Dforge.cards.forceEager=true -Xms256m").replace("\n", "\r\n").encode("ascii"),
             "READ-ME-FIRST.txt": readme.encode("utf-8"),
             "Bellwake-Manual-Playtests.md": checklist.encode("utf-8"),
             "BUILD-INFO.json": (json.dumps(info, indent=2) + "\n").encode("utf-8"),
@@ -160,11 +172,22 @@ BUILD-INFO.json; modified client sources accompany the build under source/.
             readme += "\nPLAYTEST FIXES: named draws/discards in postgame log only; match-menu Help and\ncontrol tips; menu loading fixed; losing to Tor stays in the quay; bottom prompt\nbuttons are inset and fully contained so their artwork and labels are not cropped.\n\nKEEPING YOUR 0.3.0 RUNS: close both clients, back up the old test-profile folder,\nthen copy test-profile from your previous Bellwake 0.3.0 installation into this\nfresh extraction before launching. Keep the old folder too. No geometry, campaign\nversion or save-format changes were made. Never copy your normal Forge profile.\n"
             replacement["READ-ME-FIRST.txt"] = readme.encode("utf-8")
             # Include precisely the changed client sources, not unrelated local files.
-            changed = subprocess.check_output(["git", "diff", "--name-only", "6747fa4da56e", "--", "*.java"], cwd=ROOT, text=True).splitlines()
+            changed = subprocess.check_output(["git", "diff", "--name-only", "6747fa4da56e", "--", "*.java",
+                                               "adventure-editor/pom.xml", "tools/adventure/*.ps1", "tools/adventure/*.py"],
+                                              cwd=ROOT, text=True).splitlines()
             for name in changed:
                 path = ROOT / name
                 if path.is_file():
                     replacement["source/" + name] = path.read_bytes()
+        if args.editor_jar:
+            info["editor_jar_sha256"] = digest(args.editor_jar)
+            info["card_loading"] = "Desktop Adventure defers scripts; validated persistent name index; named cards on demand; complete catalog fallback"
+            replacement["adventure-editor.jar"] = args.editor_jar.read_bytes()
+            replacement["Card-Loading.md"] = (ROOT / "docs/Adventure/Card-Loading.md").read_bytes()
+            replacement["Edit-Campaign-Sets.cmd"] = launcher.replace("forge-adventure-test.jar", "adventure-editor.jar").replace("Starting Bellwake", "Starting campaign editor").replace("launcher.log", "editor.log").replace("launcher.previous.log", "editor.previous.log").replace("\n", "\r\n").encode("ascii")
+            readme += "\nCARD LOADING: the first launch builds a disposable card-name index; later launches\nreuse it. Bellwake's decks/rewards load cards by name. Availability is unchanged.\nOther game modes and unrestricted random pools can still request the full catalog.\nStart-Bellwake-Eager.cmd provides the older eager-loading path for diagnosis.\nBoth game launchers cap Java heap at 2 GB and size JVM workers for four processors.\n\nCAMPAIGN AUTHORS: with the game closed, run Edit-Campaign-Sets.cmd, then open\nAllowed sets. The panel shows the campaign folder being edited. Select sets and\nSave allowed sets. Clear selection keeps all sets with existing restrictions.\nBack up authored campaign data first; avoid changing Bellwake during playtests.\n"
+            replacement["READ-ME-FIRST.txt"] = readme.encode("utf-8")
+            replacement["BUILD-INFO.json"] = (json.dumps(info, indent=2) + "\n").encode("utf-8")
         hashes = {}
         print("Writing single Windows ZIP and validating all inherited bytes...", flush=True)
         with zipfile.ZipFile(archive_path, "w", zipfile.ZIP_DEFLATED, compresslevel=6) as target:

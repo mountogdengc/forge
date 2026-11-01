@@ -57,7 +57,7 @@ public final class CampaignManager {
         Forge.getLocalizer().loadAdventureBundle(candidate.getPrefix() + "languages/");
         FSkinTexture.invalidateAdventureTextures();
         candidate.loadResources();
-        // loadResources initializes a pool using the outgoing player mode. Rebuild lazily after restore.
+        // Restore may change player mode; keep reward pools lazy until that mode is known.
         RewardData.invalidateCardPool();
         SoundSystem.instance.stopBackgroundMusic();
         MusicPlaylist.invalidateMusicPlaylist();

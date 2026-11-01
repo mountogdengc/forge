@@ -74,6 +74,7 @@ public class EditorMainWindow extends JFrame {
         tabs.addTab("Items", new ItemsEditor());
         tabs.addTab("Enemies", new EnemyEditor());
         tabs.addTab("Quests", new QuestEditor());
+        tabs.addTab("Allowed sets", new AllowedSetsEditor(config));
         setSize(config.getSettingData().width, config.getSettingData().height);
         setLocationRelativeTo(null);
         setVisible(true);
