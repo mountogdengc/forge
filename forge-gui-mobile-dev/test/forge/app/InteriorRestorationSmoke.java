@@ -49,6 +49,7 @@ public final class InteriorRestorationSmoke {
     private BellwakeStorySmoke story;
     private InteriorFixtureSmoke interiorFixture;
     private int helpTopic;
+    private boolean keptOpeningHand;
 
     public static void main(String[] args) {
         if (!Boolean.getBoolean("bellwake.isolatedProfile")) throw new IllegalStateException("An isolated profile is required.");
@@ -191,7 +192,7 @@ public final class InteriorRestorationSmoke {
                 require(Current.player().getLife() == savedLife && Current.player().getGold() == savedGold,
                         "Practice defeat applied a penalty");
                 System.out.println("BELLWAKE_PRACTICE_LOSS_PASS: stays in quay, Tor available, no penalties");
-                if (Boolean.getBoolean("bellwake.helpProbe")) {
+                if (Boolean.getBoolean("bellwake.helpProbe") || Boolean.getBoolean("bellwake.promptProbe")) {
                     MapStage.getInstance().beginDuel(MapStage.getInstance().getEnemyByID(61));
                     phase = 120;
                     return;
@@ -211,6 +212,21 @@ public final class InteriorRestorationSmoke {
                 }
                 require(log.getAllEntries().stream().noneMatch(entry -> entry.toString().contains(" draws ")),
                         "Named draws leaked into live match history");
+                if (Boolean.getBoolean("bellwake.promptProbe")) {
+                    Forge.reversedPrompt = false;
+                    var prompt = ((forge.screens.match.MatchScreen) Forge.getCurrentScreen()).getActivePrompt();
+                    if (!keptOpeningHand && prompt.getBtnOk().getText().equals(Forge.getLocalizer().getMessage("lblKeep"))) {
+                        keptOpeningHand = true;
+                        prompt.getBtnOk().trigger();
+                        return;
+                    }
+                    if (!prompt.getBtnOk().isEnabled() || !prompt.getBtnCancel().isEnabled()
+                            || !prompt.getBtnCancel().getText().equals(Forge.getLocalizer().getMessage("lblEndTurn"))) return;
+                    prompt.revalidate();
+                    verifyPromptBounds(prompt);
+                    phase = 122;
+                    return;
+                }
                 String[] topics = {"showPhases", "showStops", "showButtons"};
                 var help = Class.forName("forge.screens.match.views.VMatchHelp").getDeclaredMethod(topics[helpTopic]);
                 help.setAccessible(true);
@@ -248,6 +264,24 @@ public final class InteriorRestorationSmoke {
                 forge.toolbox.FOverlay.getTopOverlay().hide();
                 if (++helpTopic < 3) { phase = 120; return; }
                 System.out.println("BELLWAKE_MATCH_HELP_PASS: actual named draws private; match startup and three Help dialogs rendered");
+                phase = 8;
+                Gdx.app.exit();
+            } else if (phase == 122 || phase == 123) {
+                var prompt = ((forge.screens.match.MatchScreen) Forge.getCurrentScreen()).getActivePrompt();
+                verifyPromptBounds(prompt);
+                Pixmap shot = Pixmap.createFromFrameBuffer(0, 0, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
+                try {
+                    var path = java.nio.file.Path.of(System.getProperty("bellwake.screenshot")).getParent()
+                            .resolve(phase == 122 ? "prompt-normal.png" : "prompt-reversed.png");
+                    PixmapIO.writePNG(Gdx.files.absolute(path.toString()), shot, 6, true);
+                } finally { shot.dispose(); }
+                if (phase == 122) {
+                    Forge.reversedPrompt = true;
+                    prompt.revalidate();
+                    phase = 123;
+                    return;
+                }
+                System.out.println("BELLWAKE_PROMPT_LAYOUT_PASS: normal and reversed controls contained, no cropped corner renderer");
                 phase = 8;
                 Gdx.app.exit();
             } else if (phase == 4) {
@@ -345,6 +379,20 @@ public final class InteriorRestorationSmoke {
                 .filter(p -> p.getData().name.equals(name)).findFirst().orElseThrow();
         TileMapScene.instance().load(point);
         Forge.switchScene(TileMapScene.instance());
+    }
+
+    private static void verifyPromptBounds(forge.screens.match.views.VPrompt prompt) {
+        require(Forge.reversedPrompt ? prompt.getBtnCancel().getLeft() < prompt.getBtnOk().getLeft()
+                        : prompt.getBtnOk().getLeft() < prompt.getBtnCancel().getLeft(),
+                "Prompt controls did not follow reversed placement");
+        for (var button : new forge.toolbox.FButton[]{prompt.getBtnOk(), prompt.getBtnCancel()}) {
+            require(button.getCorner() == forge.toolbox.FButton.Corner.None,
+                    "Bottom prompt uses the oversized cropped corner renderer");
+            require(button.getLeft() > 0 && button.getTop() > 0
+                            && button.getLeft() + button.getWidth() < prompt.getWidth()
+                            && button.getTop() + button.getHeight() < prompt.getHeight(),
+                    "Bottom prompt button touches or crosses the viewport edge");
+        }
     }
 
     private static void verifyPresentationAudio() throws Exception {

@@ -6,6 +6,30 @@ This checklist validates the current progression patch and the inherited content
 
 The campaign picker and independent-playthrough architecture are implemented as described in [Campaigns and saves](Campaigns-and-Saves.md). The campaign gate below records their automated and interactive coverage separately from the earlier progression fixes. Partial coverage does not turn an entire acceptance case into a pass.
 
+## Bottom prompt clipping, November 1, 2026
+
+The reported bottom corners used legacy FButton corner artwork drawn at 150% of
+the control height, with a downward caption offset and a forced break in End Turn.
+VPrompt now uses contained regular buttons, inset from every edge of the prompt
+bar. Normal/reversed placement and the message/menu/Undo reserved areas remain.
+No input commands, gameplay rules, campaign data or save format changed.
+
+Native RED: `dist/bellwake-smoke/20261101-104723-573e9a` rejected the oversized
+corner renderer in an actual match. The affected reactor package passed 91 cases,
+zero failures/errors/skips; log `.bellwake-prompt-fix.log`, queue job
+`d3f1fcd37e40493285e4e8d3d6bfa4bc`, both exit codes 0. Unchanged desktop test
+reports remain the earlier 1,328-case run, including its six existing skips.
+
+Native GREEN: `dist/bellwake-smoke/20261101-105646-561e26`, 1280x720, actual
+OK/End Turn priority prompt after keeping the opening hand. Button bounds are
+strictly inside the bar, the cropped renderer is absent, and normal/reversed
+positions are asserted. `prompt-normal.png` and `prompt-reversed.png` were
+inspected: complete borders and captions are visible. The wrapper exited 0.
+An earlier geometry-only capture used the starting-hand labels; the final probe
+waits for the real End Turn prompt instead of substituting labels.
+
+Final standalone artifact identity and extracted viewport proof follow packaging.
+
 ## First manual playtest fixes, November 1, 2026
 
 The user supplied a real Tor loss and reported successful saving, an

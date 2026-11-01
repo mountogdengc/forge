@@ -6,6 +6,7 @@ param(
     [string]$ResumeFrom = "",
     [switch]$PresentationProbe,
     [switch]$HelpProbe,
+    [switch]$PromptProbe,
     [ValidateRange(320, 3840)][int]$Width = 1280,
     [ValidateRange(240, 2160)][int]$Height = 720,
     [ValidateSet('W', 'R')][string]$StarterColor = 'W'
@@ -13,7 +14,8 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $repository = (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
-if ($ResumeFrom -and ($PackageRoot -or $HelpProbe)) { throw 'ResumeFrom uses an AssemblyJar and its own disposable copied profile.' }
+if ($HelpProbe -and $PromptProbe) { throw 'Choose either HelpProbe or PromptProbe.' }
+if ($ResumeFrom -and ($PackageRoot -or $HelpProbe -or $PromptProbe)) { throw 'ResumeFrom uses an AssemblyJar and its own disposable copied profile.' }
 $launchDirectory = Join-Path $repository 'forge-gui-mobile-dev'
 $runtimeJava = Join-Path $JavaHome 'bin/java.exe'
 if ($PackageRoot) {
@@ -83,6 +85,7 @@ $runtimeArgs = ($mandatory -join "`n") + "`n-Xmx4g`n-Dbellwake.isolatedProfile=t
 $runtimeFile = Join-Path $output 'runtime.args'
 if ($PresentationProbe) { $runtimeArgs = "-Dbellwake.presentationProbe=true`n" + $runtimeArgs }
 if ($HelpProbe) { $runtimeArgs = "-Dbellwake.helpProbe=true`n" + $runtimeArgs }
+if ($PromptProbe) { $runtimeArgs = "-Dbellwake.promptProbe=true`n" + $runtimeArgs }
 if ($ResumeFrom) { $runtimeArgs = "-Dbellwake.resume=true`n" + $runtimeArgs }
 if ($PackageRoot) { $runtimeArgs = "-Dbellwake.packagedProbe=true`n" + $runtimeArgs }
 [IO.File]::WriteAllText($runtimeFile, $runtimeArgs)
@@ -107,6 +110,14 @@ try {
     Pop-Location
 }
 $text = Get-Content $log -Raw
+if ($PromptProbe) {
+    if ($result -ne 0 -or $text -notmatch 'BELLWAKE_PROMPT_LAYOUT_PASS') {
+        Get-Content $log -Tail 25
+        throw "Prompt layout probe did not pass. Evidence: $output"
+    }
+    Write-Output "Bottom prompt layout passed, normal and reversed. Evidence: $output"
+    return
+}
 if ($ResumeFrom) {
     if ($result -ne 0 -or $text -notmatch 'BELLWAKE_FRESH_CONTINUE_PASS') {
         Get-Content $log -Tail 25

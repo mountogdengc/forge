@@ -29,6 +29,8 @@ your normal Forge profile. Older 0.1.0/0.2.0 content still needs its old client.
 5. Hover over OK, End Turn, Undo, the menu, the phase name and individual phase
    cells. Expected: delayed explanations. Holding prompt buttons explains them
    without acting; holding a phase cell retains its explained yield action.
+   Check both bottom buttons' complete borders and labels at 1280x720. Repeat
+   with reversed prompt positions: neither button should run off the window.
 6. Toggle stops in your row and the opponent's row separately. Expected: enabled
    cells have a bottom line and color; current-phase highlighting is distinct.
    These settings pause your decisions on the chosen player's turns.

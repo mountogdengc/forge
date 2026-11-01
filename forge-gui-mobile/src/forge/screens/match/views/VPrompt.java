@@ -171,8 +171,8 @@ public class VPrompt extends FContainer {
         btnMenu.setVisible(false);
         btnOk.setSize(BTN_WIDTH, HEIGHT);
         btnCancel.setSize(BTN_WIDTH, HEIGHT);
-        btnOk.setCorner(Corner.BottomLeft);
-        btnCancel.setCorner(Corner.BottomRight);
+        btnOk.setCorner(Corner.None);
+        btnCancel.setCorner(Corner.None);
         btnOk.setEnabled(false); //disable buttons until first input queued
         btnCancel.setEnabled(false);
     }
@@ -391,6 +391,13 @@ public class VPrompt extends FContainer {
 
     @Override
     protected void doLayout(float width, float height) {
+        // Legacy corner artwork draws at 150% of the button height and shifts
+        // two-line captions downward. Keep the entire control inside the bar.
+        final float inset = PADDING;
+        final float buttonWidth = BTN_WIDTH - 2 * inset;
+        final float buttonHeight = Math.max(0, height - 2 * inset);
+        btnOk.setCorner(Corner.None);
+        btnCancel.setCorner(Corner.None);
         boolean showUndo = undoShown;
         btnUndo.setVisible(showUndo);
         float undoSpace = showUndo ? UNDO_SIZE + 2 * UNDO_GAP : 0;
@@ -398,17 +405,13 @@ public class VPrompt extends FContainer {
         float labelLeft = BTN_WIDTH;
         float undoX;
         if (Forge.reversedPrompt) { //End Turn on the left
-            btnOk.setCorner(Corner.BottomRight);
-            btnCancel.setCorner(Corner.BottomLeft);
-            btnCancel.setLeft(0);
-            btnOk.setLeft(width - BTN_WIDTH);
+            btnCancel.setBounds(inset, inset, buttonWidth, buttonHeight);
+            btnOk.setBounds(width - BTN_WIDTH + inset, inset, buttonWidth, buttonHeight);
             undoX = BTN_WIDTH + UNDO_GAP;
             labelLeft = BTN_WIDTH + undoSpace;
         } else { //End Turn on the right
-            btnOk.setCorner(Corner.BottomLeft);
-            btnCancel.setCorner(Corner.BottomRight);
-            btnOk.setLeft(0);
-            btnCancel.setLeft(width - BTN_WIDTH);
+            btnOk.setBounds(inset, inset, buttonWidth, buttonHeight);
+            btnCancel.setBounds(width - BTN_WIDTH + inset, inset, buttonWidth, buttonHeight);
             undoX = width - BTN_WIDTH - UNDO_GAP - UNDO_SIZE;
         }
         final boolean showMenu = menuShown;
@@ -419,6 +422,7 @@ public class VPrompt extends FContainer {
         else { menuX = BTN_WIDTH + UNDO_GAP; labelLeft += menuSpace; }
         btnMenu.setBounds(menuX, (height - UNDO_SIZE) / 2, UNDO_SIZE, UNDO_SIZE);
         lblMessage.setLeft(labelLeft);
+        lblMessage.setHeight(height);
         lblMessage.setWidth(width - 2 * BTN_WIDTH - undoSpace - menuSpace);
         btnUndo.setBounds(undoX, (height - UNDO_SIZE) / 2, UNDO_SIZE, UNDO_SIZE);
     }

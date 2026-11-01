@@ -103,6 +103,8 @@ def main():
                      "package_verification": "All input entries hashed; output ZIP CRC and complete extraction hashes checked. Native packaged-runtime results recorded separately in Progression-Validation.md."})
         if args.client_jar:
             info["previous_update_source_commit"] = info["source_commit"]
+            info["previous_update_built_at_utc"] = info["built_at_utc"]
+            info["built_at_utc"] = datetime.fromtimestamp(args.client_jar.stat().st_mtime, timezone.utc).isoformat()
             info["source_commit"] = info["packaging_source_commit"]
             info["jar_sha256"] = digest(args.client_jar)
             info["tests"] = client_tests
@@ -155,7 +157,7 @@ BUILD-INFO.json; modified client sources accompany the build under source/.
         if args.client_jar:
             replacement["forge-adventure-test.jar"] = args.client_jar.read_bytes()
             replacement["res/adventure/Bellwake/world/enemies.json"] = (ROOT / "forge-gui/res/adventure/Bellwake/world/enemies.json").read_bytes()
-            readme += "\nPLAYTEST FIXES: named draws/discards in postgame log only; match-menu Help and\ncontrol tips; menu loading fixed; losing to Tor stays in the quay.\n\nKEEPING YOUR 0.3.0 RUNS: close both clients, back up the old test-profile folder,\nthen copy test-profile from your previous Bellwake 0.3.0 installation into this\nfresh extraction before launching. Keep the old folder too. No geometry, campaign\nversion or save-format changes were made. Never copy your normal Forge profile.\n"
+            readme += "\nPLAYTEST FIXES: named draws/discards in postgame log only; match-menu Help and\ncontrol tips; menu loading fixed; losing to Tor stays in the quay; bottom prompt\nbuttons are inset and fully contained so their artwork and labels are not cropped.\n\nKEEPING YOUR 0.3.0 RUNS: close both clients, back up the old test-profile folder,\nthen copy test-profile from your previous Bellwake 0.3.0 installation into this\nfresh extraction before launching. Keep the old folder too. No geometry, campaign\nversion or save-format changes were made. Never copy your normal Forge profile.\n"
             replacement["READ-ME-FIRST.txt"] = readme.encode("utf-8")
             # Include precisely the changed client sources, not unrelated local files.
             changed = subprocess.check_output(["git", "diff", "--name-only", "6747fa4da56e", "--", "*.java"], cwd=ROOT, text=True).splitlines()
