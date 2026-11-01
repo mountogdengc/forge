@@ -6,6 +6,63 @@ This checklist validates the current progression patch and the inherited content
 
 The campaign picker and independent-playthrough architecture are implemented as described in [Campaigns and saves](Campaigns-and-Saves.md). The campaign gate below records their automated and interactive coverage separately from the earlier progression fixes. Partial coverage does not turn an entire acceptance case into a pass.
 
+## Standalone Bellwake Windows package, November 1, 2026
+
+Ready-to-extract build:
+`dist/adventure-windows/bellwake-0.3.0-ready/Bellwake-Windows-0.3.0.zip`.
+Size: 483,085,243 bytes. SHA256:
+`5e7cb8f090d5c0cd543f61eae4ffca0fceb6d9e8d69d201f736c4111ec5d94db`.
+Extract the entire ZIP to a new writable folder, open its Bellwake-Windows-0.3.0
+folder and run `Start-Bellwake.cmd`. New Game preselects The Last Fare of
+Bellwake. Java, art/audio, isolated profile settings and the standalone manual
+playtest guide are included; no base-plus-update installation is needed.
+
+This combines the exact pinned base and update archives recorded below. The
+client JAR remains `bbc669f3447fd34fe258164ce3ee2a39bb69817c16f460ac46576c50076abced`;
+no gameplay code is rebuilt. Packaging adds a named launcher and fresh Bellwake
+settings, and updates handoff/identity/checksum files. The original archives and
+installations remain unchanged. Queue job `75ce02cc0f024aeca9fa0e38b8ad4645`
+returned both exit codes 0. Every inherited entry was checked against the merged
+manifest, ZIP CRCs passed, and all 56,387 files in a fresh extraction were
+verified. The bundled Java 26 executable ran successfully. Evidence:
+`dist/adventure-windows/bellwake-0.3.0-ready/package-verification.json`.
+
+The actual CMD launcher started its own bundled Java and loaded Adventure start
+menu resources. Evidence: `dist/bellwake-smoke/standalone-launcher-0.3.0-fixed`.
+The startup-only probe then terminated only its owned client process; it does not
+claim a played match or normal shutdown. The first probe failed because its log
+reader did not share the active Windows log for writing. The reader was fixed;
+the package bytes were unchanged, and the repeated probe passed.
+
+Extracted native story/Continue proof:
+`dist/bellwake-smoke/20261101-002731-5d438f`, 1280x720, Lantern Watch. The wrapper
+exited 0. Bellwake default selection and the extracted portable profile passed;
+all five campaign audio routes/decoding and both map entry/river collision probes
+passed. Interior restoration, failed-load rollback, connected-room/shop fixtures,
+both assisted ending branches and fresh-process Continue passed. The screenshot
+`quay-restored.png` was inspected. Runtime, JAR and resources came from the fresh
+ZIP extraction, with no dependency on the source checkout's resource directory.
+The extraction was deliberately used only for verification; distribute the
+unchanged ZIP so each tester gets fresh settings and no fixture playthroughs.
+
+Reproduce on a NEW disposable extraction (never a player's test folder):
+
+```powershell
+./tools/adventure/verify_bellwake_launcher.ps1 -PackageRoot '<fresh-extracted-folder>' -EvidencePath '<new-evidence-folder>'
+./tools/adventure/run_bellwake_smoke.ps1 -JavaHome 'C:/Program Files/Java/jdk-26' -PackageRoot '<fresh-extracted-folder>' -PresentationProbe -StarterColor W -Width 1280 -Height 720
+```
+
+The native fixture disables hardware audio and supplies victories. Actual matches,
+subjective listening, physical controller input and measured pacing remain the
+manual checklist; no new gameplay acceptance is claimed by packaging.
+
+Fresh packaging review found no critical/important defects. Optional generalized
+Windows path hardening (reserved names/trailing spaces and combined case checks)
+is deferred: this helper accepts only two exact SHA-pinned archives and verifies
+the complete output inventory and extracted bytes. It is not an arbitrary ZIP
+merger. Real-launch coverage is separate from the native fixture's direct entry
+point, as recorded above.
+
 ## Bellwake 0.3.0 art/ambient candidate, October 31, 2026
 
 Source/art snapshot: `3c8c94ba7ce` on `codex/bellwake-chapter-polish`.

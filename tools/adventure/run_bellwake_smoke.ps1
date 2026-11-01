@@ -2,6 +2,7 @@ param(
     [string]$JavaHome = $env:JAVA_HOME,
     [string]$OutputPath = "",
     [string]$AssemblyJar = "",
+    [string]$PackageRoot = "",
     [switch]$PresentationProbe,
     [ValidateRange(320, 3840)][int]$Width = 1280,
     [ValidateRange(240, 2160)][int]$Height = 720,
@@ -10,6 +11,22 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $repository = (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
+$launchDirectory = Join-Path $repository 'forge-gui-mobile-dev'
+$runtimeJava = Join-Path $JavaHome 'bin/java.exe'
+if ($PackageRoot) {
+    $launchDirectory = (Resolve-Path -LiteralPath $PackageRoot).Path
+    $AssemblyJar = Join-Path $launchDirectory 'forge-adventure-test.jar'
+    $runtimeJava = Join-Path $launchDirectory 'runtime/bin/java.exe'
+    $portableProfile = Join-Path $launchDirectory 'forge.profile.properties'
+    if (-not (Test-Path $runtimeJava) -or -not (Test-Path $portableProfile) -or
+        (Get-Content $portableProfile) -notcontains 'userDir=./test-profile' -or
+        (Get-Content $portableProfile) -notcontains 'cacheDir=./test-cache') {
+        throw 'PackageRoot must be a disposable extracted portable test build with an isolated profile.'
+    }
+    if (Get-ChildItem -LiteralPath (Join-Path $launchDirectory 'test-profile/adventure/campaign-saves') -Recurse -File -ErrorAction SilentlyContinue) {
+        throw 'PackageRoot already has playthroughs. Extract a NEW disposable verification copy.'
+    }
+}
 if (-not $JavaHome -or -not (Test-Path (Join-Path $JavaHome 'bin/javac.exe'))) {
     throw 'Set JAVA_HOME or pass -JavaHome with a Windows JDK (17 or newer).'
 }
@@ -54,20 +71,21 @@ $runtimeArgs = ($mandatory -join "`n") + "`n-Xmx4g`n-Dbellwake.isolatedProfile=t
     '"' + $classpath + ';' + $classes.Replace('\', '/') + '"' + "`nforge.app.InteriorRestorationSmoke`n"
 $runtimeFile = Join-Path $output 'runtime.args'
 if ($PresentationProbe) { $runtimeArgs = "-Dbellwake.presentationProbe=true`n" + $runtimeArgs }
+if ($PackageRoot) { $runtimeArgs = "-Dbellwake.packagedProbe=true`n" + $runtimeArgs }
 [IO.File]::WriteAllText($runtimeFile, $runtimeArgs)
 $priorAppData = $env:APPDATA
 $priorLocalAppData = $env:LOCALAPPDATA
 $log = Join-Path $output 'smoke.log'
-Push-Location (Join-Path $repository 'forge-gui-mobile-dev')
+Push-Location $launchDirectory
 try {
     $env:APPDATA = Join-Path $profile 'roaming'
     $env:LOCALAPPDATA = Join-Path $profile 'local'
-    & (Join-Path $JavaHome 'bin/java.exe') "@$runtimeFile" *> $log
+    & $runtimeJava "@$runtimeFile" *> $log
     $result = $LASTEXITCODE
     if ($result -eq 0 -and (Get-Content $log -Raw) -match 'BELLWAKE_ASSISTED_STORY_PASS') {
         $resumeFile = Join-Path $output 'resume.args'
         [IO.File]::WriteAllText($resumeFile, "-Dbellwake.resume=true`n" + $runtimeArgs)
-        & (Join-Path $JavaHome 'bin/java.exe') "@$resumeFile" *> (Join-Path $output 'resume.log')
+        & $runtimeJava "@$resumeFile" *> (Join-Path $output 'resume.log')
         $result = $LASTEXITCODE
     }
 } finally {
@@ -85,6 +103,9 @@ if (-not (Test-Path (Join-Path $output 'resume.log')) -or (Get-Content (Join-Pat
 }
 if ($PresentationProbe -and ($text -notmatch 'BELLWAKE_PRESENTATION_AUDIO_PASS' -or ([regex]::Matches($text, 'BELLWAKE_PRESENTATION_GEOMETRY_PASS')).Count -ne 2)) {
     throw "Presentation audio/geometry markers missing. Evidence: $output"
+}
+if ($PackageRoot -and $text -notmatch 'BELLWAKE_PORTABLE_START_PASS') {
+    throw "Portable startup marker missing. Evidence: $output"
 }
 Write-Output "Graphical restoration and ASSISTED story checks passed. Evidence: $output"
 Write-Output 'This supplies victories. It does not establish played match wins, balance, or unassisted gameplay acceptance.'

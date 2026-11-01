@@ -26,12 +26,16 @@ The implementation plan is [Bellwake chapter polish](../superpowers/plans/2026-1
 
 The explicit graphical runner is `tools/adventure/run_bellwake_smoke.ps1`. It compiles the desktop test fixtures, starts a native libGDX client with a disposable profile, and retains its log and screenshot. It checks restoration, rollback, connected rooms, respawning encounters, shops, and assisted chapter interactions. It supplies victories; it is not a played match or balance test. See the validation guide for invocation and actual results.
 
-The local Windows candidate is
-`dist/adventure-windows/ready/Forge-Adventure-Windows-Test-6747fa4da56e.zip`
-(about 454 MiB). Extract the entire ZIP to a new writable folder and run
-`Start-Adventure-Test.cmd`. Java and a fresh isolated test profile are included.
-Apply the Bellwake 0.3.0 art/ambience update to a fresh extracted copy of that base client before starting. Follow [Manual playtests](Bellwake-Manual-Playtests.md) for installation, numbered actions, expected results and report fields. Its archive integrity checks passed. Both starter/resource checks, assisted story
-branches, and fresh-process Continue are recorded in the validation guide. Actual
+The standalone Windows candidate is
+`dist/adventure-windows/bellwake-0.3.0-ready/Bellwake-Windows-0.3.0.zip`.
+Extract the entire ZIP to a new writable folder and run `Start-Bellwake.cmd`.
+Java, the art/ambient update, a fresh isolated test profile and the numbered
+`Bellwake-Manual-Playtests.md` guide are included. Choose New Game; The Last Fare
+of Bellwake is preselected. No separate base package or patch is needed.
+Follow [Manual playtests](Bellwake-Manual-Playtests.md) for actions, expected results
+and report fields. Package and runtime checks are recorded in the validation guide.
+Both starter/resource checks, assisted story branches, and fresh-process Continue
+are recorded separately from human acceptance. Actual
 matches, controller testing, measured pacing, and human assessment of the art/audio remain
 acceptance work; this is a test candidate.
 

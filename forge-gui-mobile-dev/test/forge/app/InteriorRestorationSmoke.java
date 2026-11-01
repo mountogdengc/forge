@@ -65,9 +65,10 @@ public final class InteriorRestorationSmoke {
                 }, 1f, 0.25f);
             }
         });
-        ApplicationListener game = Forge.getApp(null, new Lwjgl3Clipboard(), new Main.DesktopAdapter("../forge-gui/switch_orientation.ini") {
+        String assetsDir = java.nio.file.Files.isDirectory(java.nio.file.Path.of("res")) ? "./" : "../forge-gui/";
+        ApplicationListener game = Forge.getApp(null, new Lwjgl3Clipboard(), new Main.DesktopAdapter(assetsDir + "switch_orientation.ini") {
             @Override public String getVersionString() { return "2.0.16-GITBellwakeSmoke"; }
-        }, "../forge-gui/", Integer.getInteger("bellwake.height", 720) > Integer.getInteger("bellwake.width", 1280), false, 0);
+        }, assetsDir, Integer.getInteger("bellwake.height", 720) > Integer.getInteger("bellwake.width", 1280), false, 0);
         Forge.selector = "Adventure";
         new Lwjgl3Application(game, config);
     }
@@ -99,6 +100,14 @@ public final class InteriorRestorationSmoke {
             if (++frames < 2 || Forge.getTransitionScreen() != null) return;
             frames = 0;
             if (phase == 1) {
+                if (Boolean.getBoolean("bellwake.packagedProbe") && !Boolean.getBoolean("bellwake.resume")) {
+                    require(CampaignManager.current() != null && CampaignManager.current().getId().equals("fork.bellwake"),
+                            "Portable build did not default to Bellwake");
+                    require(java.nio.file.Path.of(ForgeConstants.USER_DIR).toAbsolutePath().normalize().equals(
+                            java.nio.file.Path.of("test-profile").toAbsolutePath().normalize()),
+                            "Portable build did not use its own test profile");
+                    System.out.println("BELLWAKE_PORTABLE_START_PASS: Bellwake default and extracted portable profile");
+                }
                 if (Boolean.getBoolean("bellwake.resume")) {
                     require(StartScene.instance().Continue(), "Continue action did not start");
                     phase = 10;

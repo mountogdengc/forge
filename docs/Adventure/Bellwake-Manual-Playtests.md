@@ -2,7 +2,14 @@
 
 Use this after installing the art/ambient update. Automated tests use supplied victories; these runs must play real matches. The purpose is to decide what needs tuning, not to prove you can win by retrying until a result looks good. Record every loss, restart and confusing moment.
 
-## Install and prepare
+**Standalone Windows build:** With `Bellwake-Windows-0.3.0.zip`, extract the entire
+ZIP into a new writable folder and run `Start-Bellwake.cmd`. Java and the update
+are already included. Choose New Game, then the preselected The Last Fare of
+Bellwake and Create character. Skip installation steps 1-4 below and continue at
+step 5. The ZIP also includes a copy of this guide with standalone setup steps.
+Keep old installations for older saves; use fresh runs here.
+
+## Install base plus update (alternative) and prepare
 
 1. Keep your existing Forge/Bellwake installation intact. Extract the entire verified base client ZIP, `Forge-Adventure-Windows-Test-6747fa4da56e.zip`, into a **new writable folder**, for example `C:/Games/Bellwake-0.3-Test`. Java is included; do not install another Java or copy normal saves into this folder.
 2. Close the test client if it is running. Extract **Bellwake-Art-Ambience-0.3.0.zip** separately. Copy its contents into the new base-client folder, beside `Start-Adventure-Test.cmd`, accepting replacements. Merge the `res` directory. Do not put the update in an extra nested subfolder. The update includes a compatible client JAR with the music-cache fix as well as the chapter assets.
