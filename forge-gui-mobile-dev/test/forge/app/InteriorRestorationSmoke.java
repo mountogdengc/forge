@@ -104,6 +104,14 @@ public final class InteriorRestorationSmoke {
                     phase = 10;
                     return;
                 }
+                if (Boolean.getBoolean("bellwake.presentationProbe")) {
+                    forge.gui.GuiBase.setAdventureDirectory(ForgeConstants.ADVENTURE_COMMON_DIR);
+                    forge.sound.MusicPlaylist.invalidateMusicPlaylist();
+                    for (var playlist : new forge.sound.MusicPlaylist[]{forge.sound.MusicPlaylist.TOWN,
+                            forge.sound.MusicPlaylist.CAVE, forge.sound.MusicPlaylist.BLACK,
+                            forge.sound.MusicPlaylist.BOSS, forge.sound.MusicPlaylist.MATCH})
+                        require(playlist.getRandomFilename() != null, "Common audio fixture missing");
+                }
                 CampaignDefinition campaign = CampaignRegistry.discover().getCampaigns().stream()
                         .filter(c -> c.getId().equals("fork.bellwake")).findFirst().orElseThrow();
                 var diagnostics = CampaignContentValidator.validate(java.nio.file.Path.of(Config.instance().getAdventureRoot(), "Bellwake"),
@@ -116,6 +124,7 @@ public final class InteriorRestorationSmoke {
                 var modes = (com.badlogic.gdx.utils.Array<?>) modesField.get(preview);
                 require(modes.size == 1 && modes.first() == AdventureModes.Constructed, "Unexpected inherited starter modes");
                 CampaignManager.activate(campaign);
+                if (Boolean.getBoolean("bellwake.presentationProbe")) verifyPresentationAudio();
                 WorldSave.beginPlaythrough(campaign, "Interior smoke", "Smoke");
                 Config config = Config.instance();
                 WorldSave.generateNewWorld("Smoke", true, 0, 0, ColorSet.fromNames("W"),
@@ -126,6 +135,7 @@ public final class InteriorRestorationSmoke {
                 enter("Spawn");
                 phase = 2;
             } else if (phase == 2) {
+                if (Boolean.getBoolean("bellwake.presentationProbe")) verifyPresentationGeometry();
                 Current.player().heal(-3);
                 savedLife = Current.player().getLife();
                 savedGold = Current.player().getGold();
@@ -156,6 +166,7 @@ public final class InteriorRestorationSmoke {
                 enter("Bellwake Tollhouse");
                 phase = 4;
             } else if (phase == 4) {
+                if (Boolean.getBoolean("bellwake.presentationProbe")) verifyPresentationGeometry();
                 require(MapStage.getInstance().lookForID(60), "Keeper fixture missing");
                 float worldX = Current.player().getWorldPosX();
                 float worldY = Current.player().getWorldPosY();
@@ -247,6 +258,35 @@ public final class InteriorRestorationSmoke {
                 .filter(p -> p.getData().name.equals(name)).findFirst().orElseThrow();
         TileMapScene.instance().load(point);
         Forge.switchScene(TileMapScene.instance());
+    }
+
+    private static void verifyPresentationAudio() throws Exception {
+        for (var playlist : new forge.sound.MusicPlaylist[]{forge.sound.MusicPlaylist.BLACK,
+                forge.sound.MusicPlaylist.TOWN, forge.sound.MusicPlaylist.CAVE,
+                forge.sound.MusicPlaylist.BOSS, forge.sound.MusicPlaylist.MATCH}) {
+            String filename = playlist.getRandomFilename();
+            var expected = java.nio.file.Path.of(Config.instance().getPrefix(), "music", playlist.getSubDir()).toRealPath();
+            require(filename != null && java.nio.file.Path.of(filename).toRealPath().startsWith(expected),
+                    "Campaign audio cache retained another campaign's " + playlist + " track: " + filename);
+            try (var input = new com.badlogic.gdx.backends.lwjgl3.audio.Wav.WavInputStream(new com.badlogic.gdx.files.FileHandle(filename))) {
+                require(input.channels == 1 && input.bitDepth == 16 && input.sampleRate == 22050, "Unexpected ambient encoding");
+                byte[] buffer = new byte[32768];
+                int total = 0, read;
+                while ((read = input.read(buffer)) > 0) total += read;
+                require(total >= 48 * 22050 * 2, "Truncated ambient stream");
+            }
+        }
+        System.out.println("BELLWAKE_PRESENTATION_AUDIO_PASS: all five campaign playlists and libGDX WAV decoding after cache warmup");
+    }
+
+    private static void verifyPresentationGeometry() {
+        var stage = MapStage.getInstance();
+        var player = stage.getPlayerSprite();
+        require(!stage.isColliding(new com.badlogic.gdx.math.Rectangle(player.getX() + 2, player.getY(), 8, 6)),
+                "The actual entry foot box is blocked");
+        require(stage.isColliding(new com.badlogic.gdx.math.Rectangle(240, 400, 8, 6)),
+                "The actual river collision permits leaving the authored route");
+        System.out.println("BELLWAKE_PRESENTATION_GEOMETRY_PASS: entry clear and river blocked in " + stage.getCurrentMap());
     }
 
     private static void require(boolean condition, String message) {

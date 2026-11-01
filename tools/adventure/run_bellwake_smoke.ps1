@@ -2,6 +2,7 @@ param(
     [string]$JavaHome = $env:JAVA_HOME,
     [string]$OutputPath = "",
     [string]$AssemblyJar = "",
+    [switch]$PresentationProbe,
     [ValidateRange(320, 3840)][int]$Width = 1280,
     [ValidateRange(240, 2160)][int]$Height = 720,
     [ValidateSet('W', 'R')][string]$StarterColor = 'W'
@@ -52,6 +53,7 @@ $runtimeArgs = ($mandatory -join "`n") + "`n-Xmx4g`n-Dbellwake.isolatedProfile=t
     '"-Dbellwake.screenshot=' + (Join-Path $output 'quay-restored.png').Replace('\', '/') + '"' + "`n-cp`n" +
     '"' + $classpath + ';' + $classes.Replace('\', '/') + '"' + "`nforge.app.InteriorRestorationSmoke`n"
 $runtimeFile = Join-Path $output 'runtime.args'
+if ($PresentationProbe) { $runtimeArgs = "-Dbellwake.presentationProbe=true`n" + $runtimeArgs }
 [IO.File]::WriteAllText($runtimeFile, $runtimeArgs)
 $priorAppData = $env:APPDATA
 $priorLocalAppData = $env:LOCALAPPDATA
@@ -80,6 +82,9 @@ if ($result -ne 0 -or $text -notmatch 'BELLWAKE_INTERIOR_SMOKE_PASS' -or $text -
 }
 if (-not (Test-Path (Join-Path $output 'resume.log')) -or (Get-Content (Join-Path $output 'resume.log') -Raw) -notmatch 'BELLWAKE_FRESH_CONTINUE_PASS') {
     throw "Fresh-process Continue did not pass. Evidence: $output"
+}
+if ($PresentationProbe -and ($text -notmatch 'BELLWAKE_PRESENTATION_AUDIO_PASS' -or ([regex]::Matches($text, 'BELLWAKE_PRESENTATION_GEOMETRY_PASS')).Count -ne 2)) {
+    throw "Presentation audio/geometry markers missing. Evidence: $output"
 }
 Write-Output "Graphical restoration and ASSISTED story checks passed. Evidence: $output"
 Write-Output 'This supplies victories. It does not establish played match wins, balance, or unassisted gameplay acceptance.'

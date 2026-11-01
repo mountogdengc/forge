@@ -1,47 +1,48 @@
 <?xml version='1.0' encoding='utf-8'?>
-<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="30" height="17" tilewidth="16" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="63">
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="30" height="30" tilewidth="16" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="63">
  <tileset firstgid="1" source="../../tileset/main.tsx" />
  <tileset firstgid="10113" source="../../tileset/buildings.tsx" />
- <layer id="1" name="Background" width="30" height="17">
+ <tileset firstgid="11905" source="../../tileset/main-nocollide.tsx" />
+ <layer id="1" name="Background" width="30" height="30">
   <data encoding="base64" compression="zlib">
-   eJyL4GZgiBjFo3gUj+JRPIpH8YjAAH23xTs=
+   eJw7xsrAcGwU0xyzsiPwQNlLD7vR7aOH3fjsHGn2DkT80trOUTzysJsJbfCovaP2jto7au+ovUPTXnLcRamZxwaxvdS2GwCUq0s4
   </data>
  </layer>
- <layer id="2" name="Ground" width="30" height="17">
+ <layer id="2" name="Ground" width="30" height="30">
   <data encoding="base64" compression="zlib">
-   eJydVUtSg0AQ7QUkBCsnMH42uo0eQC8UPcKQFPfws9Rz6BY9gpp4D+0m82qaZkBwqrpggOnX7/VjppgRFT5+JkQ0DXMdxznRV0b1OOT776z9zZafHfG7D76e5vE8D5z/0WDc8fx+2swj+eW68zkxBHuhYmcwbV3IdcVxnTWfxWp3fL+eUWssE6LLpP1c6pF1pcGTHKXKjzpLo8fGY5UKV7AufOTck4NJmCNQC/SQ3KjFzYJ2de55s2dbpSnWLD3WW9IfUktMB8vBaoQa7aj+wOvDFl7gVms73/sAPo31UOs6FBfYWncZZynReRq4Sy8t/lBdY/HM627SfdymIecL37/6ufP/pnh/o7Qfo6uN947+CrdPz88pD68V7xXX9fRPvrq/0kvtH/Gu8HPmfx3r37GcoS9qsP6ufJ/GcEZfZY3FFR1P8rB/dnmr8jUP0Rt48FAV+Zec2ZeAC2+B90rl6cMWTO1ZfI864CV7Tuh+Fx37CTgMwYSeMd9aXJwhen+0AxzQvxgmOCw8D2gYO1/1t12YMe5dfo3h2/NV6vgFXcroBg==
+   eJztkmEKgCAMRvej6AxeqCt1y/50D9kRQnIk0nSKicUejKGozw8FUBRFUZRxmJd3anTvPrWpv3itATjM1Xt6yen61/O688I86Hs8Tz23vtTbyi310h7uXaV3woq8yHiRyZtyS72pfxo6pO6SvNw/zb3vk1vizUFnbetdPbA+R2+vI/a6cS0nC2fLng==
   </data>
  </layer>
- <layer id="3" name="Foreground" width="30" height="17">
+ <layer id="3" name="Foreground" width="30" height="30">
   <properties>
    <property name="spriteLayer" type="bool" value="true" />
   </properties>
   <data encoding="base64" compression="zlib">
-   eJxjYKAcNPJSJk9tQG/7KAUNQPc6MDEwLGYkDzsxkW5nPTSM7pKhdxE3eXqR/VjHjF3NZ3UGhi/q+M0h1V5i1OuzU8ccGADFKTHqzyLZa6zDwGCig8mmxL+4zES2Vx8HmxJ7cZmJbO85IHsyGwTncVDH3hygOUbsmOyzONwAArBwIddemH6QfTD/XECz14Ad1Y8gAAsXcu3FlmbPotkLc5MhlrAm116YmaCwBfkLRKPbi+we9LINV94nZC8MgOwH+QFE53JA/JaLFPYwP5JTtiGDGmb8ZS42v5Hivzoy6qm7UHsp9RsAxT9RKw==
+   eJxjYBgF9AD1vCPDfhMoBoGLdLL/EhJGtgfZflr6FeZfeoUzsn/p4U9kAPPvQKfnUTAKBiNAz4sNQyCfEJuXjXUYGEx0qG8/rcylFSDXvUMhLQwmoCbBwKAuQb5+dzFUvgcanxDoEmcYUgDdvwMJGsVJEycW2Ijhx9TWx0AFUO6GiqkNQPkEG58cewHEQx+y
   </data>
  </layer>
- <layer id="5" name="AboveSprites" width="30" height="17">
+ <layer id="5" name="AboveSprites" width="30" height="30">
   <data encoding="base64" compression="zlib">
-   eJxjYBg8oIZ3oF0wCmDgujoDww112trRNEjjW1yHgUFCB5NNKzP1OCk3fzgASsOaWnGFDFoGSRodLO4gBtRTwa0w/zYPIX8PJQAAaYAJRg==
+   eJxjYBgFo2AUjIJRMApGwVAA4joMDBI6Q8dcWoGh5t5RMApGwfAF68yxi7uLMTBoSCDY9AZqULuJAQC8XwOz
   </data>
  </layer>
  <objectgroup id="4" name="Objects">
-  <object id="38" template="../../obj/entry_up.tx" x="208" y="272" />
-  <object id="60" template="../../obj/dialog.tx" x="224" y="221">
+  <object id="38" template="../../obj/entry_up.tx" x="208" y="480" />
+  <object id="60" template="../../obj/dialog.tx" x="224" y="429">
    <properties>
     <property name="hidden" type="bool" value="false" />
     <property name="dialog">[{"condition": [{"checkQuestFlag": "bellwakeBriefed", "not": true}, {"checkCharacterFlag": "bellwakeEnding", "not": true}], "text": "Mira folds the wet coat over her arm. \"My mother went down in this coat. The Keeper at the Drowned Tollhouse still has her ticket. Bring it back before he sells the seat again.\"", "options": [{"name": "I will find her ticket.", "text": "\"Leave by the south landing. The tollhouse is east, past the reeds. Tor can offer a practice game before you go. Come back to me when you have the ticket.\"", "action": [{"setQuestFlag": {"key": "bellwakeBriefed", "val": 1}}], "options": [{"name": "Continue."}]}]}, {"condition": [{"checkQuestFlag": "bellwakeBriefed"}, {"checkQuestFlag": "bellwakeFareReleased", "not": true}, {"checkCharacterFlag": "bellwakeEnding", "not": true}], "text": "\"The tollhouse is east,\" Mira says. \"You need not rush into it unprepared.\"", "options": [{"name": "Rest by the stove.", "text": "Mira pours you something hot. You are ready to try again.", "action": [{"addLife": 20}], "options": [{"name": "Continue."}]}, {"name": "How can I prepare?", "text": "Tor waits on the west side of the quay. A practice game can earn two cards. Open Decks afterward to inspect them and decide what to change.", "options": [{"name": "Continue."}]}, {"name": "I am ready to go."}]}, {"condition": [{"checkQuestFlag": "bellwakeBriefed"}, {"checkQuestFlag": "bellwakeFareReleased"}, {"checkCharacterFlag": "bellwakeEnding", "not": true}], "text": "Mira runs her thumb over the punch in Ada's ticket. \"One crossing left. Ring her back to this bank, or let her take the boat on?\" She puts the rope in your hand.", "options": [{"name": "Ring her ashore.", "text": "Mira rings once. A woman on the landing asks for her coat. By breakfast they are arguing over the price of lamp oil, neither quite willing to go to bed.", "options": [{"name": "Keep Ghoulcaller's Bell.", "text": "The last fare is settled. Mira and Ada are home.", "action": [{"setCharacterFlag": {"key": "bellwakeEnding", "val": 1}, "setQuestFlag": {"key": "bellwakeResolved", "val": 1}, "grantRewards": [{"type": "card", "cardName": "Ghoulcaller's Bell", "count": 1}]}], "options": [{"name": "Continue."}]}]}, {"name": "Send the empty boat.", "text": "Mira buttons the coat around an empty seat. By the time the ferry turns at the far bank, someone is wearing it. A brass fare token rolls back down the mooring rope.", "options": [{"name": "Keep Traveler's Amulet.", "text": "The last fare is settled. Ada has taken the boat on.", "action": [{"setCharacterFlag": {"key": "bellwakeEnding", "val": 2}, "setQuestFlag": {"key": "bellwakeResolved", "val": 1}, "grantRewards": [{"type": "card", "cardName": "Traveler's Amulet", "count": 1}]}], "options": [{"name": "Continue."}]}]}]}, {"condition": [{"getCharacterFlag": {"key": "bellwakeEnding", "op": "=", "val": 1}}], "text": "Two coats hang by the stove. Mira calls to her mother to leave the wet one where it is. The last fare of Bellwake is settled.", "options": [{"name": "Rest by the stove.", "text": "Ada puts another log on the fire.", "action": [{"addLife": 20}], "options": [{"name": "Continue."}]}, {"name": "Leave them to their morning."}]}, {"condition": [{"getCharacterFlag": {"key": "bellwakeEnding", "op": "=", "val": 2}}], "text": "There is a fresh notch in the oarlock. Mira touches it for luck before she takes the living across. The last fare of Bellwake is settled.", "options": [{"name": "Rest by the stove.", "text": "The kettle is warm. Mira leaves a cup for you.", "action": [{"addLife": 20}], "options": [{"name": "Continue."}]}, {"name": "Watch the ferry leave."}]}]</property>
     <property name="sprite" value="sprites/heroes/human_f.atlas" />
    </properties>
   </object>
-  <object id="61" template="../../obj/enemy.tx" x="112" y="208">
+  <object id="61" template="../../obj/enemy.tx" x="112" y="416">
    <properties>
     <property name="enemy" value="Tor, Quay Tutor" />
     <property name="dialog">[{"text": "Tor lays two decks on a dry crate. \"A friendly game? There is no fee. Win once and pick two cards to take with you. You can practice again whenever you like.\"", "options": [{"name": "Play a practice game.", "action": [{"battleWithActorID": -1}]}, {"name": "Explain the two decks.", "text": "Lantern Watch builds a line of creatures and protects them. Ember Crew attacks early and uses damage spells to clear a path. You can finish the chapter with either starter.", "options": [{"name": "Continue."}]}, {"name": "Not now."}]}]</property>
     <property name="defeatDialog">[{"condition": [{"checkQuestFlag": "bellwakePracticeRewarded", "not": true}], "text": "Tor gathers the cards. \"Choose two copies of one spell. Inspect them in your collection, then open Decks if you want to change your deck. White mana casts Pacifism; red mana casts Lightning Strike.\"", "options": [{"name": "Take two Pacifisms.", "text": "Your cards are in your collection. Open Decks to choose which cards they replace.", "action": [{"setQuestFlag": {"key": "bellwakePracticeRewarded", "val": 1}, "grantRewards": [{"type": "card", "cardName": "Pacifism", "count": 2}]}], "options": [{"name": "Continue."}]}, {"name": "Take two Lightning Strikes.", "text": "Your cards are in your collection. Open Decks to choose which cards they replace.", "action": [{"setQuestFlag": {"key": "bellwakePracticeRewarded", "val": 1}, "grantRewards": [{"type": "card", "cardName": "Lightning Strike", "count": 2}]}], "options": [{"name": "Continue."}]}]}, {"condition": [{"checkQuestFlag": "bellwakePracticeRewarded"}], "text": "\"Well played,\" Tor says. \"You have already earned your cards. There is always room for another practice game.\"", "options": [{"name": "Thank Tor."}]}]</property>
    </properties>
   </object>
-  <object id="62" template="../../obj/dialog.tx" x="176" y="240">
+  <object id="62" template="../../obj/dialog.tx" x="176" y="448">
    <properties>
     <property name="hidden" type="bool" value="false" />
     <property name="dialog">[{"text": "BELLWAKE QUAY\nSouth landing: the marsh road.\nDrowned Tollhouse: east through the reeds.\nTor offers practice on the west side of the quay.\nMira tends the stove beside the landing.", "options": [{"name": "Read the directions."}]}]</property>

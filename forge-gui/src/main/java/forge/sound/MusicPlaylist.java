@@ -3,6 +3,7 @@ package forge.sound;
 import forge.util.MyRandom;
 
 import java.io.File;
+import java.util.concurrent.atomic.AtomicLong;
 
 public enum MusicPlaylist {
     BLACK       ("black/"),
@@ -21,22 +22,26 @@ public enum MusicPlaylist {
     private final String subDir;
     private int mostRecentTrackIdx = -1;
     private File[] filenames;
-    private static boolean isInvalidated = false;
+    private static final AtomicLong resourceGeneration = new AtomicLong();
+    private long loadedGeneration = -1;
 
     MusicPlaylist(String subDir0) {
         subDir = subDir0;
     }
 
     public static void invalidateMusicPlaylist() {
-        isInvalidated = true;
+        resourceGeneration.incrementAndGet();
     }
 
     public String getSubDir() {
         return this.subDir;
     }
 
-    public String getRandomFilename() {
-        if (filenames == null || isInvalidated) {
+    public synchronized String getRandomFilename() {
+        // Each playlist must observe a campaign/profile change independently.
+        // One shared boolean was consumed by the first playlist that refreshed.
+        long generation = resourceGeneration.get();
+        if (filenames == null || loadedGeneration != generation) {
             try {
                 File musicDir = SoundSystem.findMusicDirectory(this);
                 if(musicDir != null)
@@ -51,7 +56,8 @@ public enum MusicPlaylist {
                 e.printStackTrace();
                 filenames = new File[0];
             }
-            isInvalidated = false;
+            loadedGeneration = generation;
+            mostRecentTrackIdx = -1;
         }
 
         if (filenames.length == 0) { return null; }

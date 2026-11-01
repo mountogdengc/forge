@@ -1,4 +1,4 @@
-# The Last Fare of Bellwake — 0.2.0 candidate
+# The Last Fare of Bellwake - 0.3.0 candidate
 
 Bellwake is the fork's first chapter. Five passengers return from the night crossing; the sixth leaves a wet coat. Speak to Mira at Bellwake Quay, investigate the Drowned Tollhouse, recover Ada Vale's ticket, and decide how her crossing ends. The chapter has two definite endings and no New Game+.
 
@@ -16,11 +16,11 @@ The new save implementation supports stable exploration inside locations as well
 
 Interior snapshots include the room and player position, live actors, per-visit defeated encounters, persistent map changes, shop identity/stock seed, and the state needed for room exits. Returning to a saved town must not heal the character or replay its opening conversation. Loading an older checkpoint intentionally restores that older point in the story.
 
-Campaign ID remains `fork.bellwake`; this candidate's content version is `0.2.0`. Existing `0.1.0` saves are not migrated. Keep the matching old package if you want to use them. Only one content version per campaign ID is supported per installation; do not overwrite an old installation containing saves you need.
+Campaign ID remains `fork.bellwake`; this candidate's content version is `0.3.0`. Existing `0.1.0`/`0.2.0` saves are not migrated. Keep the matching old package if you want to use them. Only one content version per campaign ID is supported per installation; do not overwrite an old installation containing saves you need.
 
 ## Implementation and acceptance
 
-The chapter keeps existing Forge rules, AI, UI foundations, and shared art. Its world, quests, enemies, starters, and consequences are campaign-owned. Root maps remain in the namespaced shared folder `common/maps/map/bellwake` because the current root-POI loader uses that prefix. The maps still reuse inherited town/dungeon art; the target duration of 30–45 minutes is a playtest target, not a measured result.
+The chapter keeps existing Forge rules, AI, UI foundations, and shared art. Its world, quests, enemies, starters, and consequences are campaign-owned. Root maps remain in the namespaced shared folder `common/maps/map/bellwake` because the current root-POI loader uses that prefix. The quay and tollhouse now compose existing pixel tiles into a waterfront, landing and ruined causeway; five original ambient beds use the existing music controls. the target duration of 30-45 minutes is a playtest target, not a measured result.
 
 The implementation plan is [Bellwake chapter polish](../superpowers/plans/2026-10-31-bellwake-chapter-polish.md). Current verification and remaining acceptance work belong in [Progression validation](Progression-Validation.md). Build/automated success does not establish match balance or an unassisted finish.
 
@@ -30,9 +30,9 @@ The local Windows candidate is
 `dist/adventure-windows/ready/Forge-Adventure-Windows-Test-6747fa4da56e.zip`
 (about 454 MiB). Extract the entire ZIP to a new writable folder and run
 `Start-Adventure-Test.cmd`. Java and a fresh isolated test profile are included.
-Its archive integrity checks passed. Both starter/resource checks, assisted story
+Apply the Bellwake 0.3.0 art/ambience update to a fresh extracted copy of that base client before starting. Follow [Manual playtests](Bellwake-Manual-Playtests.md) for installation, numbered actions, expected results and report fields. Its archive integrity checks passed. Both starter/resource checks, assisted story
 branches, and fresh-process Continue are recorded in the validation guide. Actual
-matches, controller testing, measured pacing, and the final art/ambient pass remain
+matches, controller testing, measured pacing, and human assessment of the art/audio remain
 acceptance work; this is a test candidate.
 
 ## Historical 0.1.0 record
