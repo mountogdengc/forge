@@ -6,6 +6,68 @@ This checklist validates the current progression patch and the inherited content
 
 The campaign picker and independent-playthrough architecture are implemented as described in [Campaigns and saves](Campaigns-and-Saves.md). The campaign gate below records their automated and interactive coverage separately from the earlier progression fixes. Partial coverage does not turn an entire acceptance case into a pass.
 
+## First manual playtest fixes, November 1, 2026
+
+The user supplied a real Tor loss and reported successful saving, an
+unfinished-action error when loading, an unwanted exit from town after practice,
+and missing explanations of phases, stops and match controls. No deck rebalance
+was inferred from that first loss.
+
+The menu's own loading overlay was tripping the unchanged restore guard. Menu
+loads now check outgoing actions before creating the overlay, then remove that
+owned overlay before synchronous restoration. Actual battle/reward/dialogue and
+stage-action guards remain. The shipped JAR failed the real SaveLoadScene callback
+at phase 3 in `dist/bellwake-smoke/20261101-101457-d05b08`. A load-only patched
+probe passed that path and then reproduced practice ejection at phase 11 in
+`20261101-101646-58baaf`. The final client passed both paths.
+
+Tor explicitly declares friendly practice. A loss restores idle movement and
+keeps the player and tutor inside the quay without applying defeat penalties;
+ordinary enemy defeat remains unchanged. The enemy-data copy policy and content
+are tested. No campaign version, actor geometry or save-format change was made.
+
+Named actual draws/discards and additional zone transfers now use a private
+postgame log channel. Every ordinary getter filters that channel, including
+maximum/custom logging, reconnect history and the live dropdown. Private entries
+cannot carry card links. Local desktop/mobile results screens explicitly request
+the detailed history. Network forwarding omits private named events; remote
+postgame/replay history therefore remains redacted for these details. Tests cover
+privacy, duplicate suppression, undo truncation and forwarding. The old forwarding
+test initially failed because it expected all raw events; it now requires every
+public event exactly once/in order, requires private events in its workload, and
+rejects any private delivery.
+
+Final full Maven reactor package: 1,419 cases, zero failures/errors, six existing
+desktop optional skips. Queue job `cb7053017d414d87891f26bc774f170a` returned both
+exit codes 0; log `.bellwake-playtest-fixes-final.log`. The earlier full gate and
+failure are preserved in `.bellwake-playtest-fixes-reactor.log`, job
+`54fcf469e6444a80abc32493c7e5537a`. The new GUI forwarding test follows that module's
+`*Should.java` discovery convention.
+
+Native Help probes: `dist/bellwake-smoke/20261101-103334-0c34ac` (1280x720) and
+`20261101-103452-6770a1` (720x1280), both exited 0. They exercised menu loading,
+practice loss, actual match startup and named opening-hand draws hidden from live
+queries, rendered all three Help topics and checked tooltip removal after a new
+dialog changes the active container. The phase-stop captures were inspected;
+landscape fits and portrait uses the existing scrollable text panel. Hover/hold
+physical input and broader controller acceptance remain manual. The first Help
+probe waited at the real Play/Draw prompt; its helper now selects only that named
+startup choice before checking actual draw events. This does not supply a played
+match win.
+
+Older-save compatibility: `dist/bellwake-smoke/20261101-103542-846abd` copied the
+completed 0.3.0 profile from `20261031-215018-e58d78`, preserving the original. New
+client Continue restored the old interior, position, reduced life, gold, deck,
+ending and one-time reward, kept the Keeper removed, and applied the friendly Tor
+policy. The wrapper exited 0. This tests the earlier client's saved payload, not
+the user's particular private save file.
+
+Fresh review found no critical/important issues. The tooltip-container lifecycle
+concern was fixed by pinning the screen while visible and covered in the native
+Help probe. New Java sources are tracked before standalone packaging. Updated
+manual follow-up steps are in [Bellwake manual playtests](Bellwake-Manual-Playtests.md).
+Final Windows artifact identity and extracted proof are recorded after packaging.
+
 ## Standalone Bellwake Windows package, November 1, 2026
 
 Ready-to-extract build:

@@ -131,7 +131,7 @@ public class ViewWinLose implements IWinLoseView<FButton> {
 
         // Assemble game log scroller.
         final FTextArea txtLog = new FTextArea();
-        txtLog.setText(StringUtils.join(game.getGameLog().getLogEntries(null), "\r\n"));
+        txtLog.setText(StringUtils.join(game.getGameLog().getPostGameEntries(), "\r\n"));
         txtLog.setFont(FSkin.getRelativeFont(14));
         txtLog.setFocusable(true); // allow highlighting and copying of log
 

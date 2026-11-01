@@ -54,6 +54,18 @@ public class VUnifiedPhase extends FDisplayObject {
 
     private final Supplier<List<VPlayerPanel>> panels;
     private final Menu menu;
+    private final VMatchHelp.Tip tip = new VMatchHelp.Tip(this,
+            () -> VMatchHelp.text("lblMatchPhaseMenuTip", "Current phase. Tap to open each player's phase stops. Colored, underlined cells have stops ON; dim cells are OFF. Hold this label for help."));
+
+    @Override
+    public void setHovered(boolean hovered) { super.setHovered(hovered); tip.hover(hovered); }
+
+    @Override
+    public boolean longPress(float x, float y) {
+        if (!VPlayerPanel.isUnifiedPhase()) { return false; }
+        VMatchHelp.showStops();
+        return true;
+    }
 
     /** @param panels0 the player panels, top to bottom; read live so panels of players who left disappear */
     public VUnifiedPhase(Supplier<List<VPlayerPanel>> panels0) {
@@ -340,6 +352,23 @@ public class VUnifiedPhase extends FDisplayObject {
 
             /** The 12 cells of one player. */
             private class Strip extends FDisplayObject {
+                private VPhaseIndicator.PhaseLabel hoveredLabel;
+                private final VMatchHelp.Tip tip = new VMatchHelp.Tip(this,
+                        () -> hoveredLabel == null ? "" : hoveredLabel.getToolTipText());
+
+                @Override
+                public void setHovered(boolean hovered) {
+                    super.setHovered(hovered);
+                    tip.hover(hovered);
+                }
+
+                @Override
+                public void buildTouchListeners(float screenX, float screenY, List<FDisplayObject> listeners) {
+                    final VPhaseIndicator.PhaseLabel next = labelAt(screenToLocalX(screenX));
+                    if (hoveredLabel != next) { tip.hover(false); hoveredLabel = next; }
+                    super.buildTouchListeners(screenX, screenY, listeners);
+                }
+
                 private VPhaseIndicator.PhaseLabel labelAt(float x) {
                     int i = (int) (x / (getWidth() / ORDER.length));
                     i = Math.max(0, Math.min(ORDER.length - 1, i));

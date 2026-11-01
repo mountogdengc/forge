@@ -47,6 +47,7 @@
   },
   {
     "name": "Tor, Quay Tutor",
+    "practice": true,
     "sprite": "sprites/enemy/humanoid/knight.atlas",
     "deck": [
       "decks/quay-practice.dck"

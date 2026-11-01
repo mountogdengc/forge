@@ -19,6 +19,21 @@ import static forge.adventure.util.AdventureQuestController.QuestStatus.*;
 
 public class BellwakeContentTest {
     @Test
+    public void onlyTutorIsFriendlyPracticeAndCopiesRetainThePolicy() throws Exception {
+        EnemyData[] enemies = new Json().fromJson(EnemyData[].class,
+                Files.readString(adventure().resolve("Bellwake/world/enemies.json")));
+        int practice = 0;
+        for (EnemyData enemy : enemies) {
+            if (enemy.practice) {
+                practice++;
+                assertEquals(enemy.name, "Tor, Quay Tutor");
+                assertTrue(new EnemyData(enemy).practice);
+            }
+        }
+        assertEquals(practice, 1);
+        assertFalse(new EnemyData().practice);
+    }
+    @Test
     public void authoredResourcesAndCardReferencesResolve() {
         Path cards = adventure().getParent().resolve("cardsfolder");
         var errors = CampaignContentValidator.validate(adventure().resolve("Bellwake"), adventure().resolve("common"), name -> {

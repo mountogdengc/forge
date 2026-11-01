@@ -6,12 +6,20 @@ import forge.game.zone.Zone;
 import forge.game.zone.ZoneView;
 import forge.util.TextUtil;
 
-public record GameEventCardChangeZone(CardView card, ZoneView from, ZoneView to) implements GameEvent {
+public record GameEventCardChangeZone(CardView card, ZoneView from, ZoneView to, boolean actionLoggedSeparately) implements GameEvent {
+
+    public GameEventCardChangeZone(CardView card, ZoneView from, ZoneView to) {
+        this(card, from, to, false);
+    }
 
     public GameEventCardChangeZone(Card card, Zone zoneFrom, Zone zoneTo) {
+        this(card, zoneFrom, zoneTo, false);
+    }
+
+    public GameEventCardChangeZone(Card card, Zone zoneFrom, Zone zoneTo, boolean actionLoggedSeparately) {
         this(CardView.get(card),
              zoneFrom == null ? null : zoneFrom.getView(),
-             zoneTo == null ? null : zoneTo.getView());
+             zoneTo == null ? null : zoneTo.getView(), actionLoggedSeparately);
     }
 
     @Override

@@ -61,6 +61,7 @@ public enum AbilityKey {
     Devoured("Devoured"),
     DicePTExchanges("DicePTExchanges"),
     Discard("Discard"),
+    Draw("Draw"),
     DiscardedBefore("DiscardedBefore"),
     DividedShieldAmount("DividedShieldAmount"),
     EchoPaid("EchoPaid"),

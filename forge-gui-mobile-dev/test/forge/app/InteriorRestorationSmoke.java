@@ -48,6 +48,7 @@ public final class InteriorRestorationSmoke {
     private int savedGold;
     private BellwakeStorySmoke story;
     private InteriorFixtureSmoke interiorFixture;
+    private int helpTopic;
 
     public static void main(String[] args) {
         if (!Boolean.getBoolean("bellwake.isolatedProfile")) throw new IllegalStateException("An isolated profile is required.");
@@ -153,8 +154,13 @@ public final class InteriorRestorationSmoke {
                 saved = WorldSave.listSnapshots(WorldSave.getCurrentPlaythrough().playthroughId).stream()
                         .filter(s -> s.kind == SaveKind.MANUAL).findFirst().orElseThrow();
                 Current.player().giveGold(55);
-                require(WorldSave.loadSnapshot(saved), WorldSave.getLastError());
-                WorldSave.showRestoredExploration();
+                // Use the actual browser callback: its loading overlay must not
+                // be mistaken for an unfinished outgoing gameplay action.
+                Forge.switchScene(StartScene.instance());
+                StartScene.instance().Load();
+                var load = forge.adventure.scene.SaveLoadScene.class.getDeclaredMethod("load", SaveSnapshot.class);
+                load.setAccessible(true);
+                load.invoke(forge.adventure.scene.SaveLoadScene.instance(), saved);
                 phase = 3;
             } else if (phase == 3) {
                 require(Forge.getCurrentScene() instanceof TileMapScene, "Interior scene not restored");
@@ -172,8 +178,78 @@ public final class InteriorRestorationSmoke {
                 try {
                     PixmapIO.writePNG(Gdx.files.absolute(System.getProperty("bellwake.screenshot")), shot, 6, true);
                 } finally { shot.dispose(); }
+                var mob = MapStage.class.getDeclaredField("currentMob");
+                mob.setAccessible(true);
+                mob.set(MapStage.getInstance(), MapStage.getInstance().getEnemyByID(61));
+                MapStage.getInstance().setWinner(false, false);
+                phase = 11;
+            } else if (phase == 11) {
+                if (!WorldSave.explorationSaveBlockReason().isEmpty()) return;
+                require(Forge.getCurrentScene() instanceof TileMapScene && MapStage.getInstance().isInMap(),
+                        "Practice defeat ejected the player from the quay");
+                require(MapStage.getInstance().lookForID(61), "Practice defeat removed Tor");
+                require(Current.player().getLife() == savedLife && Current.player().getGold() == savedGold,
+                        "Practice defeat applied a penalty");
+                System.out.println("BELLWAKE_PRACTICE_LOSS_PASS: stays in quay, Tor available, no penalties");
+                if (Boolean.getBoolean("bellwake.helpProbe")) {
+                    MapStage.getInstance().beginDuel(MapStage.getInstance().getEnemyByID(61));
+                    phase = 120;
+                    return;
+                }
                 enter("Bellwake Tollhouse");
                 phase = 4;
+            } else if (phase == 120) {
+                if (!(Forge.getCurrentScreen() instanceof forge.screens.match.MatchScreen)) return;
+                var log = forge.screens.match.MatchController.instance.getGameView().getGameLog();
+                var detailed = (java.util.List<?>) log.getClass().getMethod("getPostGameEntries").invoke(log);
+                if (detailed.stream().noneMatch(entry -> entry.toString().contains(" draws "))) {
+                    // The coin-toss winner chooses Play before opening hands are
+                    // drawn. Advance only that named startup choice, not gameplay.
+                    var ok = ((forge.screens.match.MatchScreen) Forge.getCurrentScreen()).getActivePrompt().getBtnOk();
+                    if (ok.getText().equals(Forge.getLocalizer().getMessage("lblPlay"))) ok.trigger();
+                    return;
+                }
+                require(log.getAllEntries().stream().noneMatch(entry -> entry.toString().contains(" draws ")),
+                        "Named draws leaked into live match history");
+                String[] topics = {"showPhases", "showStops", "showButtons"};
+                var help = Class.forName("forge.screens.match.views.VMatchHelp").getDeclaredMethod(topics[helpTopic]);
+                help.setAccessible(true);
+                forge.menu.FDropDown tip = null;
+                forge.toolbox.FContainer tipParent = null;
+                if (helpTopic == 0) {
+                    var type = Class.forName("forge.screens.match.views.VMatchHelp$Tip");
+                    var constructor = type.getDeclaredConstructor(forge.toolbox.FDisplayObject.class, java.util.function.Supplier.class);
+                    constructor.setAccessible(true);
+                    tip = (forge.menu.FDropDown) constructor.newInstance(
+                            ((forge.screens.match.MatchScreen) Forge.getCurrentScreen()).getActivePrompt().getBtnOk(),
+                            (java.util.function.Supplier<String>) () -> "Control help");
+                    var message = type.getDeclaredField("message");
+                    message.setAccessible(true);
+                    message.set(tip, "Control help");
+                    tip.show();
+                    tipParent = tip.getDropDownContainer();
+                    if (tipParent == null) tipParent = forge.toolbox.FOverlay.getTopOverlay() != null
+                            ? forge.toolbox.FOverlay.getTopOverlay() : Forge.getCurrentScreen();
+                    require(tipParent.indexOf(tip) >= 0, "Tooltip was not attached");
+                }
+                help.invoke(null);
+                if (tip != null) {
+                    tip.hide();
+                    require(tipParent.indexOf(tip) < 0, "Tooltip retained by its old container after a dialog opened");
+                }
+                phase = 121;
+            } else if (phase == 121) {
+                require(forge.toolbox.FOverlay.getTopOverlay() != null, "Match Help did not open a dialog");
+                Pixmap shot = Pixmap.createFromFrameBuffer(0, 0, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
+                try {
+                    var path = java.nio.file.Path.of(System.getProperty("bellwake.screenshot")).getParent().resolve("match-help-" + helpTopic + ".png");
+                    PixmapIO.writePNG(Gdx.files.absolute(path.toString()), shot, 6, true);
+                } finally { shot.dispose(); }
+                forge.toolbox.FOverlay.getTopOverlay().hide();
+                if (++helpTopic < 3) { phase = 120; return; }
+                System.out.println("BELLWAKE_MATCH_HELP_PASS: actual named draws private; match startup and three Help dialogs rendered");
+                phase = 8;
+                Gdx.app.exit();
             } else if (phase == 4) {
                 if (Boolean.getBoolean("bellwake.presentationProbe")) verifyPresentationGeometry();
                 require(MapStage.getInstance().lookForID(60), "Keeper fixture missing");
@@ -242,6 +318,8 @@ public final class InteriorRestorationSmoke {
                 require(Current.player().getCharacterFlag("bellwakeEnding") == 2 && Current.player().checkQuestFlag("bellwakeResolved"), "Fresh Continue lost the ending");
                 require(Current.player().getCards().toFlatList().stream().filter(c -> c.getName().equals("Traveler's Amulet")).count() == 1, "Fresh Continue lost or repeated the reward");
                 require(Current.player().getSelectedDeck().getMain().countAll() == 40, "Fresh Continue changed the deck");
+                require(MapStage.getInstance().getEnemyByID(61).getData().practice,
+                        "Restored quay did not apply the friendly practice policy");
                 enter("Bellwake Tollhouse");
                 require(!MapStage.getInstance().lookForID(60), "Fresh Continue resurrected the Keeper");
                 SaveSnapshot source = WorldSave.listSnapshots(WorldSave.getCurrentPlaythrough().playthroughId).stream()

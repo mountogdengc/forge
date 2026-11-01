@@ -331,9 +331,14 @@ public class SaveLoadScene extends UIScene {
     }
 
     private void load(SaveSnapshot snapshot) {
+        if (WorldSave.hasActivePlaythrough()) {
+            String reason = WorldSave.explorationSaveBlockReason();
+            if (!reason.isEmpty()) { error(reason); return; }
+        }
         busy = true;
         Forge.setTransitionScreen(new TransitionScreen(() -> {
             try {
+                Forge.clearTransitionScreen(); // This load's own overlay is not unfinished exploration.
                 if (WorldSave.loadSnapshot(snapshot)) {
                     SoundSystem.instance.changeBackgroundTrack();
                     WorldSave.showRestoredExploration();
@@ -376,6 +381,7 @@ public class SaveLoadScene extends UIScene {
         Forge.setTransitionScreen(new TransitionScreen(() -> {
             boolean newRun = false;
             try {
+                Forge.clearTransitionScreen();
                 if (!WorldSave.loadSnapshot(source)) {
                     loadFailed(WorldSave.getLastError());
                     return;

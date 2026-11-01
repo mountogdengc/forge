@@ -338,7 +338,7 @@ public class VPhaseIndicator extends FContainer {
     }
 
     private void addPhaseLabel(String caption, PhaseType phaseType) {
-        phaseLabels.put(phaseType, add(new PhaseLabel(caption)));
+        phaseLabels.put(phaseType, add(new PhaseLabel(caption, phaseType)));
     }
 
     public PhaseLabel getLabel(PhaseType phaseType) {
@@ -413,9 +413,21 @@ public class VPhaseIndicator extends FContainer {
         private boolean yieldMarked = false;
         private Runnable onToggled;
         private Runnable onLongPress;
+        private final PhaseType phase;
+        private final VMatchHelp.Tip tip = new VMatchHelp.Tip(this, this::getToolTipText);
 
-        public PhaseLabel(String caption0) {
+        public PhaseLabel(String caption0, PhaseType phase0) {
             caption = caption0;
+            phase = phase0;
+        }
+
+        @Override
+        public String getToolTipText() { return VMatchHelp.phaseTip(phase, player.getName(), stopAtPhase); }
+
+        @Override
+        public void setHovered(boolean hovered) {
+            super.setHovered(hovered);
+            tip.hover(hovered && !isCollapsedMode());
         }
 
         public boolean getActive() {
@@ -506,6 +518,10 @@ public class VPhaseIndicator extends FContainer {
                 else { FROST_FILL.set(1f, 1f, 1f, 0.07f); }
                 final float gap = Math.max(1f, Utils.scale(1));
                 g.fillRect(FROST_FILL, x, gap, w, h - 2 * gap);
+                if (stopAtPhase) {
+                    g.fillRect(tint, x + gap, h - gap - Math.max(1f, Utils.scale(2)),
+                            Math.max(0, w - 2 * gap), Math.max(1f, Utils.scale(2)));
+                }
                 if (active && stopAtPhase) { FROST_TEXT.set(Color.BLACK); }
                 else { FROST_TEXT.set(1f, 1f, 1f, active || stopAtPhase ? 0.95f : 0.55f); }
                 g.drawText(caption, font, FROST_TEXT, x, 0, w, h, false, Align.center, true);
@@ -524,6 +540,10 @@ public class VPhaseIndicator extends FContainer {
                     backColor = Forge.isMobileAdventureMode ? FSkinColor.get(Colors.ADV_CLR_PHASE_INACTIVE_DISABLED) : FSkinColor.get(Colors.CLR_PHASE_INACTIVE_DISABLED);
                 }
                 g.fillRect(isHovered() ? backColor.brighter() : backColor, x, 0, w, h);
+                if (stopAtPhase) {
+                    g.fillRect(Color.BLACK, x + PADDING_X, h - Math.max(1f, Utils.scale(2)),
+                            Math.max(0, w - 2 * PADDING_X), Math.max(1f, Utils.scale(2)));
+                }
                 g.drawText(caption, isHovered() && font.canIncrease() ? font.increase() : font, Color.BLACK, x, 0, w, h, false, Align.center, true);
             }
         }

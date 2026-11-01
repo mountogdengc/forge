@@ -118,6 +118,14 @@ public class VPrompt extends FContainer {
 
     private class MenuButton extends FDisplayObject {
         boolean pressed;
+        private final VMatchHelp.Tip tip = new VMatchHelp.Tip(this,
+                () -> VMatchHelp.text("lblMatchMenuTip", "Open the match menu for Help, Yield Settings and other match options."));
+
+        @Override
+        public void setHovered(boolean hovered) { super.setHovered(hovered); tip.hover(hovered); }
+
+        @Override
+        public boolean longPress(float x, float y) { return tip.explain(); }
 
         @Override
         public boolean press(float x, float y) { pressed = true; return true; }
@@ -156,7 +164,7 @@ public class VPrompt extends FContainer {
         lblMessage = add(new MessageLabel());
         lblMessage.setLeft(BTN_WIDTH);
         lblMessage.setHeight(HEIGHT);
-        btnOk = add(new FButton(okText, okCommand));
+        btnOk = add(new HelpButton(okText, okCommand, true));
         btnCancel = add(new CancelButton(cancelText, e -> onCancelPressed(cancelCommand, e)));
         btnUndo = add(new UndoButton());
         btnMenu = add(new MenuButton());
@@ -197,6 +205,12 @@ public class VPrompt extends FContainer {
     /** Small round undo button that sits beside the End Turn button. */
     private class UndoButton extends FDisplayObject {
         boolean pressed;
+        private final VMatchHelp.Tip tip = new VMatchHelp.Tip(this,
+                () -> VMatchHelp.text("lblMatchUndoTip", "Undo the last reversible action. Only available while the game allows it."));
+        @Override
+        public void setHovered(boolean hovered) { super.setHovered(hovered); tip.hover(hovered); }
+        @Override
+        public boolean longPress(float x, float y) { return tip.explain(); }
         @Override
         public boolean press(float x, float y) {
             if (isVisible() && isEnabled()) {
@@ -303,13 +317,43 @@ public class VPrompt extends FContainer {
         revalidate();
     }
 
-    /**
-     * The Cancel button. While an undo is possible the game labels it "Undo (n)"; with the separate undo button that
-     * turns into the round undo button and Cancel stays End Turn.
-     */
-    private class CancelButton extends FButton {
-        private CancelButton(String text, FEventHandler command) {
+    /** Prompt buttons explain their current meaning without triggering their action. */
+    private class HelpButton extends FButton {
+        private final boolean affirmative;
+        private final VMatchHelp.Tip tip = new VMatchHelp.Tip(this, this::getToolTipText);
+
+        private HelpButton(String text, FEventHandler command, boolean affirmative0) {
             super(text, command);
+            affirmative = affirmative0;
+        }
+
+        @Override
+        public void setHovered(boolean hovered) { super.setHovered(hovered); tip.hover(hovered); }
+
+        @Override
+        public boolean longPress(float x, float y) { return tip.explain(); }
+
+        @Override
+        public String getToolTipText() {
+            if (overMatch) {
+                if (!affirmative && getText().equals(Forge.getLocalizer().getMessage("lblEndTurn"))) {
+                    return VMatchHelp.text("lblMatchEndTurnTip", "End Turn: automatically pass for the rest of the current turn, including phase stops. Required choices still appear; Yield Settings can interrupt this. Use cancel yield to take control again.");
+                }
+                if (!affirmative && undoRequested && !isSeparateUndo()) {
+                    return VMatchHelp.text("lblMatchUndoTip", "Undo the last reversible action. Only available while the game allows it.");
+                }
+                if (affirmative && getText().equals(Forge.getLocalizer().getMessage("lblOK"))) {
+                    return VMatchHelp.text("lblMatchOKTip", "OK: confirm what the message asks. During normal play, pass this one chance to act; you can still act at later stops. A waiting spell or ability may resolve after everyone passes.");
+                }
+            }
+            return getText() + "\n" + VMatchHelp.text("lblMatchPromptTip", "Read the prompt beside this button for the current choice. OK confirms; Cancel backs out when allowed.");
+        }
+    }
+
+    /** With a separate Undo button, this button keeps the End Turn label. */
+    private class CancelButton extends HelpButton {
+        private CancelButton(String text, FEventHandler command) {
+            super(text, command, false);
         }
 
         private static String msg(String key) {

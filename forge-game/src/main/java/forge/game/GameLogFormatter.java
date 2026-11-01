@@ -315,19 +315,25 @@ public class GameLogFormatter extends IGameEventVisitor.Base<GameLogEntry> {
             return new GameLogEntry(GameLogEntryType.ANTE,
                     (c != null ? c.getOwner() + " anted " + c : "a card was anted"));
         }
-        // Only log Battlefield -> Graveyard/Exile to avoid duplicating entries
-        // already covered by other events (land played, spell cast, discard, etc.)
-        if (from != ZoneType.Battlefield || (to != ZoneType.Graveyard && to != ZoneType.Exile)) {
+        final boolean publicMovement = from == ZoneType.Battlefield
+                && (to == ZoneType.Graveyard || to == ZoneType.Exile);
+        // Draw/discard have their own actual-action records. Casts, resolutions and
+        // land plays already have entries too; keep one record per action.
+        if (!publicMovement && (ev.actionLoggedSeparately() || from == to
+                || from == ZoneType.Stack || to == ZoneType.Stack
+                || (to == ZoneType.Battlefield && ev.card() != null
+                        && ev.card().getCurrentState().isLand()))) {
             return null;
         }
         final String cardName = ev.card() != null ? ev.card().toString() : "a card";
         final String message = localizer.getMessage("lblLogZoneChange", cardName, to, from);
-        return new GameLogEntry(GameLogEntryType.ZONE_CHANGE, message, ev.card());
+        return new GameLogEntry(GameLogEntryType.ZONE_CHANGE, message,
+                publicMovement ? ev.card() : null, !publicMovement);
     }
 
     @Override
     public GameLogEntry visit(GameEventAddLog ev) {
-        return new GameLogEntry(ev.type(), ev.message(), ev.sourceCard());
+        return new GameLogEntry(ev.type(), ev.message(), ev.sourceCard(), ev.postGameOnly());
     }
 
     @Subscribe

@@ -29,6 +29,8 @@ public class EnemyData implements Serializable {
     public boolean copyPlayerDeck = false;
     public String ai;
     public boolean boss = false;
+    /** Friendly practice: losing preserves exploration state and stays in the location. */
+    public boolean practice = false;
     public boolean flying = false;
     public boolean randomizeDeck = false;
     public float spawnRate;
@@ -59,6 +61,7 @@ public class EnemyData implements Serializable {
         battleBackground = enemyData.battleBackground;
         ai              = enemyData.ai;
         boss            = enemyData.boss;
+        practice        = enemyData.practice;
         flying          = enemyData.flying;
         randomizeDeck   = enemyData.randomizeDeck;
         spawnRate       = enemyData.spawnRate;

@@ -117,10 +117,17 @@ public class StartScene extends UIScene {
     public boolean Continue() {
         if (loaded || !WorldSave.canContinue())
             return true;
+        if (WorldSave.hasActivePlaythrough()) {
+            String reason = WorldSave.explorationSaveBlockReason();
+            if (!reason.isEmpty()) { showError(reason); return true; }
+        }
         loaded = true;
         try {
             Forge.setTransitionScreen(new TransitionScreen(() -> {
                 try {
+                    // The overlay belongs to this load, not outgoing gameplay.
+                    // Keep the restore guard intact for actual pending actions.
+                    Forge.clearTransitionScreen();
                     if (WorldSave.loadContinue()) {
                         SoundSystem.instance.changeBackgroundTrack();
                         WorldSave.showRestoredExploration();

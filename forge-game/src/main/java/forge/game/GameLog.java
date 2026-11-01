@@ -95,9 +95,18 @@ public class GameLog extends Observable implements Serializable {
         this.notifyObservers();
     }
 
-    /** All entries in chronological (insertion) order — note {@link #getLogEntries} returns newest-first. */
+    /** Public entries in insertion order — note {@link #getLogEntries} returns newest-first. */
     public List<GameLogEntry> getAllEntries() {
-        return snapshot();
+        final List<GameLogEntry> entries = snapshot();
+        entries.removeIf(GameLogEntry::postGameOnly);
+        return entries;
+    }
+
+    /** Full private history, newest first. Only completed-game viewers should use this. */
+    public List<GameLogEntry> getPostGameEntries() {
+        final List<GameLogEntry> entries = snapshot();
+        java.util.Collections.reverse(entries);
+        return entries;
     }
 
     /**
@@ -112,7 +121,7 @@ public class GameLog extends Observable implements Serializable {
     
         for (int i = all.size() - 1; i >= 0; i--) {
             GameLogEntry le = all.get(i);
-            if (logLevel == null || le.type().compareTo(logLevel) <= 0) {
+            if (!le.postGameOnly() && (logLevel == null || le.type().compareTo(logLevel) <= 0)) {
                 result.add(le);
             }
         }
@@ -128,7 +137,7 @@ public class GameLog extends Observable implements Serializable {
         final List<GameLogEntry> result = new ArrayList<>();
         for (int i = all.size() - 1; i >= 0; i--) {
             GameLogEntry le = all.get(i);
-            if (types.contains(le.type())) {
+            if (!le.postGameOnly() && types.contains(le.type())) {
                 result.add(le);
             }
         }
@@ -141,7 +150,7 @@ public class GameLog extends Observable implements Serializable {
     
         for (int i = all.size() - 1; i >= 0; i--) {
             GameLogEntry le = all.get(i);
-            if (logLevel == null || le.type().compareTo(logLevel) == 0) {
+            if (!le.postGameOnly() && (logLevel == null || le.type().compareTo(logLevel) == 0)) {
                 result.add(le);
             }
         }

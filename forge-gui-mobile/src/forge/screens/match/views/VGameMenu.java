@@ -21,6 +21,8 @@ public class VGameMenu extends FDropDownMenu {
 
     @Override
     protected void buildMenu() {
+        addItem(new FMenuItem(VMatchHelp.text("lblMatchHelp", "Help: playing a match"), FSkinImage.QUESTION,
+                e -> VMatchHelp.show()));
         if (MatchController.instance.isReplay()) {
             // a recording has nothing to concede, undo, yield or cheat with: only a way out
             addItem(new FMenuItem("Close replay", FSkinImage.CONCEDE, e ->

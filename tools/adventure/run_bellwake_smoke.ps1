@@ -3,7 +3,9 @@ param(
     [string]$OutputPath = "",
     [string]$AssemblyJar = "",
     [string]$PackageRoot = "",
+    [string]$ResumeFrom = "",
     [switch]$PresentationProbe,
+    [switch]$HelpProbe,
     [ValidateRange(320, 3840)][int]$Width = 1280,
     [ValidateRange(240, 2160)][int]$Height = 720,
     [ValidateSet('W', 'R')][string]$StarterColor = 'W'
@@ -11,6 +13,7 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $repository = (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
+if ($ResumeFrom -and ($PackageRoot -or $HelpProbe)) { throw 'ResumeFrom uses an AssemblyJar and its own disposable copied profile.' }
 $launchDirectory = Join-Path $repository 'forge-gui-mobile-dev'
 $runtimeJava = Join-Path $JavaHome 'bin/java.exe'
 if ($PackageRoot) {
@@ -46,6 +49,14 @@ $classes = Join-Path $output 'classes'
 $profile = Join-Path $output 'profile'
 New-Item -ItemType Directory -Force $classes, "$profile/roaming/Forge/preferences", "$profile/local" | Out-Null
 [IO.File]::WriteAllText((Join-Path $profile 'roaming/Forge/preferences/forge.preferences'), "UI_SELECTOR_MODE=Adventure`n")
+if ($ResumeFrom) {
+    $prior = (Resolve-Path -LiteralPath $ResumeFrom).Path
+    if (-not (Test-Path (Join-Path $prior 'expected.properties')) -or -not (Test-Path (Join-Path $prior 'profile/roaming/Forge/adventure'))) {
+        throw 'ResumeFrom must be a completed older smoke run with expectations and its disposable profile.'
+    }
+    Copy-Item -LiteralPath (Join-Path $prior 'expected.properties') -Destination (Join-Path $output 'expected.properties')
+    Get-ChildItem -LiteralPath (Join-Path $prior 'profile/roaming/Forge') -Force | Copy-Item -Destination (Join-Path $profile 'roaming/Forge') -Recurse -Force
+}
 $reactor = @('forge-core', 'forge-game', 'forge-ai', 'forge-gui', 'forge-gui-mobile', 'forge-gui-mobile-dev' | ForEach-Object {
     Join-Path $repository "$_/target/classes"
 }) -join ';'
@@ -71,6 +82,8 @@ $runtimeArgs = ($mandatory -join "`n") + "`n-Xmx4g`n-Dbellwake.isolatedProfile=t
     '"' + $classpath + ';' + $classes.Replace('\', '/') + '"' + "`nforge.app.InteriorRestorationSmoke`n"
 $runtimeFile = Join-Path $output 'runtime.args'
 if ($PresentationProbe) { $runtimeArgs = "-Dbellwake.presentationProbe=true`n" + $runtimeArgs }
+if ($HelpProbe) { $runtimeArgs = "-Dbellwake.helpProbe=true`n" + $runtimeArgs }
+if ($ResumeFrom) { $runtimeArgs = "-Dbellwake.resume=true`n" + $runtimeArgs }
 if ($PackageRoot) { $runtimeArgs = "-Dbellwake.packagedProbe=true`n" + $runtimeArgs }
 [IO.File]::WriteAllText($runtimeFile, $runtimeArgs)
 $priorAppData = $env:APPDATA
@@ -94,6 +107,22 @@ try {
     Pop-Location
 }
 $text = Get-Content $log -Raw
+if ($ResumeFrom) {
+    if ($result -ne 0 -or $text -notmatch 'BELLWAKE_FRESH_CONTINUE_PASS') {
+        Get-Content $log -Tail 25
+        throw "Older-profile Continue did not pass. Evidence: $output"
+    }
+    Write-Output "Older client profile restored in the updated client. Evidence: $output"
+    return
+}
+if ($HelpProbe) {
+    if ($result -ne 0 -or $text -notmatch 'BELLWAKE_MATCH_HELP_PASS' -or $text -notmatch 'BELLWAKE_PRACTICE_LOSS_PASS') {
+        Get-Content $log -Tail 25
+        throw "Match Help probe did not pass. Evidence: $output"
+    }
+    Write-Output "Actual match Help dialogs rendered. Evidence: $output"
+    return
+}
 if ($result -ne 0 -or $text -notmatch 'BELLWAKE_INTERIOR_SMOKE_PASS' -or $text -notmatch 'BELLWAKE_ASSISTED_STORY_PASS') {
     Get-Content $log -Tail 25
     throw "Graphical smoke did not pass. Evidence: $output"

@@ -18,6 +18,7 @@ import forge.ai.ComputerUtil;
 import forge.game.Game;
 import forge.game.card.Card;
 import forge.game.event.GameEvent;
+import forge.game.event.GameEventAddLog;
 import forge.game.event.GameEventAttackersDeclared;
 import forge.game.event.GameEventBlockersDeclared;
 import forge.game.event.GameEventCardChangeZone;
@@ -250,17 +251,29 @@ public class GameEventForwarderTest extends AITest {
         return sent;
     }
 
-    // Fails if an event is dropped, sent twice or sent out of order, so a sound, a log line or an animation is lost or misplaced
+    // Public events must arrive exactly once and in order; private card names must never reach a remote client.
     @Test
-    public void everyEventIsSentOnceAndInOrder() {
+    public void everyPublicEventIsSentOnceAndInOrder() {
         final Sent sent = twoBusyTurns();
 
         final List<GameEvent> received = new ArrayList<>();
         sent.batches.forEach(batch -> received.addAll(batch.events()));
+        final List<GameEvent> publicEvents = new ArrayList<>();
+        int privateDetails = 0;
+        for (final GameEvent event : sent.fired) {
+            if (event instanceof GameEventAddLog detail && detail.postGameOnly()) {
+                privateDetails++;
+            } else {
+                publicEvents.add(event);
+            }
+        }
         AssertJUnit.assertTrue("the turns were busy", sent.fired.size() > 40);
-        AssertJUnit.assertEquals("as many events were sent as were fired", sent.fired.size(), received.size());
+        AssertJUnit.assertTrue("the game emitted private draw/discard details to exercise filtering", privateDetails > 0);
+        AssertJUnit.assertFalse("no private card-name log event was delivered", received.stream()
+                .anyMatch(event -> event instanceof GameEventAddLog detail && detail.postGameOnly()));
+        AssertJUnit.assertEquals("every public event was sent", publicEvents.size(), received.size());
         for (int i = 0; i < received.size(); i++) {
-            AssertJUnit.assertSame("event " + i + " is the one fired in that place", sent.fired.get(i), received.get(i));
+            AssertJUnit.assertSame("public event " + i + " is the one fired in that place", publicEvents.get(i), received.get(i));
         }
     }
 

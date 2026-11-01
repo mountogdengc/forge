@@ -1231,8 +1231,16 @@ public class Player extends GameEntity implements Comparable<Player> {
                 }
             }
 
-            c = game.getAction().moveTo(hand, c, cause, params);
+            // Suppress the generic zone record: this action has a named draw entry.
+            final Map<AbilityKey, Object> drawParams = AbilityKey.newMap();
+            if (params != null) {
+                drawParams.putAll(params);
+            }
+            drawParams.put(AbilityKey.Draw, true);
+            c = game.getAction().moveTo(hand, c, cause, drawParams);
             drawn.add(c);
+            game.fireEvent(GameEventAddLog.postGameDetail(GameLogEntryType.INFORMATION,
+                    this + " draws " + c + "."));
 
             // CR 121.6c additional actions can't be performed when draw gets replaced
             // but "drawn this way" effects should still count them
@@ -1455,7 +1463,7 @@ public class Player extends GameEntity implements Comparable<Player> {
         //sb.append(" with Madness");
         sb.append(".");
         // Play the Discard sound
-        game.fireEvent(new GameEventAddLog(GameLogEntryType.DISCARD, sb.toString(), c));
+        game.fireEvent(GameEventAddLog.postGameDetail(GameLogEntryType.DISCARD, sb.toString()));
 
         newCard.setDiscarded(true);
 

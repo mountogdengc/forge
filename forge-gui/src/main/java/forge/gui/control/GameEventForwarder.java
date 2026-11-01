@@ -3,6 +3,7 @@ package forge.gui.control;
 import com.google.common.eventbus.Subscribe;
 import forge.game.card.CardView;
 import forge.game.event.GameEvent;
+import forge.game.event.GameEventAddLog;
 import forge.game.event.GameEventCardChangeZone;
 import forge.game.event.GameEventPlayerPriority;
 import forge.game.event.GameEventTurnEnded;
@@ -43,6 +44,12 @@ public class GameEventForwarder implements Observer {
 
     @Subscribe
     public void receiveGameEvent(GameEvent ev) {
+        // The engine keeps private action details for its completed-game viewer.
+        // Never broadcast their hidden card names to remote clients or recordings.
+        // Remote postgame logs stay redacted until a separate disclosure path exists.
+        if (ev instanceof GameEventAddLog detail && detail.postGameOnly()) {
+            return;
+        }
         if (ev instanceof GameEventTurnEnded && somethingHappened) {
             flush();
         }

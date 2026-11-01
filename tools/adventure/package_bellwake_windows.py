@@ -1,6 +1,7 @@
 """Combine the verified Windows base and Bellwake update into one portable ZIP.
 
-No game code is rebuilt. Inputs are immutable, pinned archives. The completed
+The base inputs are immutable, pinned archives. An optional tested full client
+assembly replaces the old JAR for compatible playtest fixes. The completed
 archive is extracted and every file verified in a NEW disposable test folder.
 """
 import argparse
@@ -11,7 +12,7 @@ from pathlib import Path, PurePosixPath
 import subprocess
 import zipfile
 
-from package_windows_test import LAUNCHER, check_jar
+from package_windows_test import LAUNCHER, check_jar, test_evidence
 
 ROOT = Path(__file__).resolve().parents[2]
 BASE_SHA = "c417bc4d7b61b6f57ddbf56da8aaca8646a35cf224d3b07c80fd2da93551f75f"
@@ -58,7 +59,15 @@ def main():
     parser.add_argument("--update-zip", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--verify-dir", type=Path, required=True)
+    parser.add_argument("--client-jar", type=Path,
+                        help="Fresh tested full reactor assembly, plus current compatible Bellwake enemy definitions")
     args = parser.parse_args()
+    client_tests = None
+    if args.client_jar:
+        if subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT, text=True).strip():
+            raise ValueError("Commit reviewed sources before recording the replacement client's identity")
+        check_jar(args.client_jar)
+        client_tests = test_evidence(ROOT)
     for path, expected in ((args.base_zip, BASE_SHA), (args.update_zip, UPDATE_SHA)):
         if digest(path) != expected:
             raise ValueError("Input archive checksum mismatch: " + str(path))
@@ -92,6 +101,15 @@ def main():
                      "input_base_zip_sha256": BASE_SHA, "input_update_zip_sha256": UPDATE_SHA,
                      "launcher": "Start-Bellwake.cmd", "default_campaign_plane": "Bellwake",
                      "package_verification": "All input entries hashed; output ZIP CRC and complete extraction hashes checked. Native packaged-runtime results recorded separately in Progression-Validation.md."})
+        if args.client_jar:
+            info["previous_update_source_commit"] = info["source_commit"]
+            info["source_commit"] = info["packaging_source_commit"]
+            info["jar_sha256"] = digest(args.client_jar)
+            info["tests"] = client_tests
+            info["client_build"] = "Full clean Maven reactor assembly; playtest fixes, not a one-class patch"
+            info["verification"] = "Fresh reactor test results above; see Progression-Validation.md for native/UI proof."
+            info.pop("changed_client_entries", None)
+            info.pop("class_sha256", None)
         checklist = (ROOT / "docs/Adventure/Bellwake-Manual-Playtests.md").read_text(encoding="utf-8")
         start = checklist.index("1. Keep your existing")
         end = checklist.index("5. In Settings")
@@ -134,6 +152,17 @@ BUILD-INFO.json; modified client sources accompany the build under source/.
             "test-profile/adventure/settings.json": b'{"plane":"Bellwake","width":1280,"height":720}\n',
             "source/tools/adventure/package_bellwake_windows.py": Path(__file__).read_bytes(),
         }
+        if args.client_jar:
+            replacement["forge-adventure-test.jar"] = args.client_jar.read_bytes()
+            replacement["res/adventure/Bellwake/world/enemies.json"] = (ROOT / "forge-gui/res/adventure/Bellwake/world/enemies.json").read_bytes()
+            readme += "\nPLAYTEST FIXES: named draws/discards in postgame log only; match-menu Help and\ncontrol tips; menu loading fixed; losing to Tor stays in the quay.\n\nKEEPING YOUR 0.3.0 RUNS: close both clients, back up the old test-profile folder,\nthen copy test-profile from your previous Bellwake 0.3.0 installation into this\nfresh extraction before launching. Keep the old folder too. No geometry, campaign\nversion or save-format changes were made. Never copy your normal Forge profile.\n"
+            replacement["READ-ME-FIRST.txt"] = readme.encode("utf-8")
+            # Include precisely the changed client sources, not unrelated local files.
+            changed = subprocess.check_output(["git", "diff", "--name-only", "6747fa4da56e", "--", "*.java"], cwd=ROOT, text=True).splitlines()
+            for name in changed:
+                path = ROOT / name
+                if path.is_file():
+                    replacement["source/" + name] = path.read_bytes()
         hashes = {}
         print("Writing single Windows ZIP and validating all inherited bytes...", flush=True)
         with zipfile.ZipFile(archive_path, "w", zipfile.ZIP_DEFLATED, compresslevel=6) as target:

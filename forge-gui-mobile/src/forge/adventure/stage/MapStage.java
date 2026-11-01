@@ -890,6 +890,15 @@ public class MapStage extends GameStage {
                 currentMob.freezeMovement();
                 AdventureQuestController.instance().updateQuestsLose(currentMob);
                 AdventureQuestController.instance().showQuestDialogs(MapStage.this);
+                if (currentMob.getData().practice) {
+                    // A friendly rematch starts here, without the dungeon-loss
+                    // penalty/exit path or replaying the town's entry events.
+                    isLoadingMatch = false;
+                    freezeAllEnemyBehaviors = false;
+                    MapStage.this.stop();
+                    currentMob = null;
+                    return;
+                }
                 boolean defeated = Current.player().defeated();
                 //If hardcore mode is added, check and redirect to game over screen here
                 if (canFailDungeon && !defeated)

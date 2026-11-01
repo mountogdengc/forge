@@ -594,7 +594,9 @@ public class GameAction {
         }
 
         // play the change zone sound
-        game.fireEvent(new GameEventCardChangeZone(c, zoneFrom, zoneTo));
+        game.fireEvent(new GameEventCardChangeZone(c, zoneFrom, zoneTo,
+                params != null && (Boolean.TRUE.equals(params.get(AbilityKey.Draw))
+                        || Boolean.TRUE.equals(params.get(AbilityKey.Discard)))));
 
         game.getTriggerHandler().clearActiveTriggers(copied, null);
         game.getTriggerHandler().registerActiveTrigger(copied, false);

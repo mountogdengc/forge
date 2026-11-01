@@ -9,6 +9,36 @@ Bellwake and Create character. Skip installation steps 1-4 below and continue at
 step 5. The ZIP also includes a copy of this guide with standalone setup steps.
 Keep old installations for older saves; use fresh runs here.
 
+## First playtest follow-up checks
+
+For the playtest-fixes build, you may keep a current Bellwake 0.3.0 run: close
+both clients, back up its old `test-profile` folder, then copy that folder into
+the NEW extraction before launching. Keep the old installation too. Do not copy
+your normal Forge profile. Older 0.1.0/0.2.0 content still needs its old client.
+
+1. Load your existing run. Compare location, life, gold, deck, collection and
+   objective before continuing. If there is a mismatch, preserve both copies.
+2. Lose a practice match to Tor. Expected: you remain inside the quay, retain
+   life and gold, and can move away, return and speak to Tor for a rematch.
+3. Save in the quay, move, open the menu and use Load to select the checkpoint.
+   Expected: the saved position restores without an unfinished-action error.
+   Repeat inside the tollhouse, with F8 and with Continue after a full restart.
+4. During a match open the match menu and **Help: playing a match**. Read all
+   three topics. Expected: the phase sequence, stop settings and OK/End Turn
+   explanations are readable and can be closed without advancing a choice.
+5. Hover over OK, End Turn, Undo, the menu, the phase name and individual phase
+   cells. Expected: delayed explanations. Holding prompt buttons explains them
+   without acting; holding a phase cell retains its explained yield action.
+6. Toggle stops in your row and the opponent's row separately. Expected: enabled
+   cells have a bottom line and color; current-phase highlighting is distinct.
+   These settings pause your decisions on the chosen player's turns.
+7. During play check the small history: newly recorded private draw/discard
+   details must not appear there, even with maximum/custom logging. After the
+   match, the detailed results log should name actual drawn/discarded cards and
+   other zone movements. Keep an example if a move is missing or duplicated.
+
+These checks supplement the full runs below. No new deck balance is assumed.
+
 ## Install base plus update (alternative) and prepare
 
 1. Keep your existing Forge/Bellwake installation intact. Extract the entire verified base client ZIP, `Forge-Adventure-Windows-Test-6747fa4da56e.zip`, into a **new writable folder**, for example `C:/Games/Bellwake-0.3-Test`. Java is included; do not install another Java or copy normal saves into this folder.
