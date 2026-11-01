@@ -20,7 +20,7 @@ Campaign ID remains `fork.bellwake`; this candidate's content version is `0.3.0`
 
 ## Implementation and acceptance
 
-The chapter keeps existing Forge rules, AI, UI foundations, and shared art. Its world, quests, enemies, starters, and consequences are campaign-owned. Root maps remain in the namespaced shared folder `common/maps/map/bellwake` because the current root-POI loader uses that prefix. The quay and tollhouse now compose existing pixel tiles into a waterfront, landing and ruined causeway; five original ambient beds use the existing music controls. the target duration of 30-45 minutes is a playtest target, not a measured result.
+The chapter keeps existing Forge rules, AI, UI foundations, and shared art. Its world, quests, enemies, starters, and consequences are campaign-owned. Root maps remain in the namespaced shared folder `common/maps/map/bellwake` because the current root-POI loader uses that prefix. The quay and tollhouse now compose existing pixel tiles into a waterfront, landing and ruined causeway; five original ambient beds use the existing music controls. The target duration of 30-45 minutes is a playtest target, not a measured result.
 
 The implementation plan is [Bellwake chapter polish](../superpowers/plans/2026-10-31-bellwake-chapter-polish.md). Current verification and remaining acceptance work belong in [Progression validation](Progression-Validation.md). Build/automated success does not establish match balance or an unassisted finish.
 

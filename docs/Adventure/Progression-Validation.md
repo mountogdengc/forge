@@ -6,6 +6,69 @@ This checklist validates the current progression patch and the inherited content
 
 The campaign picker and independent-playthrough architecture are implemented as described in [Campaigns and saves](Campaigns-and-Saves.md). The campaign gate below records their automated and interactive coverage separately from the earlier progression fixes. Partial coverage does not turn an entire acceptance case into a pass.
 
+## Bellwake 0.3.0 art/ambient candidate, October 31, 2026
+
+Source/art snapshot: `3c8c94ba7ce` on `codex/bellwake-chapter-polish`.
+The waterfront and tollhouse now use authored 30x30 tile compositions, preserving
+actor world positions and IDs; five original 48-second ambient beds use the
+existing music playlists. A reproduced shared playlist invalidation bug is fixed
+with independent per-playlist generation tracking. Content version 0.3.0 requires
+a fresh run; preserve the matching old installation for older saves.
+
+Checks actually run:
+
+- Five Python asset contracts passed, including reachable interaction/exit paths,
+  blocked water, unchanged actor coordinates, portrait map dimensions and WAV
+  format/levels. A sealed-landing negative fixture proves the path check rejects
+  blocked routes. Final run includes the paper-covered ledger tile.
+- Eight focused chapter/content-validator cases passed. The affected Maven reactor
+  passed 87 cases (70 Adventure), zero failures/errors/skips. Queue job
+  `f934d7c6e4e64215b3ed9c9e6f857d3d` returned both exit codes 0; full log is
+  `.bellwake-presentation-reactor.log` (2026-10-31 21:43 America/Denver).
+- Native audio regression RED: `dist/bellwake-smoke/20261031-212727-019ea8`
+  warmed common playlists, activated Bellwake, refreshed BLACK, then incorrectly
+  received common TOWN music. Source GREEN:
+  `dist/bellwake-smoke/20261031-213313-404a01` resolved all five campaign tracks,
+  decoded their full PCM data with libGDX, completed assisted story/restoration
+  and fresh-process Continue. Hardware audio was disabled; this is no listening
+  or mix-quality claim.
+- Fresh-context review reported no critical/important defects. Its optional
+  manifest concern was addressed: packaging verifies every inherited base file
+  against its pristine checksum before borrowing any manifest entry.
+
+Windows update: `dist/bellwake-presentation/3c8c94ba7ce/Bellwake-Art-Ambience-0.3.0.zip`
+(64,979,672 bytes), SHA256
+`4fb223c4256253cbeeeed499b1c49848e5900800f1149968e9b7d6e6648c9278`.
+The updated JAR SHA256 is
+`bbc669f3447fd34fe258164ce3ee2a39bb69817c16f460ac46576c50076abced`.
+The package contains only chapter resources, the compatible one-class JAR update,
+source copies and handoff/identity/checksum files; the verified base ZIP supplies
+the launcher and runtime. The packager compiled with release 17, validated every
+inherited base file, checked JAR/ZIP CRCs, and rejected profile/cache/runtime
+entries. Queue job `e8c989c2311d445baa9e86dbaf724df6` returned both exit codes 0.
+Keep the base installation/archive unchanged; apply the update to a fresh copy.
+
+Final delivery-JAR native proof: `dist/bellwake-smoke/20261031-215018-e58d78`,
+720x1280, Ember Crew, same updated JAR SHA256 as above. The wrapper exited 0.
+Both map geometry markers passed (entry clear, river blocked), as did the five
+playlist routing/WAV decoding marker, interior restoration, both assisted endings,
+reward persistence and fresh-process Continue. `quay-restored.png` was visually
+inspected: river/shoreline fills portrait rather than an empty map region.
+Reproduce with:
+
+```powershell
+./tools/adventure/run_bellwake_smoke.ps1 -JavaHome 'C:/Program Files/Java/jdk-26' -AssemblyJar 'dist/bellwake-presentation/3c8c94ba7ce/update/forge-adventure-test.jar' -PresentationProbe -StarterColor R -Width 720 -Height 1280
+```
+
+This uses matching checkout resources and an isolated disposable profile. It does
+not play real matches, exercise physical controller input, or listen to hardware
+audio. Full match, balance, listening and controller gates remain manual.
+Manual acceptance remains pending. Use [Bellwake manual playtests](Bellwake-Manual-Playtests.md)
+for exact prerequisites, four numbered runs, save checkpoints, presentation/input
+checks, expected results and report fields. Real match balance, losses/recovery,
+controller focus, subjective art/audio quality and measured pacing require those
+runs; supplied victories and WAV decoding do not establish them.
+
 ## Bellwake 0.2.0 candidate, October 31, 2026
 
 Implementation is on `codex/bellwake-chapter-polish`, based on

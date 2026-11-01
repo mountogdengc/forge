@@ -27,7 +27,7 @@
 
 - Preserve Forge rules, card data, AI, campaign/run isolation, and existing legacy campaign behavior.
 - Existing saves are not overwritten or silently reinterpreted under changed content.
-- Ship polished Bellwake as content version `0.2.0`; `0.1.0` saves require the old package. Only one installed version per campaign ID is currently supported: document package swapping, not side-by-side compatibility. No migration is promised.
+- The original candidate shipped content version `0.2.0`; the art/ambient follow-up uses `0.3.0`. Older saves require their matching package. Only one installed version per campaign ID is currently supported: document package swapping, not side-by-side compatibility. No migration is promised.
 - Do not change stable TMX object IDs of retained persisted actors casually. Allocate new IDs for new actors and document removed IDs.
 - New save readers accept existing version-1 overworld snapshots. Newly captured snapshots use envelope version 2 so older clients reject them rather than load an incorrect overworld state. Unmodified imports of old payloads retain envelope version 1. Keep playthrough metadata version 1; split the repository's shared version constant accordingly.
 - Build the Adventure client through `forge-gui-mobile-dev`, not the separate Swing client.
@@ -70,7 +70,7 @@ multi-part tasks are not a claim that no code exists.
 Automated/native checks passed and the local Windows candidate ZIP is built and integrity-checked.
 Acceptance remains open for played matches and both starters, deliberate
 loss/rematch, physical controller navigation, measured duration, complete display
-readability, and the stronger quay art/ambient pass. Supplied victories do not
+readability, and human assessment of the new quay/tollhouse art and ambient mix. Supplied victories do not
 satisfy those gates. This is a candidate, not a fully accepted polished release.
 
 | Task | Implementation result / remaining gate |
@@ -80,7 +80,7 @@ satisfy those gates. This is a candidate, not a fully accepted polished release.
 | 3 | Stable interior save/load/Continue and deferred checkpoints implemented and verified, including failed-load recovery and in-flight action guards. |
 | 4 | Briefing, clue, ticket, interaction endings and persistent consequences implemented; both branches passed assisted interactions. Player walkthrough remains open. |
 | 5 | Two curated starts, optional one-time upgrade and free recovery implemented; actual match balance and deliberate loss/rematch remain open. |
-| 6 | Content diagnostics, orientation text and completed journal implemented; final art/ambient, physical focus and presentation acceptance remain open. |
+| 6 | Content diagnostics, orientation text and completed journal implemented; Art/ambient implementation is complete in the 0.3.0 follow-up; physical focus and human presentation acceptance remain open. |
 | 7 | Full reactor and final affected build passed; local Windows ZIP and packaged-runtime Continue passed. Human gameplay acceptance remains open. |
 
 ## Task 1: Define a versioned exploration snapshot

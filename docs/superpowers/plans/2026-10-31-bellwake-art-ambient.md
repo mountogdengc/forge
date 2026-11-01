@@ -16,11 +16,11 @@
 
 - [x] Add failing asset contracts for safe approaches, water boundaries, portrait dimensions, version and audio levels/formats.
 - [x] Rework quay/toll maps with deterministic tooling and inspect rendered previews.
-- [ ] Generate and validate original campaign audio; prove routing/decoding with existing runtime APIs.
-- [ ] Run chapter content/regression tests and native map/restore/story checks sequentially; capture updated previews.
-- [ ] Produce a small verified overlay and exact manual test instructions, including setup, numbered actions, expected results, report fields and dependent follow-up work.
-- [ ] Fresh review, fix significant findings, record actual evidence and remaining manual acceptance.
+- [x] Generate and validate original campaign audio; prove routing/decoding with existing runtime APIs.
+- [x] Run chapter content/regression tests and native map/restore/story checks sequentially; capture updated previews.
+- [x] Produce a small verified overlay and exact manual test instructions, including setup, numbered actions, expected results, report fields and dependent follow-up work.
+- [x] Fresh review, fix significant findings, record actual evidence and remaining manual acceptance.
 
 Ruling: The existing shared invalidation flag was consumed by the first playlist refreshed after a campaign switch. Native RED warmed common playlists, activated Bellwake, refreshed BLACK, then TOWN incorrectly returned common/town/town5.mp3. Per-playlist generation tracking fixes this without new audio controls or gameplay behavior. Atomic generation + per-playlist synchronized lookup avoids clearing arrays under a playback callback. The update therefore includes a reassembled compatible JAR, not assets alone.
 
-Evidence so far: five asset contracts and eight chapter/validator tests passed. Native source run 20261031-213313-404a01 passed all five playlist routes and libGDX PCM decoding, assisted story/restoration, and fresh-process Continue. Final delivery-JAR/geometry proof and manual handoff remain.
+Evidence so far: five asset contracts and eight chapter/validator tests passed. Native source run 20261031-213313-404a01 passed all five playlist routes and libGDX PCM decoding, assisted story/restoration, and fresh-process Continue. Final delivery JAR passed portrait map geometry, all five audio routes/decoding, assisted story/restoration and fresh-process Continue in 20261031-215018-e58d78. The update ZIP was integrity-checked with every inherited base file verified. Manual handoff is docs/Adventure/Bellwake-Manual-Playtests.md; actual match, listening, physical controller and pacing acceptance remain pending.
