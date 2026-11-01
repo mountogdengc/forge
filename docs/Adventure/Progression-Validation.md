@@ -28,6 +28,22 @@ inspected: complete borders and captions are visible. The wrapper exited 0.
 An earlier geometry-only capture used the starting-hand labels; the final probe
 waits for the real End Turn prompt instead of substituting labels.
 
+Windows build:
+`dist/adventure-windows/bellwake-corner-fix-da3b68a2877-ready/Bellwake-Windows-0.3.0.zip`.
+Source `da3b68a2877`; 484,334,469 bytes; SHA256
+`81490c292ce47b39ce0104c6cebce0f54766017b9686ee1f2c6e230448110517`.
+Packaging job `3b30cef8af9f46dcb47221780f98309b` returned both exit codes 0.
+All 56,412 extracted files and ZIP CRCs passed, and the bundled Java ran. The
+replacement-client metadata now records its own JAR build timestamp separately
+from the preceding art update timestamp. Earlier test reports for unchanged
+modules are identified above; no new full desktop-suite run is claimed here.
+
+Extracted portrait proof: `dist/bellwake-smoke/20261101-110239-16fbd7`, 720x1280,
+using the ZIP's own runtime, JAR, resources and portable profile. The wrapper
+exited 0 after asserting normal/reversed placement and fully inset bounds in a
+real priority prompt. Both captures were generated and the normal capture was
+inspected. This remains a layout/startup check, not a played match win.
+
 Final standalone artifact identity and extracted viewport proof follow packaging.
 
 ## First manual playtest fixes, November 1, 2026
