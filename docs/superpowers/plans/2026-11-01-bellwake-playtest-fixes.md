@@ -29,3 +29,12 @@ shows the unfinished-action guard during menu loading, not a corrupt-file error.
 Root owns Adventure/save fixes and integration. Two independent agents own match
 guidance and log privacy respectively. Heavy builds/tests remain sequential.
 Native game probes use disposable profiles and no host desktop control.
+
+## Completion evidence
+
+Implementation committed as `ee8431f7625`; exact tests, RED/GREEN reproductions,
+Help captures, older-client save compatibility and final standalone ZIP identity
+are in `docs/Adventure/Progression-Validation.md`. The final extracted client
+passed menu loading, practice-loss recovery, assisted story and fresh Continue.
+The full reactor reported 1,419 cases, zero failures/errors and six existing skips.
+Physical hover/controller use and real-match balance remain manual acceptance.

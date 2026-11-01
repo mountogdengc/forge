@@ -27,11 +27,15 @@ The implementation plan is [Bellwake chapter polish](../superpowers/plans/2026-1
 The explicit graphical runner is `tools/adventure/run_bellwake_smoke.ps1`. It compiles the desktop test fixtures, starts a native libGDX client with a disposable profile, and retains its log and screenshot. It checks restoration, rollback, connected rooms, respawning encounters, shops, and assisted chapter interactions. It supplies victories; it is not a played match or balance test. See the validation guide for invocation and actual results.
 
 The standalone Windows candidate is
-`dist/adventure-windows/bellwake-0.3.0-ready/Bellwake-Windows-0.3.0.zip`.
+`dist/adventure-windows/bellwake-playtest-fixes-ee8431f7625-ready/Bellwake-Windows-0.3.0.zip`.
 Extract the entire ZIP to a new writable folder and run `Start-Bellwake.cmd`.
 Java, the art/ambient update, a fresh isolated test profile and the numbered
 `Bellwake-Manual-Playtests.md` guide are included. Choose New Game; The Last Fare
 of Bellwake is preselected. No separate base package or patch is needed.
+This build fixes menu loading and friendly-practice recovery, adds match Help
+and control tips, and keeps named draw/discard details in the postgame log.
+To keep an existing 0.3.0 run, close both clients, back up the old `test-profile`,
+and copy it beside the new launcher's file before starting. Keep the old folder.
 Follow [Manual playtests](Bellwake-Manual-Playtests.md) for actions, expected results
 and report fields. Package and runtime checks are recorded in the validation guide.
 Both starter/resource checks, assisted story branches, and fresh-process Continue

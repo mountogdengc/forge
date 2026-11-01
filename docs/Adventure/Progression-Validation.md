@@ -66,7 +66,25 @@ Fresh review found no critical/important issues. The tooltip-container lifecycle
 concern was fixed by pinning the screen while visible and covered in the native
 Help probe. New Java sources are tracked before standalone packaging. Updated
 manual follow-up steps are in [Bellwake manual playtests](Bellwake-Manual-Playtests.md).
-Final Windows artifact identity and extracted proof are recorded after packaging.
+Final Windows artifact:
+`dist/adventure-windows/bellwake-playtest-fixes-ee8431f7625-ready/Bellwake-Windows-0.3.0.zip`.
+Source `ee8431f7625c2b4505240c21aae07df29e404a94`; 483,515,349 bytes; SHA256
+`69598169cfc4f1c267f067f0cd7e01194f00b7efdf7ae759612b1cca695012da`.
+New full client JAR SHA256:
+`645e802a0ca66956c31299996b602e56134505c61294d6a7e751ac9d2996c80a`.
+Packaging job `04128b3864d147c1a274d0d9e2f015c7` returned both exit codes 0.
+ZIP CRCs and every one of the 56,412 extracted files passed verification; bundled
+Java 26 ran. Use `source_commit`, `jar_sha256` and `packaged_at_utc` for this
+artifact's identity; the inherited `built_at_utc` describes the earlier art update.
+The actual launcher loaded Adventure menu resources:
+`dist/bellwake-smoke/playtest-fixes-launcher-ee8431f7625`, exit 0.
+
+Final extracted runtime: `dist/bellwake-smoke/20261101-104310-b82a0c`, Ember Crew,
+1280x720. Wrapper exit 0. It used the ZIP's bundled runtime, JAR, resources and
+portable profile, and passed actual menu-load restoration, friendly practice loss,
+five audio routes/decoding, both map collision probes, connected-room/rollback
+fixtures, both assisted ending branches and fresh-process Continue. The shipped
+ZIP remains pristine; only the separate verification extraction has fixture saves.
 
 ## Standalone Bellwake Windows package, November 1, 2026
 
