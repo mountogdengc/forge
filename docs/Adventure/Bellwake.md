@@ -27,11 +27,17 @@ The implementation plan is [Bellwake chapter polish](../superpowers/plans/2026-1
 The explicit graphical runner is `tools/adventure/run_bellwake_smoke.ps1`. It compiles the desktop test fixtures, starts a native libGDX client with a disposable profile, and retains its log and screenshot. It checks restoration, rollback, connected rooms, respawning encounters, shops, and assisted chapter interactions. It supplies victories; it is not a played match or balance test. See the validation guide for invocation and actual results.
 
 The standalone Windows candidate is
-`dist/adventure-windows/bellwake-corner-fix-da3b68a2877-ready/Bellwake-Windows-0.3.0.zip`.
+`dist/adventure-windows/bellwake-card-loading-ebdc3907868c-ready/Bellwake-Windows-0.3.0.zip`.
 Extract the entire ZIP to a new writable folder and run `Start-Bellwake.cmd`.
 Java, the art/ambient update, a fresh isolated test profile and the numbered
 `Bellwake-Manual-Playtests.md` guide are included. Choose New Game; The Last Fare
 of Bellwake is preselected. No separate base package or patch is needed.
+This candidate defers card rules, caches the card-name index, and includes
+`Edit-Campaign-Sets.cmd` for campaign authors. Bellwake's availability and 0.3.0
+saves are unchanged. Measured cached menu startup fell from a 25.842-second
+median to 12.105 seconds under the controlled conditions in
+[Adventure card loading](Card-Loading.md). First launch can still build fonts
+and the card index; use the included launchers instead of opening a JAR.
 This build fixes menu loading and friendly-practice recovery, adds match Help
 and control tips, and keeps named draw/discard details in the postgame log.
 To keep an existing 0.3.0 run, close both clients, back up the old `test-profile`,

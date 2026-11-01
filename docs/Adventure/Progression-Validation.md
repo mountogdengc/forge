@@ -6,6 +6,90 @@ This checklist validates the current progression patch and the inherited content
 
 The campaign picker and independent-playthrough architecture are implemented as described in [Campaigns and saves](Campaigns-and-Saves.md). The campaign gate below records their automated and interactive coverage separately from the earlier progression fixes. Partial coverage does not turn an entire acceptance case into a pass.
 
+## Campaign-first card loading, November 1, 2026
+
+Implementation source `ebdc3907868c`; Bellwake remains content version 0.3.0
+with unchanged availability and save format. Desktop libGDX Adventure defers
+rules; a validated persistent name index accelerates subsequent starts. Fixed
+cards resolve by name, selected-edition acquisition pools prepare those names,
+and ordinary whole-catalog APIs still complete the database. The author editor
+adds **Allowed sets**; clearing removes the whitelist to preserve legacy null
+semantics. Android/iOS and Swing startup defaults are unchanged.
+
+Baseline, method and measurements: [Adventure card loading](Card-Loading.md).
+Final sequential capped database comparison job
+`e00605295ba345d3871607e77cfadddb`: old eager median 2,673 ms; final cached
+1,282 ms; cold index 4,138 ms (one sample). Full eager/deferred counts match
+97,271 printings and 33,223 unique cards. Summed peak heap pools are measured
+separately from resident/native/GPU memory.
+
+Actual hidden Bellwake menu comparison, same preconverted fonts/fresh profiles:
+old median 25.842 s (three runs); final absent card index 17.173 s (one run);
+final cached median 12.105 s (three runs). Final menus load zero common rules,
+and warm indexes parse zero scripts. These conditions exclude unrelated first
+font-generation costs and do not guarantee a complete cold-extraction time.
+Evidence `.superpowers/card-loading/startup-old-final-repeats/`,
+`startup-final-cold/`, `startup-final-warm/`; all wrappers exit 0. No benchmark
+window became visible or focused.
+
+Clean reactor job `5ef7207356394b2ca08293147abec108` passed 1,442 cases.
+After final startup/cache corrections, whole affected reactor job
+`0b30a039e0054e899e4585f2003ac52d` passed **1,443 reported cases**, zero
+failures/errors and six existing optional desktop skips (1,437 passes).
+The final build uses the preceding clean outputs and normal changed-file
+compilation, with all affected tests rerun. Cache tests cover source/ZIP
+invalidation, corrupt/unwritable caches, aliases and transient parse recovery;
+catalog/reward tests cover complete fallback, explicit prints, selected pools,
+campaign switching, fixed rewards and saved UNKNOWN printings. Editor roundtrip
+and startup-port policy tests also pass. Fresh code review findings were fixed.
+
+Failed setup/intermediate results remain retained: unquoted JVM arguments,
+missing language initialization, sandbox/incorrect resource CWD, an existing
+save-test worker timeout with cleanup lock, and a run compiling the new recovery
+test before its implementation. The final save suite passes. An early native
+candidate exposed a hidden SpellSmith acquisition-pool preload; removing that
+startup call is verified by the final zero-rule menu assertions. None of those
+failed/intermediate measurements is used as the final performance baseline.
+
+Windows archive:
+`dist/adventure-windows/bellwake-card-loading-ebdc3907868c-ready/Bellwake-Windows-0.3.0.zip`.
+514,474,125 bytes; SHA256
+`e1fae95615a85609ee25554929564c2684055a14f145d5fc9d96c638cb7b5a56`.
+Packaging job `8c1ec584cb334126b819a55687afef3a` exits 0; 56,442 extracted
+files, complete hashes, ZIP CRC and bundled Java 26 pass. The archive includes
+the matching editor, normal/eager diagnostic launchers, source/provenance and
+manual guides. Both game launchers use a 2 GB heap and four reported JVM
+processors. The earlier packages remain intact.
+
+Native final-client proof (all wrappers exit 0):
+
+- `dist/bellwake-smoke/card-loading-help`: actual match opening, private named
+  draws, three Help dialogs and practice loss; loaded unique cards are 0 at
+  the menu, 43 after starter preparation and 43 at the first duel.
+- `dist/bellwake-smoke/card-loading-packaged-white`: exact extracted ZIP and
+  bundled Java, default Bellwake/portable profile, white starter, interior
+  save/menu Load/F5/F8 checks, failed cross-campaign rollback, connected
+  interiors, practice reward once, both assisted endings, revisit/reload and
+  fresh-process Continue.
+- `dist/bellwake-smoke/card-loading-red`: actual red character starter through
+  the same assisted story/save checks and fresh-process Continue.
+- `dist/bellwake-smoke/card-loading-older-save`: a copied older 0.3.0 profile
+  from `20261031-215018-e58d78` restores Continue, ending state, 17 life,
+  12 gold and quay position (208, 16). Its original profile is untouched.
+- `.superpowers/card-loading/editor-panel/probe.log`: packaged editor panel
+  lists 686 editions in headless Swing without initializing the card reader.
+  File writes are covered separately by the editor roundtrip tests.
+
+These are hidden render/runtime tests and assisted victories. They do not
+execute the real launcher/Main entry point, assess physical keyboard/mouse
+responsiveness or the earlier host lockup, supply played match wins/balance,
+or assess audible ambience. Use the delivered `Start-Bellwake.cmd`,
+`Bellwake-Manual-Playtests.md` and the loading checks in `Card-Loading.md` for
+those human acceptance cases. Report first/repeat startup times, launcher,
+campaign/sets, card/edition, save outcome, and both logs; those results determine
+whether remaining work concerns first-use resources, input/GPU diagnosis,
+card-resolution compatibility or chapter balance.
+
 ## Bottom prompt clipping, November 1, 2026
 
 The reported bottom corners used legacy FButton corner artwork drawn at 150% of
