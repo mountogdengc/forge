@@ -7,13 +7,18 @@ final class DesktopGraphicsPolicy {
     private DesktopGraphicsPolicy() { }
 
     static Lwjgl3ApplicationConfiguration create(boolean diagnostic) {
+        return create(diagnostic, false);
+    }
+
+    static Lwjgl3ApplicationConfiguration create(boolean diagnostic, boolean diagnosticAudio) {
         Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
         config.setForegroundFPS(diagnostic ? 30 : 60);
         config.setIdleFPS(15);
         config.useVsync(true);
-        config.disableAudio(diagnostic);
+        boolean audio = !diagnostic || diagnosticAudio;
+        config.disableAudio(!audio);
         System.out.println("Desktop graphics: frame limit=" + (diagnostic ? 30 : 60)
-                + ", VSync=true, audio=" + !diagnostic + ", diagnostic=" + diagnostic);
+                + ", VSync=true, audio=" + audio + ", diagnostic=" + diagnostic);
         return config;
     }
 }

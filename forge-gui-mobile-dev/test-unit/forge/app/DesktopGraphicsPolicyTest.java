@@ -16,6 +16,14 @@ public class DesktopGraphicsPolicyTest {
         assertEquals(value(config, "foregroundFPS"), 30);
         assertEquals(value(config, "disableAudio"), true);
     }
+    @Test public void audioComparisonRetainsTheSameRenderingLimits() throws Exception {
+        Object config = Class.forName("forge.app.DesktopGraphicsPolicy")
+                .getDeclaredMethod("create", boolean.class, boolean.class).invoke(null, true, true);
+        assertEquals(value(config, "foregroundFPS"), 30);
+        assertEquals(value(config, "idleFPS"), 15);
+        assertEquals(value(config, "vSyncEnabled"), true);
+        assertEquals(value(config, "disableAudio"), false);
+    }
     private static Object create(boolean diagnostic) throws Exception {
         return Class.forName("forge.app.DesktopGraphicsPolicy").getDeclaredMethod("create", boolean.class).invoke(null, diagnostic);
     }

@@ -1,6 +1,7 @@
 param(
     [string]$PackageRoot = $PSScriptRoot,
-    [ValidateRange(5, 30)][int]$Seconds = 30
+    [ValidateRange(5, 30)][int]$Seconds = 30,
+    [switch]$AudioEnabled
 )
 $ErrorActionPreference = 'Stop'
 
@@ -80,8 +81,9 @@ New-Item -ItemType Directory -Force $logs | Out-Null
 $options = (Get-Content (Join-Path $root 'java-options.txt') -Raw).Trim() + "`n-Xms128m`n-Xmx1g`n-XX:ActiveProcessorCount=2`n-Dforge.desktop.diagnostic=true`n" +
     '"-Duser.home=' + $root.Replace('\', '/') + '/test-home"' + "`n-jar`nforge-bellwake-diagnostic.jar`nlandscape`nwidth=960`nheight=540`n"
 $argumentFile = Join-Path $logs 'runtime.args'
+if ($AudioEnabled) { $options = "-Dforge.desktop.diagnosticAudio=true`n" + $options }
 [IO.File]::WriteAllText($argumentFile, $options)
-Write-Output "Diagnostic: 30 FPS, audio disabled, windowed. Stops after $Seconds seconds including loading."
+Write-Output "Diagnostic: 30 FPS, audio enabled=$AudioEnabled, windowed. Stops after $Seconds seconds including loading."
 Write-Output "Driver/kernel stalls can delay the watchdog. Logs: $logs"
 Write-Output 'Keep this diagnostic console open until the test finishes; closing it can cancel the watchdog.'
 $previousAppData = $env:APPDATA
@@ -98,6 +100,7 @@ try {
     $result = Watch-BellwakeProcess -Process $process -LimitSeconds $Seconds -LogDirectory $logs -GpuTool $gpuTool
     $result.game_pid = $process.Id
     $result.diagnostic = $true
+    $result.audio_enabled = [bool]$AudioEnabled
     $result | ConvertTo-Json | Set-Content (Join-Path $logs 'result.json')
     Write-Output "Diagnostic finished. Keep this log folder: $logs"
 } finally {

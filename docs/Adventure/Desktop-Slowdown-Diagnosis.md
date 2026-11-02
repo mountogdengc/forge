@@ -5,7 +5,8 @@ including several minutes to quit from the menu. Normal responsiveness returns
 after closing it. Current installation:
 `C:/tmp/Bellwake-Windows-0.3.0/Bellwake-Windows-0.3.0`.
 
-No game was relaunched during this investigation. After exit there is no Java
+The initial investigation did not relaunch the game. One subsequently approved
+30-second run is recorded below; no second run has been made. After the original exit there was no Java
 game process, about 14 GB available physical memory, zero paging/disk queue in
 the captured sample, and the RTX 3090 reports 3,410/24,576 MiB VRAM and 6% GPU
 utilization. These are idle observations and cannot rule out resource pressure
@@ -53,10 +54,10 @@ start a match or change settings during this diagnostic.
    whether the desktop stayed responsive, and whether automatic termination
    restored it. No older process is terminated by this script.
 
-The game has not been launched with this candidate. Configuration tests fail
-before the policy exists and pass afterward. Watchdog timeout/normal-exit checks
+Before the first approved run, configuration tests failed
+before the policy existed and passed afterward. Watchdog timeout/normal-exit checks
 use harmless hidden PowerShell child processes; they do not exercise graphics
-or prove desktop safety. Physical run remains a separate, user-approved step.
+or prove desktop safety. Each physical run remains a separate, user-approved step.
 
 The affected Maven reactor passed 115 cases with zero failures/errors/skips,
 including the two new graphics configuration cases. Desktop/game behavior tests
@@ -76,3 +77,37 @@ Packaging job `c07ac8617cfa48088cb816b6f9c29dee` exits 0. Source
 The installed original JAR still matches its previous
 `cb946014ef6e021853151ccbb547450cd3c58a75b79f86ec6fda33e07f7b15a2` hash.
 No game Java process was running at the final read-only check.
+
+## First approved visible run — 17:21 local time
+
+The add-on's 12 files were installed beside the user's existing JAR; that
+original JAR retained its prior hash. User explicitly approved one 30-second
+run. The actual Main/GameLauncher log confirms 30 FPS, VSync true, audio false,
+diagnostic true, a warm index hit and zero card-index script parses. The
+watchdog recorded 30,237 ms and `stopped_at_limit=true`; its exit-code field was
+null, so termination was independently verified by the absence of Java/Javaw.
+
+David reported the desktop/cursor stayed responsive, and he created a new game
+and played until automatic closure. GPU samples were 9–24% utilization and
+3,189–4,021 MiB total VRAM use of 24,576 MiB. Java working set peaked around
+1,353 MiB, private bytes around 2,397 MiB, with 20.92 process CPU seconds over
+the sampled interval. These are not all Java heap memory. After closure, the
+host had about 15 GB available RAM and zero sampled paging.
+
+Logs: `C:/tmp/Bellwake-Windows-0.3.0/Bellwake-Windows-0.3.0/logs/diagnostic-20261101-172124-4413d3`.
+Preserved raw copies and summary:
+`.superpowers/desktop-slowdown/approved-run-20261101-172124/`.
+This establishes a usable low-load baseline for that run, not the cause of the
+original slowdown: frame pacing, audio, worker sizing, heap and cache state
+were different from the ordinary run.
+
+An optional audio-on comparison is prepared separately. It changes only audio
+from the successful diagnostic settings; 30 FPS, window size, heap, processor
+count and deadline stay the same. A configuration test asserts frame/VSync/audio
+settings; the script keeps the other launch arguments unchanged. The comparison
+uses a distinct `GITBellwakeAudioDiagnostic` revision, and packaging rejects the
+earlier client so an audio-on label cannot silently use its audio-disabled code.
+It has not been installed or run; approval for the first run is not treated as
+permission for a second. If audio-on reproduces the problem, investigate the
+audio backend/device path. If it stays responsive, retain the frame cap and
+isolate other differences before declaring a root cause.

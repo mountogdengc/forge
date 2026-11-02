@@ -20,14 +20,14 @@ def main():
         if jar.testzip() or 'forge/app/DesktopGraphicsPolicy.class' not in jar.namelist():
             raise ValueError('Missing or corrupt diagnostic client.')
         manifest = jar.read('META-INF/MANIFEST.MF')
-        if b'Main-Class: forge.app.Main' not in manifest or b'GITBellwakeDesktopDiagnostic' not in manifest:
+        if b'Main-Class: forge.app.Main' not in manifest or b'GITBellwakeAudioDiagnostic' not in manifest:
             raise ValueError('Wrong client entry point or revision.')
     cases = []
     for report in (ROOT / 'forge-gui-mobile-dev/target/surefire-reports').glob('TEST-*.xml'):
         cases.extend(ET.parse(report).getroot().iter('testcase'))
     cases = [case for case in cases if case.get('classname') == 'forge.app.DesktopGraphicsPolicyTest']
-    if len(cases) != 2 or any(case.find(tag) is not None for case in cases for tag in ('failure', 'error', 'skipped')):
-        raise ValueError('Require both passing desktop configuration tests.')
+    if len(cases) != 3 or any(case.find(tag) is not None for case in cases for tag in ('failure', 'error', 'skipped')):
+        raise ValueError('Require all three passing desktop configuration tests.')
     output = args.output.resolve()
     if output.exists():
         raise ValueError('Choose a new output directory; preserve earlier evidence.')
@@ -55,12 +55,20 @@ its watchdog. Use only when you are ready for one controlled diagnostic run.
    when slowdown started; cursor/desktop responsiveness; auto-close outcome;
    responsiveness after closing. Initial loading may consume the whole test.
 
+AUDIO COMPARISON (only after agreeing to another timed test):
+Start-Bellwake-Diagnostic-Audio.cmd enables audio while retaining the exact same
+30 FPS, 960x540 window, 1 GB heap, two reported processors and 30-second deadline.
+It may reproduce the desktop slowdown. Do not use the ordinary launcher for
+this comparison. The first no-audio run was responsive; cause remains unknown.
+
 This changes multiple settings for low-load triage. Success alone cannot tell
 which subsystem caused the problem. Logs record game output, CPU/memory samples,
 optional bounded NVIDIA GPU queries and termination status. The original game
 JAR is left intact. No installer, driver update or global system setting change.
 ''',
     }
+    files['Start-Bellwake-Diagnostic-Audio.cmd'] = files['Start-Bellwake-Diagnostic.cmd'].replace(
+        b'-Seconds 30\r\n', b'-Seconds 30 -AudioEnabled\r\n')
     sources = ['forge-gui-mobile-dev/src/forge/app/GameLauncher.java',
                'forge-gui-mobile-dev/src/forge/app/DesktopGraphicsPolicy.java',
                'forge-gui-mobile-dev/test-unit/forge/app/DesktopGraphicsPolicyTest.java',
@@ -71,7 +79,7 @@ JAR is left intact. No installer, driver update or global system setting change.
     info = {
         'source_commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
         'jar_sha256': hashlib.sha256(files['forge-bellwake-diagnostic.jar']).hexdigest(),
-        'configuration_tests_passed': 2,
+        'configuration_tests_passed': 3,
         'game_run': False,
         'status': 'Unconfirmed cause; opt-in low-load diagnostic only',
     }

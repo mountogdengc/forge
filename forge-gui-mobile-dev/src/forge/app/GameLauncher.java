@@ -29,7 +29,8 @@ public class GameLauncher {
         //increase MemoryStack to 1MB, default is 64kb
         Configuration.STACK_SIZE.set(1024);
         boolean diagnostic = Boolean.getBoolean("forge.desktop.diagnostic");
-        Lwjgl3ApplicationConfiguration config = DesktopGraphicsPolicy.create(diagnostic);
+        Lwjgl3ApplicationConfiguration config = DesktopGraphicsPolicy.create(diagnostic,
+                Boolean.getBoolean("forge.desktop.diagnosticAudio"));
         HWInfo hw = null;
         try {
             SystemInfo si = new SystemInfo();
