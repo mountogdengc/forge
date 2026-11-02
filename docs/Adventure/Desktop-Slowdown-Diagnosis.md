@@ -146,3 +146,16 @@ checks the exact tested JAR hash before launching. It has not been executed.
 The original launcher and JAR are unchanged. This is a short-tested workaround
 for continued playtesting, not verified long-session stability, normal shutdown
 behavior, or a confirmed root-cause fix.
+
+## User playthrough and larger window
+
+David subsequently reported the capped launcher worked well and that he played
+through the whole quest. That supplies human full-quest playthrough evidence at
+960×540 with the capped/audio-on setup, beyond the earlier timed checks. It
+does not isolate the original slowdown's cause.
+
+At his request, `Start-Bellwake-Capped.cmd` now opens at 1280×720. The 30-FPS
+cap, audio, 1-GB heap, two reported processors, client JAR and portable profile
+remain unchanged. The installed 960×540 launcher is retained separately as
+`Start-Bellwake-Capped-960x540.cmd`. No game was launched for this change;
+the larger window still needs its next user playtest.

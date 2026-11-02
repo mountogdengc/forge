@@ -15,10 +15,10 @@ if not exist "logs" mkdir "logs"
 if exist "logs\capped-launcher.log" copy /y "logs\capped-launcher.log" "logs\capped-launcher.previous.log" >nul
 set "APPDATA=%CD%\test-platform\roaming"
 set "LOCALAPPDATA=%CD%\test-platform\local"
-echo Bellwake playtest: 30 FPS, audio on, 960x540, 1 GB Java heap, two reported processors.
-echo There is NO automatic timeout. Longer sessions and normal quitting remain unverified.
+echo Bellwake playtest: 30 FPS, audio on, 1280x720, 1 GB Java heap, two reported processors.
+echo There is NO automatic timeout.
 echo Keep this console open while playing. Errors go to logs\capped-launcher.log.
-"runtime\bin\java.exe" @java-options.txt -Xms128m -Xmx1g -XX:ActiveProcessorCount=2 -Dforge.desktop.diagnostic=true -Dforge.desktop.diagnosticAudio=true "-Duser.home=%CD%\test-home" -jar "forge-bellwake-diagnostic.jar" landscape width=960 height=540 1>"logs\capped-launcher.log" 2>&1
+"runtime\bin\java.exe" @java-options.txt -Xms128m -Xmx1g -XX:ActiveProcessorCount=2 -Dforge.desktop.diagnostic=true -Dforge.desktop.diagnosticAudio=true "-Duser.home=%CD%\test-home" -jar "forge-bellwake-diagnostic.jar" landscape width=1280 height=720 1>"logs\capped-launcher.log" 2>&1
 set "result=%ERRORLEVEL%"
 if not "%result%"=="0" (
   echo The game exited with an error. Keep logs\capped-launcher.log.
