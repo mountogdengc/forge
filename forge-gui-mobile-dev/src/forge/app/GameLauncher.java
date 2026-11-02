@@ -28,7 +28,8 @@ public class GameLauncher {
         Lwjgl3ApplicationConfiguration.useGlfwAsync();
         //increase MemoryStack to 1MB, default is 64kb
         Configuration.STACK_SIZE.set(1024);
-        Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
+        boolean diagnostic = Boolean.getBoolean("forge.desktop.diagnostic");
+        Lwjgl3ApplicationConfiguration config = DesktopGraphicsPolicy.create(diagnostic);
         HWInfo hw = null;
         try {
             SystemInfo si = new SystemInfo();
@@ -107,7 +108,7 @@ public class GameLauncher {
             int tmp = windowHeight; windowHeight = windowWidth; windowWidth = tmp;
         }
 
-        if (Config.instance().getSettingData().fullScreen) {
+        if (Config.instance().getSettingData().fullScreen && !diagnostic) {
             config.setFullscreenMode(Lwjgl3ApplicationConfiguration.getDisplayMode());
             config.setAutoIconify(true);
         } else {
