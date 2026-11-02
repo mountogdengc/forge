@@ -102,6 +102,39 @@ public class CampaignCardLoadingTest {
         }
     }
 
+    @Test
+    public void explicitEditionRewardsStayLazyForUniqueAndVariantModes() throws Exception {
+        for (boolean variants : new boolean[]{false, true}) {
+            try (Fixture fixture = new Fixture()) {
+                fixture.activate("ALL");
+                Config.instance().getSettingData().useAllCardVariants = variants;
+                RewardData fixed = new RewardData();
+                fixed.type = "card";
+                fixed.cardName = "Shared Card";
+                fixed.editions = new String[]{"AAA"};
+                fixed.count = 2;
+                Array<Reward> cards = fixed.generate(false, true);
+                assertEquals(cards.size, 2);
+                for (Reward card : cards) assertEquals(card.getCard().getEdition(), "AAA");
+
+                RewardData union = new RewardData();
+                union.type = "Union";
+                union.count = 2;
+                union.cardUnion = new RewardData[]{fixed};
+                Array<Reward> unionCards = union.generate(false, true);
+                assertEquals(unionCards.size, 2);
+                for (Reward card : unionCards) assertEquals(card.getCard().getEdition(), "AAA");
+
+                fixed.cardName = "Shared Card|BBB";
+                for (Reward card : fixed.generate(false, true)) assertEquals(card.getCard().getEdition(), "BBB",
+                        "An embedded edition takes precedence over the separate edition filter.");
+                assertFalse(fixture.data.getCommonCards().contains("Alpha Card"));
+                assertFalse(fixture.data.getCommonCards().contains("Beta Card"),
+                        "Explicit named rewards must not materialize unrelated scripts.");
+            }
+        }
+    }
+
     private static Set<String> names(Iterable<PaperCard> cards) {
         Set<String> names = new java.util.HashSet<>();
         for (PaperCard card : cards) names.add(card.getName());
