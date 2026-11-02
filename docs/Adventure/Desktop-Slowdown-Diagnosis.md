@@ -101,13 +101,48 @@ This establishes a usable low-load baseline for that run, not the cause of the
 original slowdown: frame pacing, audio, worker sizing, heap and cache state
 were different from the ordinary run.
 
-An optional audio-on comparison is prepared separately. It changes only audio
+An optional audio-on comparison was prepared separately. It changes only audio
 from the successful diagnostic settings; 30 FPS, window size, heap, processor
 count and deadline stay the same. A configuration test asserts frame/VSync/audio
 settings; the script keeps the other launch arguments unchanged. The comparison
 uses a distinct `GITBellwakeAudioDiagnostic` revision, and packaging rejects the
 earlier client so an audio-on label cannot silently use its audio-disabled code.
-It has not been installed or run; approval for the first run is not treated as
-permission for a second. If audio-on reproduces the problem, investigate the
-audio backend/device path. If it stays responsive, retain the frame cap and
-isolate other differences before declaring a root cause.
+It was not installed or run until David separately approved the second test.
+If audio-on reproduces the problem, investigate the audio backend/device path.
+If it stays responsive, retain the frame cap and isolate other differences
+before declaring a root cause.
+
+## Second approved run, audio enabled — 17:43 local time
+
+Before installation, no Java/Javaw game was running and the shared test slot was
+idle. Each replaced diagnostic file was copied into the installation's
+`diagnostic-backups/before-audio-20261101-174330` folder. The original normal-game
+JAR retained its previous SHA256. The installed comparison JAR matches
+`018a851ba19ce1c8756036f0708b25b64510d73f5c34496f3d1e0e5e73d88075`.
+
+The real Main/GameLauncher log confirms `frame limit=30, VSync=true, audio=true,
+diagnostic=true` and `GITBellwakeAudioDiagnostic`. The watchdog recorded
+30,229 ms, `audio_enabled=true` and `stopped_at_limit=true`. Again its exit code
+was null; termination was independently confirmed with no Java/Javaw remaining.
+David reported **sound audible; desktop responsive**.
+
+Whole-GPU samples (including other applications) were 16–35% utilization and
+3,252–4,052 MiB total VRAM use. Java working set peaked around 1,468 MiB,
+private bytes around 2,413 MiB, and sampled process CPU time was 21.28 seconds.
+After closing, about 15.8 GB physical memory was available and sampled paging
+was zero. Audio alone did not reproduce the slowdown under these capped
+conditions. This does not prove that frame rate was the original cause or rule
+out interactions at other workloads, resource limits or window sizes.
+
+Logs: `C:/tmp/Bellwake-Windows-0.3.0/Bellwake-Windows-0.3.0/logs/diagnostic-20261101-174346-1c509a`.
+Preserved copies/summary: `.superpowers/desktop-slowdown/audio-run-20261101-174346/`.
+No third game run occurred.
+
+A separate `Start-Bellwake-Capped.cmd` was added beside the current game. It
+retains the successful 30-FPS/audio-on/960×540/1-GB-heap/two-reported-processors
+arguments and portable directories, but has **no automatic timeout**. Its
+arguments were compared to the successful run's recorded argument file; it
+checks the exact tested JAR hash before launching. It has not been executed.
+The original launcher and JAR are unchanged. This is a short-tested workaround
+for continued playtesting, not verified long-session stability, normal shutdown
+behavior, or a confirmed root-cause fix.
