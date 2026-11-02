@@ -126,7 +126,9 @@ public class CampaignCardLoadingTest {
                 for (Reward card : unionCards) assertEquals(card.getCard().getEdition(), "AAA");
 
                 fixed.cardName = "Shared Card|BBB";
-                for (Reward card : fixed.generate(false, true)) assertEquals(card.getCard().getEdition(), "BBB",
+                Array<Reward> embeddedCards = fixed.generate(false, true);
+                assertEquals(embeddedCards.size, 2);
+                for (Reward card : embeddedCards) assertEquals(card.getCard().getEdition(), "BBB",
                         "An embedded edition takes precedence over the separate edition filter.");
                 assertFalse(fixture.data.getCommonCards().contains("Alpha Card"));
                 assertFalse(fixture.data.getCommonCards().contains("Beta Card"),
