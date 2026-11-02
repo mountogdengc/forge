@@ -66,3 +66,13 @@ checks verify timeout, normal exit and termination after telemetry-directory
 failure. Fresh review caught the latter lifecycle gap; its regression failed
 before guarded Java-first cleanup and passed afterward. The watchdog and test
 processes all exited. No user-installed game file was edited.
+
+Prepared add-on: `dist/bellwake-desktop-diagnostic/first-candidate/Bellwake-Desktop-Diagnostic.zip`.
+55,315,108 bytes; 12 payload files verified byte-for-byte and by ZIP CRC.
+SHA256 `c5895fa6bdb7181386427525c417e32cde969cc1ff7ca0de2857790985fea6e9`.
+Packaging job `c07ac8617cfa48088cb816b6f9c29dee` exits 0. Source
+`da45f076fec0`; diagnostic JAR SHA256
+`56cf4a42c4827efc871023bc631daf4e35134e7c170da8414fe88f90ad579304`.
+The installed original JAR still matches its previous
+`cb946014ef6e021853151ccbb547450cd3c58a75b79f86ec6fda33e07f7b15a2` hash.
+No game Java process was running at the final read-only check.
