@@ -1595,7 +1595,6 @@ public class GameAction {
                 orderedNoRegCreats = true;
             }
             for (Card c : noRegCreats) {
-                c.updateWasDestroyed(true);
                 sacrificeDestroy(c, null, mapParams);
             }
 
@@ -2138,8 +2137,6 @@ public class GameAction {
             c.getController().addSacrificedThisTurn(lkiCopy, source);
             lki.put(c.getController(), lkiCopy);
 
-            c.updateWasDestroyed(true);
-
             Card changed = sacrificeDestroy(c, source, params);
             if (changed != null) {
                 result.add(changed);
@@ -2178,8 +2175,6 @@ public class GameAction {
             activator = sa.getActivatingPlayer();
         }
 
-        //for animation
-        c.updateWasDestroyed(true);
         // Play the Destroy sound
         game.fireEvent(new GameEventCardDestroyed());
 
