@@ -1,0 +1,77 @@
+<?xml version='1.0' encoding='utf-8'?>
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="40" height="34" tilewidth="16" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="1029">
+ <tileset firstgid="1" source="../../tileset/main.tsx" />
+ <tileset firstgid="10113" source="../../tileset/buildings.tsx" />
+ <tileset firstgid="11905" source="../../tileset/main-nocollide.tsx" />
+ <layer id="1" name="Background" width="40" height="34">
+  <data encoding="base64" compression="zlib">eJztwzENAAAMA6DK21//XvpPAyT0kqqqqqqqmn8MrDee</data>
+ </layer>
+ <layer id="2" name="Ground" width="40" height="34">
+  <data encoding="base64" compression="zlib">eJzt0DEKwCAURME9XbD3HjlNDpxasRDBxGIeiNWHZRJJqz3X3LtLUkv7z95+sa/fVg/bx48fP378+PHjx4/fSfv48ePHb1cjP+X3Xgg+E9g=</data>
+ </layer>
+ <layer id="3" name="Foreground" width="40" height="34">
+  <properties>
+   <property name="spriteLayer" type="bool" value="true" />
+  </properties>
+  <data encoding="base64" compression="zlib">eJztl8sJwkAURY/13DZCsCxbiFqEGz8FuMlG8NOGnzLErQYyTJLn/A681XC5h8kLIZAHjWApWAnWIji2gp1gLzgE6HcWXARXwS1Av7vgIXgKXkZ+bQVHx+nCNfvp8fWzIBW/U/V/v28H19yUpPJ8fXKzeti5a8/Q3Kb+nbF7yvsxbk9sfr471pfL5f6mIhe/sn82uT4W8zy/H2X/bHJWPbH5lf1L6/+8QPS8AQLknOU=</data>
+ </layer>
+ <layer id="4" name="AboveSprites" width="40" height="34">
+  <data encoding="base64" compression="zlib">eJztwYEAAAAAw6D5U1/gCFUBAAAAANAxFUAAAQ==</data>
+ </layer>
+ <objectgroup id="5" name="Objects">
+  <object id="38" template="../../obj/entry_up.tx" x="320" y="528" />
+  <object id="60" template="../../obj/enemy.tx" x="320" y="144">
+   <properties>
+    <property name="cosDialogKey" value="church.doru" />
+    <property name="dialog" value="[{&quot;text&quot;:&quot;A pale young man recoils from the light. \&quot;Stay back. I can hear your heart.\&quot; The cellar door will not hold against him forever.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Subdue Doru.&quot;,&quot;action&quot;:[{&quot;battleWithActorID&quot;:-1}]},{&quot;name&quot;:&quot;Withdraw and prepare.&quot;}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosDoruSubdued&quot;,&quot;not&quot;:true}]},{&quot;text&quot;:&quot;Doru has fallen back against the cellar wall. His hunger has not left him. Donavich waits for your decision: bind his son securely, or end his suffering.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Restrain Doru.&quot;,&quot;text&quot;:&quot;You secure Doru below the church. Donavich agrees to keep watch and warn the village. His son is still a vampire spawn; restraint buys safety, not a cure.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;,&quot;action&quot;:[{&quot;deleteMapObject&quot;:-1}]}],&quot;action&quot;:[{&quot;setCharacterFlag&quot;:{&quot;key&quot;:&quot;cosDoruFate&quot;,&quot;val&quot;:1},&quot;setQuestFlag&quot;:{&quot;key&quot;:&quot;cosChurchResolved&quot;,&quot;val&quot;:1}}]},{&quot;name&quot;:&quot;Put Doru to rest.&quot;,&quot;text&quot;:&quot;You end the danger beneath the church. Donavich kneels beside his son. No one calls this a rescue, but the village will sleep behind fewer barricades.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;,&quot;action&quot;:[{&quot;deleteMapObject&quot;:-1}]}],&quot;action&quot;:[{&quot;setCharacterFlag&quot;:{&quot;key&quot;:&quot;cosDoruFate&quot;,&quot;val&quot;:2},&quot;setQuestFlag&quot;:{&quot;key&quot;:&quot;cosChurchResolved&quot;,&quot;val&quot;:1}}]}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosDoruSubdued&quot;},{&quot;checkQuestFlag&quot;:&quot;cosChurchResolved&quot;,&quot;not&quot;:true}]},{&quot;text&quot;:&quot;Doru remains bound below the church. Donavich has taken the watch. The hunger is contained for now; it has not been cured.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosChurchResolved&quot;},{&quot;getCharacterFlag&quot;:{&quot;key&quot;:&quot;cosDoruFate&quot;,&quot;op&quot;:&quot;=&quot;,&quot;val&quot;:1}}]},{&quot;text&quot;:&quot;The cellar is silent. Donavich has covered his son and closed the door.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosChurchResolved&quot;},{&quot;getCharacterFlag&quot;:{&quot;key&quot;:&quot;cosDoruFate&quot;,&quot;op&quot;:&quot;=&quot;,&quot;val&quot;:2}}]}]" />
+    <property name="enemy" value="Doru" />
+    <property name="defeatDialog" value="[{&quot;text&quot;:&quot;Doru can no longer press the attack. His father stands in the doorway. Decide whether to restrain him or put him to rest. If you leave now, speak to Doru again to finish this decision.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Restrain Doru.&quot;,&quot;text&quot;:&quot;You secure Doru below the church. Donavich agrees to keep watch and warn the village. His son is still a vampire spawn; restraint buys safety, not a cure.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;,&quot;action&quot;:[{&quot;deleteMapObject&quot;:-1}]}],&quot;action&quot;:[{&quot;setCharacterFlag&quot;:{&quot;key&quot;:&quot;cosDoruFate&quot;,&quot;val&quot;:1},&quot;setQuestFlag&quot;:{&quot;key&quot;:&quot;cosChurchResolved&quot;,&quot;val&quot;:1}}]},{&quot;name&quot;:&quot;Put Doru to rest.&quot;,&quot;text&quot;:&quot;You end the danger beneath the church. Donavich kneels beside his son. No one calls this a rescue, but the village will sleep behind fewer barricades.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;,&quot;action&quot;:[{&quot;deleteMapObject&quot;:-1}]}],&quot;action&quot;:[{&quot;setCharacterFlag&quot;:{&quot;key&quot;:&quot;cosDoruFate&quot;,&quot;val&quot;:2},&quot;setQuestFlag&quot;:{&quot;key&quot;:&quot;cosChurchResolved&quot;,&quot;val&quot;:1}}]}],&quot;action&quot;:[{&quot;setQuestFlag&quot;:{&quot;key&quot;:&quot;cosDoruSubdued&quot;,&quot;val&quot;:1}}]}]" />
+    <property name="removeWhenQuestFlag" value="cosChurchResolved" />
+   </properties>
+  </object>
+  <object id="61" template="../../obj/dialog.tx" x="384" y="288">
+   <properties>
+    <property name="cosDialogKey" value="church.donavich" />
+    <property name="dialog" value="[{&quot;text&quot;:&quot;Donavich keeps one hand on the cellar door. \&quot;My son returned changed. I cannot feed his hunger, and I cannot keep pretending the lock is enough. Subdue him before he hurts someone.\&quot;&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosDoruSubdued&quot;,&quot;not&quot;:true}]},{&quot;text&quot;:&quot;\&quot;You have stopped him for a moment,\&quot; Donavich says. \&quot;Go to Doru. Choose restraint or death. I will not mistake either for a cure.\&quot;&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosDoruSubdued&quot;},{&quot;checkQuestFlag&quot;:&quot;cosChurchResolved&quot;,&quot;not&quot;:true}]},{&quot;text&quot;:&quot;Donavich tests the bindings. \&quot;I will keep watch. The village must know what is here. Thank you for leaving me this duty, even if I cannot call it hope.\&quot;&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosChurchResolved&quot;},{&quot;getCharacterFlag&quot;:{&quot;key&quot;:&quot;cosDoruFate&quot;,&quot;op&quot;:&quot;=&quot;,&quot;val&quot;:1}}]},{&quot;text&quot;:&quot;Donavich sets a candle by the closed cellar door. \&quot;There is nothing more to ask of him now. Tell Ismark the church is quiet.\&quot;&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosChurchResolved&quot;},{&quot;getCharacterFlag&quot;:{&quot;key&quot;:&quot;cosDoruFate&quot;,&quot;op&quot;:&quot;=&quot;,&quot;val&quot;:2}}]}]" />
+    <property name="hidden" type="bool" value="false" />
+    <property name="sprite" value="sprites/heroes/human_m.atlas" />
+   </properties>
+  </object>
+  <object id="62" template="../../obj/dialog.tx" x="480" y="384">
+   <properties>
+    <property name="cosDialogKey" value="church.register" />
+    <property name="dialog" value="[{&quot;text&quot;:&quot;The church register stops in the middle of a name. A newer note records Doru's return and the first broken lock. The handwriting grows smaller on each line. This is evidence of danger, not a recipe for reversing it.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Remember the warning.&quot;,&quot;text&quot;:&quot;You mark the entry in memory. The register cannot settle Doru's fate.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;action&quot;:[{&quot;setQuestFlag&quot;:{&quot;key&quot;:&quot;cosRegisterRead&quot;,&quot;val&quot;:1}}]},{&quot;name&quot;:&quot;Close the register.&quot;}]}]" />
+    <property name="hidden" type="bool" value="false" />
+   </properties>
+  </object>
+  <object id="1000" name="scenery footprint" type="collision" x="0" y="0" width="640" height="16" />
+  <object id="1001" name="scenery footprint" type="collision" x="0" y="528" width="640" height="16" />
+  <object id="1002" name="scenery footprint" type="collision" x="0" y="16" width="16" height="512" />
+  <object id="1003" name="scenery footprint" type="collision" x="624" y="16" width="16" height="512" />
+  <object id="1004" name="scenery footprint" type="collision" x="288" y="16" width="64" height="64" />
+  <object id="1005" name="scenery footprint" type="collision" x="112" y="80" width="16" height="416" />
+  <object id="1006" name="scenery footprint" type="collision" x="528" y="80" width="16" height="416" />
+  <object id="1007" name="scenery footprint" type="collision" x="128" y="80" width="160" height="16" />
+  <object id="1008" name="scenery footprint" type="collision" x="368" y="80" width="160" height="16" />
+  <object id="1009" name="scenery footprint" type="collision" x="128" y="480" width="160" height="16" />
+  <object id="1010" name="scenery footprint" type="collision" x="368" y="480" width="160" height="16" />
+  <object id="1011" name="scenery footprint" type="collision" x="176" y="256" width="80" height="16" />
+  <object id="1012" name="scenery footprint" type="collision" x="400" y="256" width="80" height="16" />
+  <object id="1013" name="scenery footprint" type="collision" x="176" y="320" width="80" height="16" />
+  <object id="1014" name="scenery footprint" type="collision" x="400" y="320" width="80" height="16" />
+  <object id="1015" name="scenery footprint" type="collision" x="176" y="384" width="80" height="16" />
+  <object id="1016" name="scenery footprint" type="collision" x="400" y="384" width="80" height="16" />
+  <object id="1017" name="scenery footprint" type="collision" x="176" y="448" width="80" height="16" />
+  <object id="1018" name="scenery footprint" type="collision" x="400" y="448" width="80" height="16" />
+  <object id="1019" name="scenery footprint" type="collision" x="256" y="176" width="16" height="16" />
+  <object id="1020" name="scenery footprint" type="collision" x="384" y="176" width="16" height="16" />
+  <object id="1021" name="scenery footprint" type="collision" x="288" y="192" width="80" height="16" />
+  <object id="1022" name="scenery footprint" type="collision" x="464" y="352" width="16" height="16" />
+  <object id="1023" name="scenery footprint" type="collision" x="48" y="128" width="16" height="16" />
+  <object id="1024" name="scenery footprint" type="collision" x="48" y="208" width="16" height="16" />
+  <object id="1025" name="scenery footprint" type="collision" x="576" y="128" width="16" height="16" />
+  <object id="1026" name="scenery footprint" type="collision" x="576" y="208" width="16" height="16" />
+  <object id="1027" name="scenery footprint" type="collision" x="48" y="368" width="16" height="16" />
+  <object id="1028" name="scenery footprint" type="collision" x="576" y="368" width="16" height="16" />
+ </objectgroup>
+</map>

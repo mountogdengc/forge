@@ -7,7 +7,6 @@ import com.badlogic.gdx.utils.JsonWriter;
 import forge.adventure.data.AdventureQuestData;
 import forge.adventure.data.EnemyData;
 import forge.adventure.data.PointOfInterestData;
-import forge.adventure.util.Config;
 import forge.adventure.util.Paths;
 
 import javax.swing.*;
@@ -29,6 +28,8 @@ public class QuestController {
     private final DefaultListModel<AdventureQuestData> allQuests = new DefaultListModel<>();
 
     private static QuestController instance;
+
+    static void reset() { instance = null; }
 
     public static QuestController getInstance() {
         if (instance == null)
@@ -156,7 +157,7 @@ public class QuestController {
         allEnemies.clear();
         Array<EnemyData> enemyJSON=new Array<>();
         Json json = new Json();
-        FileHandle handle = Config.instance().getFile(Paths.ENEMIES);
+        FileHandle handle = EditorFiles.read(Paths.ENEMIES);
         if (handle.exists())
         {
             enemyJSON = json.fromJson(Array.class, EnemyData.class, handle);
@@ -174,7 +175,7 @@ public class QuestController {
         allPOI.clear();
         Array<PointOfInterestData> POIJSON=new Array<>();
         json = new Json();
-        handle = Config.instance().getFile(Paths.POINTS_OF_INTEREST);
+        handle = EditorFiles.read(Paths.POINTS_OF_INTEREST);
         if (handle.exists())
         {
             POIJSON = json.fromJson(Array.class, PointOfInterestData.class, handle);
@@ -192,7 +193,7 @@ public class QuestController {
         allQuests.clear();
         Array<AdventureQuestData> questJSON=new Array<>();
         json = new Json();
-        handle = Config.instance().getFile(Paths.QUESTS);
+        handle = EditorFiles.read(Paths.QUESTS);
         if (handle.exists())
         {
             questJSON = json.fromJson(Array.class, AdventureQuestData.class, handle);
@@ -227,7 +228,7 @@ public class QuestController {
     void save()
     {
         Json json = new Json(JsonWriter.OutputType.json);
-        FileHandle handle = Config.instance().getFile(Paths.QUESTS);
+        FileHandle handle = EditorFiles.writeTarget(Paths.QUESTS);
         AdventureQuestData[] saveData = Arrays.stream(allQuests.toArray()).map(AdventureQuestData.class::cast).toArray(AdventureQuestData[]::new);
 
         handle.writeString(json.prettyPrint(json.toJson(saveData,Array.class, AdventureQuestData.class)),false);

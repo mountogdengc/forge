@@ -98,7 +98,7 @@ public class EnemyEditor extends JComponent {
         for(int i=0;i<model.getSize();i++)
             allEnemies.add(model.get(i));
         Json json = new Json(JsonWriter.OutputType.json);
-        FileHandle handle = Config.instance().getFile(Paths.ENEMIES);
+        FileHandle handle = EditorFiles.writeTarget(Paths.ENEMIES);
         handle.writeString(json.prettyPrint(json.toJson(allEnemies,Array.class, EnemyData.class)),false);
 
     }
@@ -107,7 +107,7 @@ public class EnemyEditor extends JComponent {
         model.clear();
         Array<EnemyData> allEnemies=new Array<>();
         Json json = new Json();
-        FileHandle handle = Config.instance().getFile(Paths.ENEMIES);
+        FileHandle handle = EditorFiles.read(Paths.ENEMIES);
         if (handle.exists())
         {
             allEnemies = json.fromJson(Array.class, EnemyData.class, handle);

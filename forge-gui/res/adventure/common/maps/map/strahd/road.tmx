@@ -1,0 +1,79 @@
+<?xml version='1.0' encoding='utf-8'?>
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="40" height="34" tilewidth="16" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="1030">
+ <tileset firstgid="1" source="../../tileset/main.tsx" />
+ <tileset firstgid="10113" source="../../tileset/buildings.tsx" />
+ <tileset firstgid="11905" source="../../tileset/main-nocollide.tsx" />
+ <layer id="1" name="Background" width="40" height="34">
+  <data encoding="base64" compression="zlib">eJztwzENAAAMA6CamsT67j8NkNBLqqqqqqpq/gHvldxO</data>
+ </layer>
+ <layer id="2" name="Ground" width="40" height="34">
+  <data encoding="base64" compression="zlib">eJzt08EJACAMBMH0ZB/2X44dCBpzyGUX8s58LoLIoznODx++Lr5d+HLh+9t3s03lfvHhc/O9TPEjE76ePuUG8OHDVxM+b18UtQCkErFh</data>
+ </layer>
+ <layer id="3" name="Foreground" width="40" height="34">
+  <properties>
+   <property name="spriteLayer" type="bool" value="true" />
+  </properties>
+  <data encoding="base64" compression="zlib">eJztVkESAiEMy0N0X0FPetx3qe9aPe+3dDzKwEAlrbBrzgxp2qQAbBeXAFwDcAv+XDXcBwGOAkzC5y9xpbjjOxYB7gI8CPWVtMZcKW5mv0r8v7pjq/DM4hvrrDsfe0tbr7W+2FvaLLTqa63XWp+3v7T6LHcXA6PvLu/5azHa/P/9/IS2H955Gs1f3eDsR5XyUA85e57yHmL5iqEz5SHW3vLKz7c8NfnR/nk1PD34dC/7b4+9Zmq28HBOM7Pulr7mNDNnZfGGL73+CyrxAnaNhLU=</data>
+ </layer>
+ <layer id="4" name="AboveSprites" width="40" height="34">
+  <data encoding="base64" compression="zlib">eJztwYEAAAAAw6D5U1/gCFUBAAAAANAxFUAAAQ==</data>
+ </layer>
+ <objectgroup id="5" name="Objects">
+  <object id="38" template="../../obj/entry_up.tx" x="320" y="528" />
+  <object id="60" template="../../obj/enemy.tx" x="288" y="288">
+   <properties>
+    <property name="cosDialogKey" value="road.wolves" />
+    <property name="dialog" value="[{&quot;text&quot;:&quot;Shapes move between the trees. Without Ireena's agreement to travel, there is no reason to force this crossing. Return to the village and speak to her after resolving the church.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosEscortAccepted&quot;,&quot;not&quot;:true}]},{&quot;text&quot;:&quot;The pack fans across the track. Ireena draws back to the waystone. Break their line so you can reach Tser Pool together.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Drive off the pack.&quot;,&quot;action&quot;:[{&quot;battleWithActorID&quot;:-1}]},{&quot;name&quot;:&quot;Retreat and recover.&quot;}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosEscortAccepted&quot;},{&quot;checkQuestFlag&quot;:&quot;cosRoadCleared&quot;,&quot;not&quot;:true}]},{&quot;text&quot;:&quot;Only pawprints remain. The road to Tser Pool is open. Speak to Madam Eva there to finish this leg of the journey.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosEscortAccepted&quot;},{&quot;checkQuestFlag&quot;:&quot;cosRoadCleared&quot;}]}]" />
+    <property name="enemy" value="Mist-Stalked Pack" />
+    <property name="defeatDialog" value="[{&quot;text&quot;:&quot;&quot;,&quot;options&quot;:[],&quot;action&quot;:[{&quot;setQuestFlag&quot;:{&quot;key&quot;:&quot;cosRoadCleared&quot;,&quot;val&quot;:1},&quot;deleteMapObject&quot;:-1}]}]" />
+    <property name="removeWhenQuestFlag" value="cosRoadCleared" />
+   </properties>
+  </object>
+  <object id="61" template="../../obj/dialog.tx" x="192" y="432">
+   <properties>
+    <property name="cosDialogKey" value="road.waystone" />
+    <property name="dialog" value="[{&quot;text&quot;:&quot;A weathered stone points toward Tser Pool. Someone has scratched a second message beneath the arrow: KEEP WALKING WHEN THE WOODS GO QUIET.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Remember the way.&quot;,&quot;text&quot;:&quot;You note the turn toward camp. A sign can show the route; it cannot clear the wolves.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;action&quot;:[{&quot;setQuestFlag&quot;:{&quot;key&quot;:&quot;cosWaystoneRead&quot;,&quot;val&quot;:1}}]},{&quot;name&quot;:&quot;Leave the stone.&quot;}]}]" />
+    <property name="hidden" type="bool" value="false" />
+   </properties>
+  </object>
+  <object id="62" template="../../obj/dialog.tx" x="464" y="160">
+   <properties>
+    <property name="cosDialogKey" value="road.strahd" />
+    <property name="dialog" value="[{&quot;text&quot;:&quot;A rider waits beyond the trees, too still to have arrived by accident. \&quot;You have begun to make choices in my valley,\&quot; he says. \&quot;Do keep making them.\&quot; He turns his horse before you can answer. This is no battlefield, and the count offers no duel.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Keep to the road.&quot;,&quot;action&quot;:[{&quot;setQuestFlag&quot;:{&quot;key&quot;:&quot;cosStrahdDeparted&quot;,&quot;val&quot;:1},&quot;departMapObject&quot;:{&quot;id&quot;:-1,&quot;deltaX&quot;:256,&quot;deltaY&quot;:160,&quot;duration&quot;:2.5,&quot;mountSprite&quot;:&quot;sprites/enemy/beast/horse/horseblack.atlas&quot;}}]}]}]" />
+    <property name="hidden" type="bool" value="false" />
+    <property name="sprite" value="sprites/heroes/undead_m.atlas" />
+    <property name="removeWhenQuestFlag" value="cosStrahdDeparted" />
+   </properties>
+  </object>
+  <object id="1000" name="scenery footprint" type="collision" x="0" y="0" width="640" height="16" />
+  <object id="1001" name="scenery footprint" type="collision" x="0" y="528" width="640" height="16" />
+  <object id="1002" name="scenery footprint" type="collision" x="0" y="16" width="16" height="512" />
+  <object id="1003" name="scenery footprint" type="collision" x="624" y="16" width="16" height="512" />
+  <object id="1004" name="scenery footprint" type="collision" x="32" y="32" width="48" height="48" />
+  <object id="1005" name="scenery footprint" type="collision" x="96" y="32" width="48" height="48" />
+  <object id="1006" name="scenery footprint" type="collision" x="176" y="48" width="48" height="48" />
+  <object id="1007" name="scenery footprint" type="collision" x="240" y="16" width="48" height="48" />
+  <object id="1008" name="scenery footprint" type="collision" x="544" y="32" width="48" height="48" />
+  <object id="1009" name="scenery footprint" type="collision" x="32" y="112" width="48" height="48" />
+  <object id="1010" name="scenery footprint" type="collision" x="96" y="128" width="48" height="48" />
+  <object id="1011" name="scenery footprint" type="collision" x="288" y="128" width="48" height="48" />
+  <object id="1012" name="scenery footprint" type="collision" x="352" y="144" width="48" height="48" />
+  <object id="1013" name="scenery footprint" type="collision" x="544" y="160" width="48" height="48" />
+  <object id="1014" name="scenery footprint" type="collision" x="32" y="224" width="48" height="48" />
+  <object id="1015" name="scenery footprint" type="collision" x="96" y="256" width="48" height="48" />
+  <object id="1016" name="scenery footprint" type="collision" x="544" y="272" width="48" height="48" />
+  <object id="1017" name="scenery footprint" type="collision" x="304" y="336" width="48" height="48" />
+  <object id="1018" name="scenery footprint" type="collision" x="384" y="336" width="48" height="48" />
+  <object id="1019" name="scenery footprint" type="collision" x="448" y="368" width="48" height="48" />
+  <object id="1020" name="scenery footprint" type="collision" x="544" y="400" width="48" height="48" />
+  <object id="1021" name="scenery footprint" type="collision" x="32" y="368" width="48" height="48" />
+  <object id="1022" name="scenery footprint" type="collision" x="80" y="448" width="48" height="48" />
+  <object id="1023" name="scenery footprint" type="collision" x="176" y="480" width="48" height="48" />
+  <object id="1024" name="scenery footprint" type="collision" x="416" y="464" width="48" height="48" />
+  <object id="1025" name="scenery footprint" type="collision" x="512" y="480" width="48" height="48" />
+  <object id="1026" name="scenery footprint" type="collision" x="176" y="400" width="16" height="16" />
+  <object id="1027" name="scenery footprint" type="collision" x="480" y="112" width="16" height="16" />
+  <object id="1028" name="scenery footprint" type="collision" x="272" y="352" width="16" height="16" />
+  <object id="1029" name="scenery footprint" type="collision" x="512" y="320" width="16" height="16" />
+ </objectgroup>
+</map>

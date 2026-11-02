@@ -4,14 +4,17 @@ param(
     [string]$AssemblyJar = "",
     [string]$PackageRoot = "",
     [string]$ResumeFrom = "",
+    [string]$CampaignProjectRoot = "",
     [switch]$PresentationProbe,
     [switch]$HelpProbe,
     [switch]$PromptProbe,
     [switch]$Hidden,
     [switch]$RequireDeferred,
+    [switch]$StrahdProbe,
+    [switch]$EditorButtonProbe,
     [ValidateRange(320, 3840)][int]$Width = 1280,
     [ValidateRange(240, 2160)][int]$Height = 720,
-    [ValidateSet('W', 'R')][string]$StarterColor = 'W'
+    [ValidateSet('W', 'R', 'B')][string]$StarterColor = 'W'
 )
 
 $ErrorActionPreference = 'Stop'
@@ -61,6 +64,17 @@ if ($ResumeFrom) {
     Copy-Item -LiteralPath (Join-Path $prior 'expected.properties') -Destination (Join-Path $output 'expected.properties')
     Get-ChildItem -LiteralPath (Join-Path $prior 'profile/roaming/Forge') -Force | Copy-Item -Destination (Join-Path $profile 'roaming/Forge') -Recurse -Force
 }
+$authoringCampaignId = ""
+if ($CampaignProjectRoot) {
+    if ($PackageRoot -or $ResumeFrom) { throw 'CampaignProjectRoot requires a new isolated source run.' }
+    $projectSource = (Resolve-Path -LiteralPath $CampaignProjectRoot).Path
+    $projectManifest = Get-Content -LiteralPath (Join-Path $projectSource 'campaign.json') -Raw | ConvertFrom-Json
+    $authoringCampaignId = $projectManifest.id
+    if ($authoringCampaignId -notmatch '^user\.[A-Za-z0-9._-]+$') { throw 'Expected a newly authored campaign identity.' }
+    $projectParent = Join-Path $profile 'roaming/Forge/adventure/userplanes'
+    New-Item -ItemType Directory -Force $projectParent | Out-Null
+    Copy-Item -LiteralPath $projectSource -Destination (Join-Path $projectParent 'Authoring-Test') -Recurse
+}
 $reactor = @('forge-core', 'forge-game', 'forge-ai', 'forge-gui', 'forge-gui-mobile', 'forge-gui-mobile-dev' | ForEach-Object {
     Join-Path $repository "$_/target/classes"
 }) -join ';'
@@ -79,7 +93,7 @@ $compileFile = Join-Path $output 'compile.args'
 if ($LASTEXITCODE -ne 0) { throw "Graphical fixture compilation failed; see $output" }
 [xml]$pom = Get-Content (Join-Path $repository 'forge-gui-mobile-dev/pom.xml')
 $mandatory = $pom.project.properties.'mandatory.java.args'.Split(' ', [StringSplitOptions]::RemoveEmptyEntries)
-$runtimeArgs = ($mandatory -join "`n") + "`n-Xmx2g`n-XX:ActiveProcessorCount=4`n-Dbellwake.isolatedProfile=true`n-Dbellwake.width=$Width`n-Dbellwake.height=$Height`n-Dbellwake.starter=$StarterColor`n" +
+$runtimeArgs = ($mandatory -join "`n") + "`n-Xms128m`n-Xmx1g`n-XX:ActiveProcessorCount=2`n-Dbellwake.isolatedProfile=true`n-Dbellwake.width=$Width`n-Dbellwake.height=$Height`n-Dbellwake.starter=$StarterColor`n" +
     '"-Dbellwake.expected=' + (Join-Path $output 'expected.properties').Replace('\', '/') + '"' + "`n" +
     '"-Duser.home=' + $profile.Replace('\', '/') + '"' + "`n" +
     '"-Dbellwake.screenshot=' + (Join-Path $output 'quay-restored.png').Replace('\', '/') + '"' + "`n-cp`n" +
@@ -92,6 +106,12 @@ if ($ResumeFrom) { $runtimeArgs = "-Dbellwake.resume=true`n" + $runtimeArgs }
 if ($PackageRoot) { $runtimeArgs = "-Dbellwake.packagedProbe=true`n" + $runtimeArgs }
 if ($Hidden) { $runtimeArgs = "-Dbellwake.hidden=true`n" + $runtimeArgs }
 if ($RequireDeferred) { $runtimeArgs = "-Dbellwake.requireDeferred=true`n" + $runtimeArgs }
+if ($StrahdProbe) {
+    $runtimeArgs = "-Dstrahd.chapterProbe=true`n" + $runtimeArgs
+    if ($ResumeFrom) { $runtimeArgs = "-Dstrahd.resume=true`n" + $runtimeArgs }
+}
+if ($EditorButtonProbe) { $runtimeArgs = "-Deditor.buttonProbe=true`n" + $runtimeArgs }
+if ($authoringCampaignId) { $runtimeArgs = "-Dbellwake.campaignId=$authoringCampaignId`n" + $runtimeArgs }
 [IO.File]::WriteAllText($runtimeFile, $runtimeArgs)
 $priorAppData = $env:APPDATA
 $priorLocalAppData = $env:LOCALAPPDATA
@@ -108,12 +128,40 @@ try {
         & $runtimeJava "@$resumeFile" *> (Join-Path $output 'resume.log')
         $result = $LASTEXITCODE
     }
+    if ($StrahdProbe -and !$ResumeFrom -and $result -eq 0 -and (Get-Content $log -Raw) -match 'STRAHD_ASSISTED_CHAPTER_PASS') {
+        $resumeFile = Join-Path $output 'strahd-resume.args'
+        [IO.File]::WriteAllText($resumeFile, "-Dstrahd.resume=true`n" + $runtimeArgs)
+        & $runtimeJava "@$resumeFile" *> (Join-Path $output 'resume.log')
+        $result = $LASTEXITCODE
+    }
 } finally {
     $env:APPDATA = $priorAppData
     $env:LOCALAPPDATA = $priorLocalAppData
     Pop-Location
 }
 $text = Get-Content $log -Raw
+if ($EditorButtonProbe) {
+    if ($result -ne 0 -or $text -notmatch 'CAMPAIGN_EDITOR_BUTTON_PASS') {
+        Get-Content $log -Tail 35
+        throw "Campaign Editor startup button did not pass. Evidence: $output"
+    }
+    Write-Output "Campaign Editor startup-menu integration passed. Evidence: $output"
+    return
+}
+if ($StrahdProbe) {
+    if ($ResumeFrom -and $result -eq 0 -and $text -match 'STRAHD_COMPLETED_ACTOR_RECONCILIATION_PASS') {
+        Write-Output "Older Strahd profile restored and completed actors removed. Evidence: $output"
+        return
+    }
+    if ($result -ne 0 -or $text -notmatch 'STRAHD_ASSISTED_CHAPTER_PASS' -or
+        !(Test-Path (Join-Path $output 'resume.log')) -or
+        (Get-Content (Join-Path $output 'resume.log') -Raw) -notmatch 'STRAHD_FRESH_CONTINUE_PASS') {
+        Get-Content $log -Tail 35
+        throw "Strahd assisted chapter check did not pass. Evidence: $output"
+    }
+    Write-Output "Strahd ASSISTED chapter checks passed. Evidence: $output"
+    return
+}
 if ($PromptProbe) {
     if ($result -ne 0 -or $text -notmatch 'BELLWAKE_PROMPT_LAYOUT_PASS') {
         Get-Content $log -Tail 25

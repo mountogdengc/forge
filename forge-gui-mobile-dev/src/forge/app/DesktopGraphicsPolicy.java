@@ -12,12 +12,12 @@ final class DesktopGraphicsPolicy {
 
     static Lwjgl3ApplicationConfiguration create(boolean diagnostic, boolean diagnosticAudio) {
         Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
-        config.setForegroundFPS(diagnostic ? 30 : 60);
+        config.setForegroundFPS(30);
         config.setIdleFPS(15);
         config.useVsync(true);
         boolean audio = !diagnostic || diagnosticAudio;
         config.disableAudio(!audio);
-        System.out.println("Desktop graphics: frame limit=" + (diagnostic ? 30 : 60)
+        System.out.println("Desktop graphics: frame limit=30"
                 + ", VSync=true, audio=" + audio + ", diagnostic=" + diagnostic);
         return config;
     }

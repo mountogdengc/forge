@@ -51,6 +51,7 @@ public final class InteriorRestorationSmoke {
     private int helpTopic;
     private boolean keptOpeningHand;
     private boolean deferredMatchChecked;
+    private StrahdChapterSmoke strahd;
 
     public static void main(String[] args) {
         if (!Boolean.getBoolean("bellwake.isolatedProfile")) throw new IllegalStateException("An isolated profile is required.");
@@ -58,8 +59,8 @@ public final class InteriorRestorationSmoke {
         config.setTitle("Bellwake interior restoration smoke");
         config.setWindowedMode(Integer.getInteger("bellwake.width", 1280), Integer.getInteger("bellwake.height", 720));
         config.setInitialVisible(!Boolean.getBoolean("bellwake.hidden"));
-        config.setForegroundFPS(60);
-        config.setIdleFPS(60);
+        config.setForegroundFPS(30);
+        config.setIdleFPS(15);
         config.setPauseWhenLostFocus(false);
         config.setPauseWhenMinimized(false);
         config.disableAudio(true);
@@ -76,6 +77,12 @@ public final class InteriorRestorationSmoke {
             @Override public String getVersionString() { return "2.0.16-GITBellwakeSmoke"; }
             @Override public boolean isConnectedToInternet() { return false; }
             @Override public boolean isConnectedToWifi() { return false; }
+            @Override public String openCampaignEditor(String campaignId) {
+                if (!Boolean.getBoolean("editor.buttonProbe")) return super.openCampaignEditor(campaignId);
+                CampaignEditorButtonSmoke.launches++;
+                CampaignEditorButtonSmoke.requested = campaignId;
+                return null;
+            }
             @Override public void setMouseConfined(boolean confined) {
                 if (!Boolean.getBoolean("bellwake.hidden")) super.setMouseConfined(confined);
             }
@@ -120,8 +127,26 @@ public final class InteriorRestorationSmoke {
                 require(Forge.getTransitionScreen() == null, "Interior Continue left its loading overlay open");
             if (++frames < 2 || Forge.getTransitionScreen() != null) return;
             frames = 0;
+            if (phase == 201) {
+                if (strahd.tick()) {
+                    System.out.println("STRAHD_ASSISTED_CHAPTER_PASS");
+                    Gdx.app.exit();
+                    phase = 202;
+                }
+                return;
+            }
             if (phase == 1) {
                 if (Boolean.getBoolean("bellwake.requireDeferred")) verifyDeferredCatalog("menu");
+                if (Boolean.getBoolean("editor.buttonProbe")) {
+                    CampaignEditorButtonSmoke.run();
+                    Gdx.app.exit(); phase = 202; return;
+                }
+                if (Boolean.getBoolean("strahd.chapterProbe")) {
+                    strahd = new StrahdChapterSmoke();
+                    strahd.begin();
+                    phase = 201;
+                    return;
+                }
                 if (Boolean.getBoolean("bellwake.packagedProbe") && !Boolean.getBoolean("bellwake.resume")) {
                     require(CampaignManager.current() != null && CampaignManager.current().getId().equals("fork.bellwake"),
                             "Portable build did not default to Bellwake");
@@ -144,8 +169,8 @@ public final class InteriorRestorationSmoke {
                         require(playlist.getRandomFilename() != null, "Common audio fixture missing");
                 }
                 CampaignDefinition campaign = CampaignRegistry.discover().getCampaigns().stream()
-                        .filter(c -> c.getId().equals("fork.bellwake")).findFirst().orElseThrow();
-                var diagnostics = CampaignContentValidator.validate(java.nio.file.Path.of(Config.instance().getAdventureRoot(), "Bellwake"),
+                        .filter(c -> c.getId().equals(System.getProperty("bellwake.campaignId", "fork.bellwake"))).findFirst().orElseThrow();
+                var diagnostics = CampaignContentValidator.validate(campaign.getRoot(),
                         java.nio.file.Path.of(Config.instance().getAdventureRoot(), "common"),
                         name -> forge.StaticData.instance().getCommonCards().getCard(name) != null);
                 require(diagnostics.isEmpty(), diagnostics.toString());
@@ -482,7 +507,7 @@ public final class InteriorRestorationSmoke {
             }
         }
         java.nio.file.Path manifest = fixture.resolve("campaign.json");
-        java.nio.file.Files.writeString(manifest, java.nio.file.Files.readString(manifest).replace("fork.bellwake", "fixture.bellwake.failure"));
+        java.nio.file.Files.writeString(manifest, java.nio.file.Files.readString(manifest).replace(CampaignManager.current().getId(), "fixture.bellwake.failure"));
         CampaignDefinition campaign = CampaignRegistry.discover().getCampaigns().stream()
                 .filter(c -> c.getId().equals("fixture.bellwake.failure")).findFirst().orElseThrow();
         PlaythroughRepository repository = new PlaythroughRepository(java.nio.file.Path.of(ForgeConstants.USER_ADVENTURE_DIR, "campaign-saves"));

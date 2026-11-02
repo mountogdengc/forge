@@ -40,10 +40,17 @@ public class Main {
     }
     public static class DesktopAdapter implements IDeviceAdapter {
         private final String switchOrientationFile;
+        private final CampaignEditorLauncher campaignEditor;
 
         DesktopAdapter(String switchOrientationFile0) {
             switchOrientationFile = switchOrientationFile0;
+            java.nio.file.Path root = java.nio.file.Path.of(switchOrientationFile0).toAbsolutePath().normalize().getParent();
+            campaignEditor = new CampaignEditorLauncher(root, java.nio.file.Path.of(System.getProperty("java.home")),
+                    root.getParent().resolve("adventure-editor/target/adventure-editor-jar-with-dependencies.jar"));
         }
+
+        @Override public boolean supportsCampaignEditor() { return true; }
+        @Override public String openCampaignEditor(String campaignId) { return campaignEditor.launch(campaignId); }
 
         //just assume desktop always connected to wifi
         @Override

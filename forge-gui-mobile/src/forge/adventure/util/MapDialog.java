@@ -416,6 +416,9 @@ public class MapDialog {
                 if (E.deleteMapObject < 0) stage.deleteObject(parentID);
                 else stage.deleteObject(E.deleteMapObject);
             }
+            if (E.departMapObject != null) {
+                stage.departObject(E.departMapObject.id < 0 ? parentID : E.departMapObject.id, E.departMapObject);
+            }
             if (E.activateMapObject != 0){
                 stage.activateMapObject(E.activateMapObject);
             }

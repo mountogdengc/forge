@@ -1,0 +1,81 @@
+<?xml version='1.0' encoding='utf-8'?>
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="40" height="34" tilewidth="16" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="1026">
+ <tileset firstgid="1" source="../../tileset/main.tsx" />
+ <tileset firstgid="10113" source="../../tileset/buildings.tsx" />
+ <tileset firstgid="11905" source="../../tileset/main-nocollide.tsx" />
+ <layer id="1" name="Background" width="40" height="34">
+  <data encoding="base64" compression="zlib">eJztwzENAAAMA6CamsT67j8NkNBLqqqqqqpq/gHvldxO</data>
+ </layer>
+ <layer id="2" name="Ground" width="40" height="34">
+  <data encoding="base64" compression="zlib">eJztlzEKgDAMRXMnL9HJxXuI959EMEttatqEJsN/UMgg8aWfIBIB0OcsRMd76joDLS+uMyDdXRY/5Ptl39Ye+K31kzwt++vlNNpTu79Rftr9jfSLyPfpX/fk919lvG714me8/Ga8uO7NOsPfzKN1b1av+0O+epAv8kW+diK/v1o/yTED+D+ygXxtIF9Kyw2LcSsv</data>
+ </layer>
+ <layer id="3" name="Foreground" width="40" height="34">
+  <properties>
+   <property name="spriteLayer" type="bool" value="true" />
+  </properties>
+  <data encoding="base64" compression="zlib">eJztl0EOgjAQRb8b8S5V01bPQNCFeAz1YOpZ1L3cAw/gEmNMWzN2bGFewgZ+2pdAPlNAoHLRwFUDN52mw84AewMczD/M/A5jCxQWmNju3lS517sroPFk3nMzR/6Tg4vKs3ergEeA32tuFZAXBKHfzBl6wBL2WDP4baQLs2BU0p4PjXPZXTnOp8cI3r+cT08R/L6dDft2zgj9ZlM4Z3C/R+m//FhEni2WxPXryH5blVY3cfQapZs4eo3STan8nzBAnpxPNnY=</data>
+ </layer>
+ <layer id="4" name="AboveSprites" width="40" height="34">
+  <data encoding="base64" compression="zlib">eJztwYEAAAAAw6D5U1/gCFUBAAAAANAxFUAAAQ==</data>
+ </layer>
+ <objectgroup id="5" name="Objects">
+  <object id="38" template="../../obj/entry_up.tx" x="320" y="528" />
+  <object id="60" template="../../obj/dialog.tx" x="320" y="208">
+   <properties>
+    <property name="cosDialogKey" value="village.ismark" />
+    <property name="dialog" value="[{&quot;text&quot;:&quot;Ismark makes room beside the stove. \&quot;The mist lets people enter more readily than leave. Before my sister Ireena travels, we must know whether the church can keep its own doors shut. Speak to Donavich, and face what waits below.\&quot;&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;I will investigate the church.&quot;,&quot;text&quot;:&quot;\&quot;The church stands apart from the houses. Return to Ireena afterward. The Roadwarden can help you practice, and this stove is yours whenever you need it.\&quot;&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;action&quot;:[{&quot;setQuestFlag&quot;:{&quot;key&quot;:&quot;cosBriefed&quot;,&quot;val&quot;:1}}]},{&quot;name&quot;:&quot;Rest and recover for free.&quot;,&quot;text&quot;:&quot;A door is barred, a kettle warmed. Your strength returns. There is no charge.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;action&quot;:[{&quot;addLife&quot;:1000}]},{&quot;name&quot;:&quot;I need a moment.&quot;}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosBriefed&quot;,&quot;not&quot;:true}]},{&quot;text&quot;:&quot;\&quot;We still hear cries from the church,\&quot; Ismark says. \&quot;Donavich needs an answer, and Ireena needs a safer road.\&quot;&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Rest and recover for free.&quot;,&quot;text&quot;:&quot;A door is barred, a kettle warmed. Your strength returns. There is no charge.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;action&quot;:[{&quot;addLife&quot;:1000}]},{&quot;name&quot;:&quot;I will return to the church.&quot;}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosBriefed&quot;},{&quot;checkQuestFlag&quot;:&quot;cosChurchResolved&quot;,&quot;not&quot;:true}]},{&quot;text&quot;:&quot;Ismark checks the shutters. \&quot;You have done what the church could not do alone. Speak to Ireena herself; the decision to travel belongs to her.\&quot;&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Rest and recover for free.&quot;,&quot;text&quot;:&quot;A door is barred, a kettle warmed. Your strength returns. There is no charge.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;action&quot;:[{&quot;addLife&quot;:1000}]},{&quot;name&quot;:&quot;I will speak to Ireena.&quot;}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosBriefed&quot;},{&quot;checkQuestFlag&quot;:&quot;cosChurchResolved&quot;},{&quot;checkQuestFlag&quot;:&quot;cosEscortAccepted&quot;,&quot;not&quot;:true}]},{&quot;text&quot;:&quot;\&quot;Tser Pool lies beyond the Old Svalich Road,\&quot; Ismark says. \&quot;Keep Ireena away from the pack, and listen to Eva when you reach camp.\&quot;&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Rest and recover for free.&quot;,&quot;text&quot;:&quot;A door is barred, a kettle warmed. Your strength returns. There is no charge.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;action&quot;:[{&quot;addLife&quot;:1000}]},{&quot;name&quot;:&quot;Back to the road.&quot;}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosBriefed&quot;},{&quot;checkQuestFlag&quot;:&quot;cosEscortAccepted&quot;},{&quot;checkQuestFlag&quot;:&quot;cosChapterOneComplete&quot;,&quot;not&quot;:true}]},{&quot;text&quot;:&quot;The village lamps are still alight. Ismark listens to your account of the camp. \&quot;Then there is a little more distance between my sister and the count tonight.\&quot;&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Rest and recover for free.&quot;,&quot;text&quot;:&quot;A door is barred, a kettle warmed. Your strength returns. There is no charge.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;action&quot;:[{&quot;addLife&quot;:1000}]},{&quot;name&quot;:&quot;Leave the lamp burning.&quot;}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosBriefed&quot;},{&quot;checkQuestFlag&quot;:&quot;cosChapterOneComplete&quot;}]}]" />
+    <property name="hidden" type="bool" value="false" />
+    <property name="sprite" value="sprites/heroes/human_m.atlas" />
+   </properties>
+  </object>
+  <object id="61" template="../../obj/dialog.tx" x="448" y="320">
+   <properties>
+    <property name="cosDialogKey" value="village.ireena" />
+    <property name="dialog" value="[{&quot;text&quot;:&quot;Ireena has packed a small bag but keeps her hand on the door. \&quot;Speak to Ismark first. I will not ask a stranger to walk into this without knowing why.\&quot;&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosBriefed&quot;,&quot;not&quot;:true}]},{&quot;text&quot;:&quot;\&quot;Donavich has enough grief without us leaving a danger at his door,\&quot; Ireena says. \&quot;Settle what is happening in the church. Then we can talk about the road.\&quot;&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosBriefed&quot;},{&quot;checkQuestFlag&quot;:&quot;cosChurchResolved&quot;,&quot;not&quot;:true}]},{&quot;text&quot;:&quot;Ireena shoulders her bag. \&quot;I will go to Tser Pool, if you will help clear the road. I choose to leave this house. Can I count on you?\&quot;&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;I will escort you to Tser Pool.&quot;,&quot;text&quot;:&quot;\&quot;Then take the Old Svalich Road. I will keep close when the mist thickens. We must deal with the wolves before we can call this a safe crossing.\&quot;&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;action&quot;:[{&quot;setQuestFlag&quot;:{&quot;key&quot;:&quot;cosEscortAccepted&quot;,&quot;val&quot;:1}}]},{&quot;name&quot;:&quot;I need to prepare first.&quot;}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosBriefed&quot;},{&quot;checkQuestFlag&quot;:&quot;cosChurchResolved&quot;},{&quot;checkQuestFlag&quot;:&quot;cosEscortAccepted&quot;,&quot;not&quot;:true}]},{&quot;text&quot;:&quot;\&quot;The road first, then Tser Pool,\&quot; Ireena says. \&quot;We travel together, but I cannot fight the pack for you. Rest here if you need to.\&quot;&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosEscortAccepted&quot;},{&quot;checkQuestFlag&quot;:&quot;cosRoadCleared&quot;,&quot;not&quot;:true}]},{&quot;text&quot;:&quot;\&quot;The pack is scattered. Let us speak to Madam Eva at Tser Pool,\&quot; Ireena says. \&quot;A safe fire is only a beginning.\&quot;&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosEscortAccepted&quot;},{&quot;checkQuestFlag&quot;:&quot;cosRoadCleared&quot;},{&quot;checkQuestFlag&quot;:&quot;cosChapterOneComplete&quot;,&quot;not&quot;:true}]},{&quot;text&quot;:&quot;Ireena has found shelter at Tser Pool. Her old room stands quiet; Ismark keeps a lamp burning for her.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosChapterOneComplete&quot;}]}]" />
+    <property name="hidden" type="bool" value="false" />
+    <property name="sprite" value="sprites/heroes/human_f.atlas" />
+   </properties>
+  </object>
+  <object id="62" template="../../obj/enemy.tx" x="160" y="384">
+   <properties>
+    <property name="cosDialogKey" value="village.practice" />
+    <property name="dialog" value="[{&quot;text&quot;:&quot;The Roadwarden clears a table. \&quot;Friendly practice? No entry fee, and a loss leaves you here. Your first victory earns two copies of one chosen spell. Later games are just practice.\&quot;&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Play a friendly practice game.&quot;,&quot;action&quot;:[{&quot;battleWithActorID&quot;:-1}]},{&quot;name&quot;:&quot;Explain the starting decks.&quot;,&quot;text&quot;:&quot;Village Vigil uses white mana: humans, spirits, protection and patient defense. Grave Resolve uses black mana: returning creatures and removal. Open Decks to edit your cards. Neither start requires a purchase.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}]},{&quot;name&quot;:&quot;Rest and recover for free.&quot;,&quot;text&quot;:&quot;A door is barred, a kettle warmed. Your strength returns. There is no charge.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;action&quot;:[{&quot;addLife&quot;:1000}]},{&quot;name&quot;:&quot;Not now.&quot;}]}]" />
+    <property name="enemy" value="Svalich Roadwarden" />
+    <property name="defeatDialog" value="[{&quot;text&quot;:&quot;\&quot;Well played. Pick two cards for your collection. Rebuke is white removal for an attacking creature; Murder is black removal for any creature. Open Decks afterward to choose replacements. Your deck never changes automatically.\&quot;&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Take two Rebukes (white).&quot;,&quot;text&quot;:&quot;Two Rebukes are in your collection. Open Decks if you want to use them.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;action&quot;:[{&quot;setQuestFlag&quot;:{&quot;key&quot;:&quot;cosTrainingRewarded&quot;,&quot;val&quot;:1},&quot;grantRewards&quot;:[{&quot;type&quot;:&quot;card&quot;,&quot;cardName&quot;:&quot;Rebuke&quot;,&quot;count&quot;:2}]}]},{&quot;name&quot;:&quot;Take two Murders (black).&quot;,&quot;text&quot;:&quot;Two Murders are in your collection. Open Decks if you want to use them.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;action&quot;:[{&quot;setQuestFlag&quot;:{&quot;key&quot;:&quot;cosTrainingRewarded&quot;,&quot;val&quot;:1},&quot;grantRewards&quot;:[{&quot;type&quot;:&quot;card&quot;,&quot;cardName&quot;:&quot;Murder&quot;,&quot;count&quot;:2}]}]}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosTrainingRewarded&quot;,&quot;not&quot;:true}]},{&quot;text&quot;:&quot;\&quot;A good game. You already received your two cards, but the table is always open.\&quot;&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosTrainingRewarded&quot;}]}]" />
+   </properties>
+  </object>
+  <object id="63" template="../../obj/dialog.tx" x="352" y="432">
+   <properties>
+    <property name="cosDialogKey" value="village.notice" />
+    <property name="dialog" value="[{&quot;text&quot;:&quot;BAROVIA\nIsmark offers shelter and free recovery.\nIreena decides when to travel.\nThe Roadwarden offers optional friendly practice.\nInvestigate the Village Church, return to Ireena, clear the Old Svalich Road, then speak to Eva at Tser Pool.\nUse the overworld exit to travel between locations. Open the journal to check your current task.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}]}]" />
+    <property name="hidden" type="bool" value="false" />
+   </properties>
+  </object>
+  <object id="1000" name="scenery footprint" type="collision" x="0" y="0" width="640" height="16" />
+  <object id="1001" name="scenery footprint" type="collision" x="0" y="528" width="640" height="16" />
+  <object id="1002" name="scenery footprint" type="collision" x="0" y="16" width="16" height="512" />
+  <object id="1003" name="scenery footprint" type="collision" x="624" y="16" width="16" height="512" />
+  <object id="1004" name="scenery footprint" type="collision" x="96" y="64" width="16" height="32" />
+  <object id="1005" name="scenery footprint" type="collision" x="432" y="64" width="16" height="32" />
+  <object id="1006" name="scenery footprint" type="collision" x="80" y="192" width="16" height="32" />
+  <object id="1007" name="scenery footprint" type="collision" x="480" y="192" width="16" height="32" />
+  <object id="1008" name="scenery footprint" type="collision" x="80" y="432" width="16" height="32" />
+  <object id="1009" name="scenery footprint" type="collision" x="464" y="432" width="16" height="32" />
+  <object id="1010" name="scenery footprint" type="collision" x="224" y="64" width="32" height="32" />
+  <object id="1011" name="scenery footprint" type="collision" x="384" y="64" width="32" height="32" />
+  <object id="1012" name="scenery footprint" type="collision" x="320" y="304" width="16" height="16" />
+  <object id="1013" name="scenery footprint" type="collision" x="320" y="320" width="16" height="16" />
+  <object id="1014" name="scenery footprint" type="collision" x="256" y="256" width="16" height="16" />
+  <object id="1015" name="scenery footprint" type="collision" x="384" y="256" width="16" height="16" />
+  <object id="1016" name="scenery footprint" type="collision" x="256" y="384" width="16" height="16" />
+  <object id="1017" name="scenery footprint" type="collision" x="384" y="384" width="16" height="16" />
+  <object id="1018" name="scenery footprint" type="collision" x="192" y="288" width="48" height="16" />
+  <object id="1019" name="scenery footprint" type="collision" x="400" y="352" width="48" height="16" />
+  <object id="1020" name="scenery footprint" type="collision" x="16" y="32" width="48" height="48" />
+  <object id="1021" name="scenery footprint" type="collision" x="544" y="32" width="48" height="48" />
+  <object id="1022" name="scenery footprint" type="collision" x="16" y="304" width="48" height="48" />
+  <object id="1023" name="scenery footprint" type="collision" x="560" y="336" width="48" height="48" />
+  <object id="1024" name="scenery footprint" type="collision" x="160" y="464" width="48" height="48" />
+  <object id="1025" name="scenery footprint" type="collision" x="400" y="464" width="48" height="48" />
+ </objectgroup>
+</map>

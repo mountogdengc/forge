@@ -33,6 +33,10 @@ public interface IDeviceAdapter {
     boolean needFileAccess();
     void requestFileAcces();
 
+    default boolean supportsCampaignEditor() { return false; }
+    /** Null means opened; a message describes a failure or an already-open window. */
+    default String openCampaignEditor(String campaignId) { return "Campaign Editor is available in the desktop app."; }
+
     /** Confine the mouse cursor to the window (desktop LibGDX only). Default no-op. */
     default void setMouseConfined(boolean confined) {
     }

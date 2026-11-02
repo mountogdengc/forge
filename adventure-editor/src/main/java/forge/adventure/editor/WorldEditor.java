@@ -10,9 +10,6 @@ import forge.adventure.util.Paths;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class WorldEditor extends JComponent {
@@ -120,7 +117,7 @@ public class WorldEditor extends JComponent {
 
         toolBar.addSeparator();
 
-        newButton=new JButton("test map");
+        newButton=new JButton("How to playtest");
         newButton.addActionListener(e -> WorldEditor.this.test());
         toolBar.add(newButton);
 
@@ -136,28 +133,10 @@ public class WorldEditor extends JComponent {
 
     private void test() {
 
-        String javaHome = System.getProperty("java.home");
-        String javaBin = javaHome + File.separator + "bin" + File.separator + "java";
-        String classpath = System.getProperty("java.class.path");
-        String className = forge.adventure.Main.class.getName();
-
-        ArrayList<String> command = new ArrayList<>();
-        command.add(javaBin);
-        command.add("-cp");
-        command.add(classpath);
-        command.add(className);
-
-        command.add("testMap");
-
-        ProcessBuilder build=  new ProcessBuilder(command);
-        build .redirectInput(ProcessBuilder.Redirect.INHERIT)
-                .redirectOutput(ProcessBuilder.Redirect.INHERIT)
-                .redirectError(ProcessBuilder.Redirect.INHERIT);
-        try {
-           Process process=  build.start();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        JOptionPane.showMessageDialog(this,
+                "Save the campaign, run Overview > Validate Campaign, then restart the game.\n"
+                + "Select your campaign and start a new run to test it.",
+                "Playtest a campaign", JOptionPane.INFORMATION_MESSAGE);
     }
 
     void saveBiome()
@@ -165,7 +144,7 @@ public class WorldEditor extends JComponent {
 
         edit.updateTerrain();
         Json json = new Json(JsonWriter.OutputType.json);
-        FileHandle handle =  Config.instance().getFile(currentData.biomesNames[list.getSelectedIndex()]);
+        FileHandle handle =  EditorFiles.writeTarget(currentData.biomesNames[list.getSelectedIndex()]);
         handle.writeString(json.prettyPrint(json.toJson(edit.currentData,  BiomeData.class)),false);
 
     }
@@ -182,7 +161,7 @@ public class WorldEditor extends JComponent {
         currentData.biomesNames=  (biomesNames.getList());
 
         Json json = new Json(JsonWriter.OutputType.json);
-        FileHandle handle = Config.instance().getFile(Paths.WORLD);
+        FileHandle handle = EditorFiles.writeTarget(Paths.WORLD);
         handle.writeString(json.prettyPrint(json.toJson(currentData,  WorldData.class)),false);
 
     }
@@ -193,7 +172,7 @@ public class WorldEditor extends JComponent {
 
         model.clear();
         Json json = new Json();
-        FileHandle handle = Config.instance().getFile(Paths.WORLD);
+        FileHandle handle = EditorFiles.read(Paths.WORLD);
         if (handle.exists())
         {
               currentData=json.fromJson(WorldData.class, WorldData.class, handle);
@@ -215,7 +194,7 @@ public class WorldEditor extends JComponent {
         for(String path:currentData.biomesNames)
         {
             Json json = new Json();
-            FileHandle handle = Config.instance().getFile(path);
+            FileHandle handle = EditorFiles.read(path);
             if (handle.exists())
             {
                 BiomeData data=json.fromJson(BiomeData.class, BiomeData.class, handle);

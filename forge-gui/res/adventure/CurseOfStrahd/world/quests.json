@@ -1,0 +1,83 @@
+[
+  {
+    "id": 8101,
+    "isTemplate": true,
+    "storyQuest": true,
+    "autoTrack": true,
+    "name": "Into the Mists",
+    "description": "Help Barovia face the danger at its church, then escort Ireena along the old road to Madam Eva at Tser Pool.",
+    "prologue": {
+      "text": "The road behind you has become a wall of mist. A few lamps still burn in Barovia. Find Ismark in the village before you venture farther.",
+      "options": [
+        {
+          "name": "Find shelter."
+        }
+      ]
+    },
+    "stages": [
+      {
+        "id": 1,
+        "name": "Shelter in Barovia",
+        "description": "Speak to Ismark in Barovia.",
+        "objective": "QuestFlag",
+        "mapFlag": "cosBriefed",
+        "mapFlagValue": 1
+      },
+      {
+        "id": 2,
+        "name": "Subdue Doru",
+        "description": "Subdue Doru in the Village Church.",
+        "objective": "QuestFlag",
+        "mapFlag": "cosDoruSubdued",
+        "mapFlagValue": 1,
+        "prerequisiteIDs": [
+          1
+        ]
+      },
+      {
+        "id": 3,
+        "name": "Decide Doru's fate",
+        "description": "Speak to Doru; decide his fate.",
+        "objective": "QuestFlag",
+        "mapFlag": "cosChurchResolved",
+        "mapFlagValue": 1,
+        "prerequisiteIDs": [
+          2
+        ]
+      },
+      {
+        "id": 4,
+        "name": "Escort Ireena",
+        "description": "Ask Ireena in Barovia to travel.",
+        "objective": "QuestFlag",
+        "mapFlag": "cosEscortAccepted",
+        "mapFlagValue": 1,
+        "prerequisiteIDs": [
+          3
+        ]
+      },
+      {
+        "id": 5,
+        "name": "Clear the old road",
+        "description": "Defeat the pack on Old Svalich Road.",
+        "objective": "QuestFlag",
+        "mapFlag": "cosRoadCleared",
+        "mapFlagValue": 1,
+        "prerequisiteIDs": [
+          4
+        ]
+      },
+      {
+        "id": 6,
+        "name": "Hear Madam Eva",
+        "description": "Speak to Madam Eva at Tser Pool.",
+        "objective": "QuestFlag",
+        "mapFlag": "cosChapterOneComplete",
+        "mapFlagValue": 1,
+        "prerequisiteIDs": [
+          5
+        ]
+      }
+    ]
+  }
+]

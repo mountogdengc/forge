@@ -51,6 +51,16 @@
     },
     {
       "type": "TextButton",
+      "name": "CampaignEditor",
+      "text": "Campaign Editor",
+      "selectable": true,
+      "width": 160,
+      "height": 30,
+      "x": 160,
+      "y": 100
+    },
+    {
+      "type": "TextButton",
       "name": "Resume",
       "text": "tr(lblResume)",
       "selectable": true,

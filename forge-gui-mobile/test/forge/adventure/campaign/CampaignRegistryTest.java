@@ -211,6 +211,21 @@ public class CampaignRegistryTest {
         }
     }
 
+    @Test public void editorCanOpenBrokenConfigurationWithoutWeakeningGameValidation() throws Exception {
+        Field current = Config.class.getDeclaredField("currentConfig"); current.setAccessible(true);
+        Object original = current.get(null);
+        try (Fixture fixture = new Fixture()) {
+            Path project = fixture.campaign(fixture.user, "draft", "user.draft", "Draft", "1");
+            CampaignDefinition definition = fixture.discover().findById("user.draft");
+            Config good = Config.forCampaign(definition, new SettingData()); Config.activateCampaign(good);
+            Files.writeString(project.resolve("config.json"), "{broken:");
+            assertThrows(IllegalArgumentException.class, () -> Config.forCampaign(definition));
+            Config editor = Config.forEditing(definition);
+            assertEquals(editor.getCampaign().getId(), "user.draft");
+            assertSame(Config.instance(), good, "Opening an editor draft must not activate it.");
+        } finally { current.set(null, original); }
+    }
+
     private static void assertCampaignData(String identity) {
         assertEquals(Config.instance().getFile("marker.txt").readString(), identity);
         assertEquals(ItemListData.getItem("shared-item").description, identity);

@@ -93,7 +93,7 @@ public class ItemsEditor extends JComponent {
         for(int i=0;i<model.getSize();i++)
             allEnemies.add(model.get(i));
         Json json = new Json(JsonWriter.OutputType.json);
-        FileHandle handle = Config.instance().getFile(Paths.ITEMS);
+        FileHandle handle = EditorFiles.writeTarget(Paths.ITEMS);
         handle.writeString(json.prettyPrint(json.toJson(allEnemies,Array.class, ItemData.class)),false);
 
     }
@@ -102,7 +102,7 @@ public class ItemsEditor extends JComponent {
         model.clear();
         Array<ItemData> allEnemies=new Array<>();
         Json json = new Json();
-        FileHandle handle = Config.instance().getFile(Paths.ITEMS);
+        FileHandle handle = EditorFiles.read(Paths.ITEMS);
         if (handle.exists())
         {
             allEnemies =json.fromJson(Array.class, ItemData.class, handle);

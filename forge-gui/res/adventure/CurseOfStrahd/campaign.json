@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "id": "fork.curse-of-strahd",
+  "version": "0.1.0",
+  "title": "Curse of Strahd: Into the Mists",
+  "description": "The mists close around Barovia. Help a frightened village, face the hunger beneath its church, and bring Ireena safely to Tser Pool. An original opening-chapter card-adventure adaptation.",
+  "startingQuestIds": [
+    "8101"
+  ],
+  "startingLocation": "Spawn",
+  "allowNewGamePlus": false,
+  "inheritCommonWorld": false,
+  "inheritCommonQuests": false,
+  "development": false
+}

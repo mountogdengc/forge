@@ -174,8 +174,8 @@ public class TileMapScene extends HudScene {
             SoundSystem.instance.clearShelvedPlaylist();
         }
         rootPoint = point;
-        oldMap = point.getData().map;
-        map = new TemplateTmxMapLoader().load(Config.instance().getCommonFilePath(point.getData().map));
+        oldMap = forge.adventure.campaign.CampaignMapResolver.mapIdentity(point.getData().map);
+        map = new TemplateTmxMapLoader().load(Config.instance().getRootMapFilePath(point.getData().map));
         ((MapStage) stage).setPointOfInterest(getPointOfInterestChanges());
         stage.getPlayerSprite().setPosition(0, 0);
         WorldSave.getCurrentSave().getWorld().setSeed(point.getSeedOffset());
@@ -197,8 +197,9 @@ public class TileMapScene extends HudScene {
             if (candidate.getID().equals(snapshot.poiId)) { point = candidate; break; }
         }
         if (point == null) throw new java.io.IOException("The saved location is not present in this world.");
-        boolean rootMap = snapshot.map.equals(point.getData().map);
-        String resource = rootMap ? Config.instance().getCommonFilePath(snapshot.map)
+        boolean rootMap = forge.adventure.campaign.CampaignMapResolver.mapIdentity(snapshot.map)
+                .equals(forge.adventure.campaign.CampaignMapResolver.mapIdentity(point.getData().map));
+        String resource = rootMap ? Config.instance().getRootMapFilePath(point.getData().map)
                 : Config.instance().getFilePath(snapshot.map);
         java.io.File file = new java.io.File(resource).getCanonicalFile();
         java.nio.file.Path path = file.toPath();
@@ -208,7 +209,7 @@ public class TileMapScene extends HudScene {
             throw new java.io.IOException("The saved map resource is missing or outside the campaign.");
         }
         rootPoint = point;
-        oldMap = snapshot.map;
+        oldMap = forge.adventure.campaign.CampaignMapResolver.mapIdentity(snapshot.map);
         nextMap = null;
         nextSpawnPoint = 0;
         autoheal = false;
@@ -219,7 +220,7 @@ public class TileMapScene extends HudScene {
         try {
             map = new TemplateTmxMapLoader().load(file.getPath());
             Current.world().setSeed(point.getSeedOffset());
-            getTiledMapRenderer().loadMap(map, snapshot.sourceMap, snapshot.map, 0);
+            getTiledMapRenderer().loadMap(map, forge.adventure.campaign.CampaignMapResolver.mapIdentity(snapshot.sourceMap), oldMap, 0);
             restored.restoreExploration(snapshot);
         } catch (RuntimeException e) {
             throw new java.io.IOException("Could not restore map " + snapshot.map + ".", e);
@@ -256,7 +257,9 @@ public class TileMapScene extends HudScene {
     }
 
     public PointOfInterestChanges getPointOfInterestChanges(String targetMap) {
-        if (rootPoint.getID().endsWith(targetMap))
+        if (forge.adventure.campaign.CampaignMapResolver.mapIdentity(rootPoint.getData().map)
+                .equals(forge.adventure.campaign.CampaignMapResolver.mapIdentity(targetMap))
+                || rootPoint.getID().endsWith(targetMap))
             return getPointOfInterestChanges();
         return WorldSave.getCurrentSave().getPointOfInterestChanges(rootPoint.getID() + targetMap);
     }

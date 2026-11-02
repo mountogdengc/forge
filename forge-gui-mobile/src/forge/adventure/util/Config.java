@@ -32,6 +32,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.*;
 
 /**
@@ -72,6 +73,10 @@ public class Config {
     }
 
     private Config(CampaignDefinition campaign, SettingData sharedSettings) {
+        this(campaign, sharedSettings, false);
+    }
+
+    private Config(CampaignDefinition campaign, SettingData sharedSettings, boolean editing) {
         this.campaign = campaign;
         String path = resPath();
         FilenameFilter planesFilter = (file, s) -> !s.contains(".") && !s.equals(commonDirectoryName);
@@ -100,12 +105,7 @@ public class Config {
         }
         plane = campaign == null ? settingsData.plane : campaign.getPlane();
 
-        if (settingsData.width == 0 || settingsData.height == 0) {
-            settingsData.width = 1280;
-            settingsData.height = 720;
-        }
-        if (settingsData.videomode == null || settingsData.videomode.isEmpty())
-            settingsData.videomode = "720p";
+        settingsData.applyResolutionDefaults(GuiBase.isMobile());
         //reward card display fine tune
         if (settingsData.rewardCardAdj == null || settingsData.rewardCardAdj == 0f)
             settingsData.rewardCardAdj = 1f;
@@ -131,15 +131,18 @@ public class Config {
         if(!file.exists())
             file = new FileHandle(commonPrefix + "config.json");
         try {
-            configData = new Json().fromJson(ConfigData.class, file);
+            Json reader = new Json();
+            reader.setIgnoreUnknownFields(true);
+            configData = reader.fromJson(ConfigData.class, file);
         } catch (Exception e) {
-            if (campaign != null) {
+            if (campaign != null && !editing) {
                 throw new IllegalArgumentException("Cannot read configuration for " + campaign.getTitle() + ".", e);
             }
-            e.printStackTrace();
+            if (!editing) e.printStackTrace();
             configData = new ConfigData();
         }
-        if (campaign != null && (configData.screenWidth <= 0 || configData.screenHeight <= 0
+        if (configData == null && editing) configData = new ConfigData();
+        if (campaign != null && !editing && (configData.screenWidth <= 0 || configData.screenHeight <= 0
                 || configData.difficulties == null || configData.difficulties.length == 0
                 || configData.colorIds == null || configData.colorIdNames == null
                 || configData.colorIds.length != configData.colorIdNames.length
@@ -152,6 +155,12 @@ public class Config {
     /** Build character-creation options without changing the active campaign or global filters. */
     public static Config forCampaign(CampaignDefinition definition) {
         return forCampaign(definition, instance().settingsData);
+    }
+
+    /** Resource configuration for editing a draft; game activation still uses forCampaign validation. */
+    public static Config forEditing(CampaignDefinition definition) {
+        Objects.requireNonNull(definition,"Campaign definition");
+        return new Config(definition,instance().settingsData,true);
     }
 
     /** Resource-only configuration, also usable by editors and headless campaign validation. */
@@ -328,6 +337,11 @@ public class Config {
 
     public String getCommonFilePath(String path) {
         return commonPrefix + path;
+    }
+
+    public String getRootMapFilePath(String reference) {
+        return forge.adventure.campaign.CampaignMapResolver.resolve(
+                Path.of(prefix),Path.of(commonPrefix),reference).toString();
     }
 
     private String langFilePath(String fullPath, String rootPrefix) {

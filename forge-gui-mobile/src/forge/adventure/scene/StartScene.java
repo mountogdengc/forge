@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
 public class StartScene extends UIScene {
     private static StartScene object;
     Dialog exitDialog, backupDialog, zipDialog, unzipDialog;
-    TextraButton saveButton, resumeButton, continueButton;
+    TextraButton saveButton, resumeButton, continueButton, campaignEditorButton;
     TypingLabel version = Controls.newTypingLabel("{GRADIENT}[%80]v." + Forge.getDeviceAdapter().getVersionString() + "{ENDGRADIENT}");
 
 
@@ -52,14 +52,17 @@ public class StartScene extends UIScene {
         ui.onButtonPress("Backup", StartScene.this::backup);
         ui.onButtonPress("Exit", StartScene.this::Exit);
         ui.onButtonPress("Switch", StartScene.this::switchToClassic);
+        ui.onButtonPress("CampaignEditor", this::campaignEditor);
 
 
         saveButton = ui.findActor("Save");
         resumeButton = ui.findActor("Resume");
         continueButton = ui.findActor("Continue");
+        campaignEditorButton = ui.findActor("CampaignEditor");
 
         saveButton.setVisible(false);
         resumeButton.setVisible(false);
+        if (campaignEditorButton != null) campaignEditorButton.setVisible(Forge.getDeviceAdapter().supportsCampaignEditor());
         version.setHeight(5);
         version.skipToTheEnd();
         ui.addActor(version);
@@ -151,6 +154,17 @@ public class StartScene extends UIScene {
 
     public boolean settings() {
         Forge.switchScene(SettingsScene.instance());
+        return true;
+    }
+
+    public boolean campaignEditor() {
+        if (WorldSave.hasActivePlaythrough()) {
+            showError("Open Campaign Editor from the startup menu before loading a game.");
+            return true;
+        }
+        var campaign = forge.adventure.campaign.CampaignManager.current();
+        String error = Forge.getDeviceAdapter().openCampaignEditor(campaign == null ? null : campaign.getId());
+        if (error != null) showError(error);
         return true;
     }
 
@@ -354,6 +368,8 @@ public class StartScene extends UIScene {
     public void enter() {
         boolean hasSaveButton = WorldSave.hasActivePlaythrough() && WorldSave.getCurrentSave().getWorld().getData() != null;
         saveButton.setVisible(hasSaveButton);
+        if (campaignEditorButton != null) campaignEditorButton.setVisible(!WorldSave.hasActivePlaythrough()
+                && Forge.getDeviceAdapter().supportsCampaignEditor());
         saveButton.setDisabled(!WorldSave.explorationSaveBlockReason().isEmpty());
         updateResumeContinue();
 

@@ -20,8 +20,14 @@ import xml.etree.ElementTree as ET
 import zipfile
 
 REPOSITORY_URL = "https://github.com/mountogdengc/forge"
+DESKTOP_SETTINGS = {"width": 1920, "height": 1080, "fullScreen": False, "videomode": "1080p"}
+DESKTOP_DEFAULTS = {
+    **DESKTOP_SETTINGS, "foreground_fps": 30, "idle_fps": 15, "audio": True,
+    "initial_heap_mb": 128, "maximum_heap_mb": 1024, "active_processors": 2,
+}
 REQUIRED_CLASSES = (
     "forge/app/Main.class",
+    "forge/app/DesktopGraphicsPolicy.class",
     "forge/adventure/scene/CampaignSelectionScene.class",
     "forge/adventure/campaign/CampaignRegistry.class",
     "forge/adventure/world/PlaythroughRepository.class",
@@ -63,7 +69,7 @@ set "APPDATA=%CD%\test-platform\roaming"
 set "LOCALAPPDATA=%CD%\test-platform\local"
 echo Starting Forge Adventure with a separate test profile.
 echo Keep this window open while playing. Errors go to logs\launcher.log.
-"runtime\bin\java.exe" @java-options.txt -Xms256m -Xmx4g "-Duser.home=%CD%\test-home" -jar "forge-adventure-test.jar" landscape 1>"logs\launcher.log" 2>&1
+"runtime\bin\java.exe" @java-options.txt -Xms128m -Xmx1g -XX:ActiveProcessorCount=2 "-Duser.home=%CD%\test-home" -jar "forge-adventure-test.jar" landscape 1>"logs\launcher.log" 2>&1
 set "result=%ERRORLEVEL%"
 if not "%result%"=="0" (
   echo The game exited with an error. See logs\launcher.log and test-profile\forge.log.
@@ -141,12 +147,27 @@ and build scripts are available at the exact source URL above.
 '''
 
 
+def render_launcher(eager: bool = False) -> str:
+    # Attach diagnostics independently of heap tuning.
+    return LAUNCHER.replace("@java-options.txt", "@java-options.txt -Dforge.cards.forceEager=true", 1) if eager else LAUNCHER
+
+
 def sha256(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as stream:
         for block in iter(lambda: stream.read(1024 * 1024), b""):
             digest.update(block)
     return digest.hexdigest()
+
+
+def archive_for(package: Path) -> Path:
+    return package.parent / (package.name + ".zip")
+
+
+def changed_sources(root: Path) -> list[str]:
+    changed = subprocess.check_output(["git", "diff", "HEAD", "--name-only", "-z"], cwd=root)
+    untracked = subprocess.check_output(["git", "ls-files", "--others", "--exclude-standard", "-z"], cwd=root)
+    return (changed + untracked).decode("utf-8").split("\0")
 
 
 def test_evidence(root: Path) -> dict:
@@ -172,6 +193,8 @@ def test_evidence(root: Path) -> dict:
         "forge.adventure.world.ExplorationSavePolicyTest",
         "forge.adventure.data.BellwakeContentTest",
         "forge.adventure.campaign.CampaignContentValidatorTest",
+        "forge.app.DesktopGraphicsPolicyTest",
+        "forge.adventure.data.SettingDataTest",
     }
     if totals["tests"] == 0 or totals["failures"] or totals["errors"]:
         raise RuntimeError(f"Tests did not pass: {totals}")
@@ -205,6 +228,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--repository", type=Path, default=Path.cwd())
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--campaign", help="Campaign folder selected for a fresh profile")
     args = parser.parse_args()
     if sys.platform != "win32" or platform.machine().lower() not in ("amd64", "x86_64"):
         raise RuntimeError("Package on Windows x64 using the Windows JDK from the build.")
@@ -225,8 +249,23 @@ def main() -> None:
     if len(jars) != 1:
         raise RuntimeError(f"Expected one clean Adventure assembly JAR, found {len(jars)}.")
     check_jar(jars[0])
+    editor_jar = root / 'adventure-editor/target/adventure-editor-jar-with-dependencies.jar'
+    if not editor_jar.is_file(): raise RuntimeError('Build the matching Adventure Editor before packaging.')
+    with zipfile.ZipFile(editor_jar) as editor:
+        if editor.testzip() or 'forge/adventure/editor/EditorFiles.class' not in editor.namelist():
+            raise RuntimeError('The matching editor with campaign-local save handling is required.')
     evidence = test_evidence(root)
     resources = root / "forge-gui/res"
+    campaign = None
+    if args.campaign:
+        adventure = (resources / "adventure").resolve()
+        campaign_root = (adventure / args.campaign).resolve()
+        if campaign_root.parent != adventure:
+            raise RuntimeError("Campaign must name one immediate Adventure folder.")
+        campaign = json.loads((campaign_root / "campaign.json").read_text(encoding="utf-8"))
+        if args.campaign == "CurseOfStrahd":
+            from embed_strahd_dialogues import embed
+            embed(campaign_root / "story/dialogues.json", adventure / "common/maps/map/strahd", check=True)
     for name in REQUIRED_RESOURCES:
         if not (resources / name).is_file():
             raise RuntimeError(f"Required resource is missing: {name}")
@@ -243,12 +282,14 @@ def main() -> None:
         raise RuntimeError("Repository license file is missing.")
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=True)
-    package = output / f"Forge-Adventure-Windows-Test-{sha[:12]}"
-    archive_path = package.with_suffix(".zip")
+    package_name = f"{args.campaign}-Windows-{campaign['version']}-{sha[:12]}" if campaign else f"Forge-Adventure-Windows-Test-{sha[:12]}"
+    package = output / package_name
+    archive_path = archive_for(package)
     if package.exists() or archive_path.exists():
         raise RuntimeError("Output exists; refusing to overwrite a package or test profile.")
     package.mkdir()
     shutil.copy2(jars[0], package / "forge-adventure-test.jar")
+    shutil.copyfile(editor_jar,package/'adventure-editor.jar')
     # Windows does not need source timestamps/attributes to run these files.
     # copy2's per-file metadata work is costly across the full card database.
     shutil.copytree(resources, package / "res", copy_function=shutil.copyfile)
@@ -261,16 +302,45 @@ def main() -> None:
     preferences = package / "test-profile/preferences"
     preferences.mkdir(parents=True)
     (preferences / "forge.preferences").write_text("UI_SELECTOR_MODE=Adventure\nUI_LANDSCAPE_MODE=true\n", encoding="ascii")
+    adventure_profile = package / "test-profile/adventure"
+    adventure_profile.mkdir(parents=True)
+    desktop_settings = dict(DESKTOP_SETTINGS)
+    if campaign:
+        desktop_settings["plane"] = args.campaign
+    (adventure_profile / "settings.json").write_text(json.dumps(desktop_settings) + "\n", encoding="ascii")
     (package / "java-options.txt").write_text(options.strip() + "\n", encoding="ascii")
     (package / "Start-Adventure-Test.cmd").write_bytes(LAUNCHER.replace("\n", "\r\n").encode("ascii"))
+    if campaign:
+        (package / f"Start-{args.campaign}.cmd").write_bytes(LAUNCHER.replace("\n", "\r\n").encode("ascii"))
     source_url = f"{REPOSITORY_URL}/tree/{sha}"
-    (package / "READ-ME-FIRST.txt").write_text(README.format(sha=sha, source_url=source_url), encoding="utf-8")
+    readme = README.format(sha=sha, source_url=source_url)
+    if args.campaign == "CurseOfStrahd":
+        readme = (root / "docs/Adventure/Curse-of-Strahd-Playtests.md").read_text(encoding="utf-8")
+    (package / "READ-ME-FIRST.txt").write_text(readme, encoding="utf-8")
+    # Preserve the actual uncommitted sources rather than implying HEAD contains them.
+    changed = changed_sources(root)
+    source_changes = {}
+    for name in sorted(set(filter(None, changed))):
+        source = root / name
+        if not source.is_file():
+            source_changes[name] = "deleted"
+            continue
+        destination = package / "SOURCE-CHANGES" / name
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(source, destination)
+        source_changes[name] = sha256(source)
     info = {
         "source_repository": REPOSITORY_URL, "source_commit": sha, "source_url": source_url,
+        "source_changes_from_commit": source_changes,
+        "source_changes_note": "Modified/new source files are included under SOURCE-CHANGES; source_commit is their baseline.",
         "built_at_utc": datetime.now(timezone.utc).isoformat(), "target": "Windows x64",
         "java": (version.stderr + version.stdout).strip(), "tests": evidence,
         "jar_sha256": sha256(package / "forge-adventure-test.jar"),
+        "editor_jar_sha256":sha256(package/'adventure-editor.jar'),
         "profile": "test-profile", "cache": "test-cache",
+        "desktop_defaults": DESKTOP_DEFAULTS,
+        "selected_campaign": args.campaign,
+        "selected_campaign_version": campaign["version"] if campaign else None,
         "bellwake_content_version": json.loads((resources / "adventure/Bellwake/campaign.json").read_text(encoding="utf-8"))["version"],
         "windows_graphical_playtest": "Not performed by this packaging workflow",
     }

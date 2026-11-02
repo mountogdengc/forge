@@ -5,7 +5,6 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonWriter;
 import forge.adventure.data.AdventureQuestData;
-import forge.adventure.util.Config;
 import forge.adventure.util.Paths;
 
 import javax.swing.*;
@@ -81,7 +80,7 @@ public class QuestEditor extends JComponent {
             allQuests.add(QuestController.getInstance().getAllQuests().get(i));
         }
         Json json = new Json(JsonWriter.OutputType.json);
-        FileHandle handle = Config.instance().getFile(Paths.QUESTS);
+        FileHandle handle = EditorFiles.writeTarget(Paths.QUESTS);
         handle.writeString(json.prettyPrint(json.toJson(allQuests,Array.class, AdventureQuestData.class)),false);
         QuestController.getInstance().save();
     }

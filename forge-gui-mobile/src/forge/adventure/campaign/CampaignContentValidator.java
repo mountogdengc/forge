@@ -87,21 +87,26 @@ public final class CampaignContentValidator {
         if (poiFile != null) for (JsonValue point : json(poiFile)) {
             names.add(point.getString("name", ""));
             String map = point.getString("map", "");
-            // Root POI maps deliberately use the common prefix in the runtime.
-            Path file = common.resolve(map).normalize();
-            if (!file.startsWith(common) || !Files.isRegularFile(file)) errors.add(poiFile + ": missing root map " + map);
-            else map(file);
+            try { map(CampaignMapResolver.resolve(root,common,map)); }
+            catch (IllegalArgumentException error) { errors.add(poiFile + ": " + error.getMessage()); }
         }
         String start = manifest.getString("startingLocation", "");
         if (start != null && !start.isBlank() && !names.contains(start)) errors.add(manifestFile + ": missing starting location " + start);
         Path configFile = resource("config.json", "configuration");
         if (configFile != null) {
-            JsonValue difficulties = json(configFile).get("difficulties");
+            JsonValue config = json(configFile);
+            JsonValue editions = config.get("starterDecksByEdition");
+            if (editions != null) for (JsonValue decks : editions) checkDeckValues(decks, configFile.toString());
+            JsonValue difficulties = config.get("difficulties");
             if (difficulties != null) for (JsonValue difficulty : difficulties) {
-                JsonValue decks = difficulty.get("constructedStarterDecks");
-                if (decks != null) for (JsonValue deck : decks) checkDeck(resource(deck.asString(), configFile.toString()));
+                for (String key : new String[]{"constructedStarterDecks", "starterDecks", "pileDecks", "commanderDecks"})
+                    checkDeckValues(difficulty.get(key), configFile.toString());
             }
         }
+    }
+
+    private void checkDeckValues(JsonValue decks, String source) {
+        if (decks != null) for (JsonValue deck : decks) checkDeck(resource(deck.asString(), source));
     }
 
     private void validateStages(JsonValue quest, String source) {
@@ -151,6 +156,11 @@ public final class CampaignContentValidator {
                     if ((name.equals("dialog") || name.equals("defeatDialog")) && !value.isBlank()) {
                         try { for (JsonValue item : new JsonReader().parse(value)) dialog(item, source, actorIds, id); }
                         catch (RuntimeException e) { errors.add(source + ": malformed dialogue: " + e.getMessage()); }
+                    }
+                    if (name.equals("deckOverride") && !value.isBlank()) checkDeck(resource(value, source));
+                    if (name.equals("reward") && !value.isBlank()) {
+                        try { rewards(new JsonReader().parse(value), source); }
+                        catch (RuntimeException e) { errors.add(source + ": malformed reward: " + e.getMessage()); }
                     }
                     if (name.equals("teleport") && !value.isBlank()) {
                         Path target = resource(value, source);
@@ -210,8 +220,20 @@ public final class CampaignContentValidator {
         }
     }
 
+    private void checkNamedCards(JsonValue value, String source) {
+        for (JsonValue child = value.child; child != null; child = child.next) {
+            if ("cardName".equals(child.name) && child.isString() && !child.asString().isBlank()
+                    && !cardExists.test(child.asString())) errors.add(source + ": unknown generated-deck card " + child.asString());
+            if (child.isArray() || child.isObject()) checkNamedCards(child, source);
+        }
+    }
+
     private void checkDeck(Path file) {
-        if (file == null || !checked.add(file) || !file.toString().endsWith(".dck")) return;
+        if (file == null || !checked.add(file)) return;
+        if (!file.toString().endsWith(".dck")) {
+            checkNamedCards(json(file), file.toString());
+            return;
+        }
         try {
             for (String line : Files.readAllLines(file)) {
                 String value = line.trim();

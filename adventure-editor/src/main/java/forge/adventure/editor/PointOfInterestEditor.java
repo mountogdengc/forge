@@ -14,6 +14,7 @@ import java.awt.event.ActionListener;
 import java.util.HashMap;
 
 public class PointOfInterestEditor extends JComponent {
+    private String loadedCatalog;
     DefaultListModel<PointOfInterestData> model = new DefaultListModel<>();
     JList<PointOfInterestData> list = new JList<>(model);
     JToolBar toolBar = new JToolBar("toolbar");
@@ -67,7 +68,7 @@ public class PointOfInterestEditor extends JComponent {
         addButton("remove", e -> PointOfInterestEditor.this.remove());
         addButton("copy", e -> PointOfInterestEditor.this.copy());
         addButton("load", e -> PointOfInterestEditor.this.load());
-        addButton("save", e -> PointOfInterestEditor.this.save());
+        addButton("save", e -> { try { save(); } catch (RuntimeException error) { JOptionPane.showMessageDialog(this,error.getMessage(),"Locations not saved",JOptionPane.ERROR_MESSAGE); } });
         BorderLayout layout=new BorderLayout();
         setLayout(layout);
         add(new JScrollPane(list), BorderLayout.LINE_START);
@@ -94,21 +95,27 @@ public class PointOfInterestEditor extends JComponent {
 
     void save()
     {
+        FileHandle latest = EditorFiles.read(Paths.POINTS_OF_INTEREST);
+        String disk = latest == null || !latest.exists() ? null : latest.readString("UTF-8");
+        if (!java.util.Objects.equals(loadedCatalog, disk)) throw new IllegalStateException("Locations changed on disk. Use Load to reload before saving; preserve any unsaved form edits first.");
         Array<PointOfInterestData> allEnemies=new Array<>();
         for(int i=0;i<model.getSize();i++)
             allEnemies.add(model.get(i));
         Json json = new Json(JsonWriter.OutputType.json);
-        FileHandle handle = Config.instance().getFile(Paths.POINTS_OF_INTEREST);
+        FileHandle handle = EditorFiles.writeTarget(Paths.POINTS_OF_INTEREST);
         handle.writeString(json.prettyPrint(json.toJson(allEnemies,Array.class, PointOfInterestData.class)),false);
+        loadedCatalog = handle.readString("UTF-8");
 
     }
-    void load()
+    void load() { load(true); }
+    void load(boolean refreshQuests)
     {
         model.clear();
         Array<PointOfInterestData> allEnemies=new Array<>();
         Json json = new Json();
-        FileHandle handle = Config.instance().getFile(Paths.POINTS_OF_INTEREST);
-        if (handle.exists())
+        FileHandle handle = EditorFiles.read(Paths.POINTS_OF_INTEREST);
+        loadedCatalog = handle == null || !handle.exists() ? null : handle.readString("UTF-8");
+        if (handle != null && handle.exists())
         {
             allEnemies =json.fromJson(Array.class, PointOfInterestData.class, handle);
         }
@@ -116,7 +123,7 @@ public class PointOfInterestEditor extends JComponent {
             model.add(i,allEnemies.get(i));
         }
 
-        QuestController.getInstance().load();
+        if (refreshQuests) QuestController.getInstance().load();
     }
     void addItem()
     {

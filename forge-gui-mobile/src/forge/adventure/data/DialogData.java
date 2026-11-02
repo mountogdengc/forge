@@ -74,6 +74,15 @@ public class DialogData implements Serializable {
         public int addShards = 0;           //Gives the player X shards. Negative to take.
 
         public int deleteMapObject = 0;   //Remove ID from the map. -1 for self.
+        public Departure departMapObject; //Animate departure and persist removal. Null in older saves.
+        static public class Departure implements Serializable {
+            private static final long serialVersionUID = 1L;
+            public int id = -1;
+            public float deltaX = 256f;
+            public float deltaY = 160f;
+            public float duration = 2.5f;
+            public String mountSprite;
+        }
         public int activateMapObject = 0; //Remove inactive state from ID.
         public int battleWithActorID = 0; //Start a battle with enemy ID. -1 for self if possible.
         public EffectData giveBlessing;   //Give a blessing to the player.

@@ -11,6 +11,15 @@ import java.util.HashMap;
  */
 public class SettingData {
 
+    /** Fill missing resolution settings without replacing a player's explicit choice. */
+    public void applyResolutionDefaults(boolean nativeMobile) {
+        if (width == 0) width = nativeMobile ? 1280 : 1920;
+        if (height == 0) height = nativeMobile ? 720 : 1080;
+        if (videomode == null || videomode.isEmpty()) {
+            videomode = nativeMobile ? "720p" : "1080p";
+        }
+    }
+
 	public int width;
     public int height;
     public String plane;

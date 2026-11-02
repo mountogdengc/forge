@@ -420,6 +420,12 @@ public class MapStage extends GameStage {
                 int id = prop.get("id", int.class);
                 if (changes.isObjectDeleted(id))
                     continue;
+                // Reconcile completed encounters from saves made before their removal was scripted.
+                String removeFlag = prop.get("removeWhenQuestFlag", String.class);
+                if (removeFlag != null && !removeFlag.isEmpty() && Current.player().checkQuestFlag(removeFlag)) {
+                    changes.deleteObject(id);
+                    continue;
+                }
 
                 boolean hidden = !obj.isVisible(); //Check if the object is invisible.
 
@@ -954,6 +960,42 @@ public class MapStage extends GameStage {
             }
         }
         return false;
+    }
+
+    /** The persistent actor leaves immediately; its noninteractive visual finishes the exit. */
+    public void departObject(int id, DialogData.ActionData.Departure departure) {
+        Actor original = getByID(id);
+        if (!(original instanceof CharacterSprite)) {
+            deleteObject(id);
+            return;
+        }
+        float seconds = Float.isFinite(departure.duration) ? Math.max(0.1f, Math.min(10f, departure.duration)) : 2.5f;
+        float dx = Float.isFinite(departure.deltaX) ? departure.deltaX : 256f;
+        float dy = Float.isFinite(departure.deltaY) ? departure.deltaY : 160f;
+        CharacterSprite character = (CharacterSprite) original;
+        CharacterSprite rider = new CharacterSprite(character.getAtlasPath());
+        Group visual = new Group();
+        visual.setName("departing-map-object-" + id);
+        visual.setPosition(original.getX(), original.getY());
+        CharacterSprite.AnimationDirections direction = dx < 0
+                ? CharacterSprite.AnimationDirections.Left : CharacterSprite.AnimationDirections.Right;
+        if (departure.mountSprite != null && !departure.mountSprite.isEmpty()) {
+            CharacterSprite mount = new CharacterSprite(departure.mountSprite);
+            mount.setDirection(direction);
+            mount.setAnimation(CharacterSprite.AnimationTypes.Walk);
+            visual.addActor(mount);
+            rider.setPosition(14f, 12f);
+            visual.moveBy(-14f, -12f);
+        } else {
+            rider.setAnimation(CharacterSprite.AnimationTypes.Walk);
+        }
+        rider.setDirection(direction);
+        visual.addActor(rider);
+        deleteObject(id);
+        foregroundSprites.addActor(visual);
+        visual.addAction(Actions.sequence(Actions.moveBy(dx, dy, seconds), Actions.removeActor()));
+        // A checkpoint cannot capture only half of this presentation. No timer survives a map reset.
+        startPause(seconds + 0.1f);
     }
 
     public boolean activateMapObject(int id){

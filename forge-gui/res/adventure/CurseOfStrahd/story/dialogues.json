@@ -1,0 +1,1045 @@
+{
+  "village.ismark": {
+    "dialog": [
+      {
+        "text": "Ismark makes room beside the stove. \"The mist lets people enter more readily than leave. Before my sister Ireena travels, we must know whether the church can keep its own doors shut. Speak to Donavich, and face what waits below.\"",
+        "options": [
+          {
+            "name": "I will investigate the church.",
+            "text": "\"The church stands apart from the houses. Return to Ireena afterward. The Roadwarden can help you practice, and this stove is yours whenever you need it.\"",
+            "options": [
+              {
+                "name": "Continue."
+              }
+            ],
+            "action": [
+              {
+                "setQuestFlag": {
+                  "key": "cosBriefed",
+                  "val": 1
+                }
+              }
+            ]
+          },
+          {
+            "name": "Rest and recover for free.",
+            "text": "A door is barred, a kettle warmed. Your strength returns. There is no charge.",
+            "options": [
+              {
+                "name": "Continue."
+              }
+            ],
+            "action": [
+              {
+                "addLife": 1000
+              }
+            ]
+          },
+          {
+            "name": "I need a moment."
+          }
+        ],
+        "condition": [
+          {
+            "checkQuestFlag": "cosBriefed",
+            "not": true
+          }
+        ]
+      },
+      {
+        "text": "\"We still hear cries from the church,\" Ismark says. \"Donavich needs an answer, and Ireena needs a safer road.\"",
+        "options": [
+          {
+            "name": "Rest and recover for free.",
+            "text": "A door is barred, a kettle warmed. Your strength returns. There is no charge.",
+            "options": [
+              {
+                "name": "Continue."
+              }
+            ],
+            "action": [
+              {
+                "addLife": 1000
+              }
+            ]
+          },
+          {
+            "name": "I will return to the church."
+          }
+        ],
+        "condition": [
+          {
+            "checkQuestFlag": "cosBriefed"
+          },
+          {
+            "checkQuestFlag": "cosChurchResolved",
+            "not": true
+          }
+        ]
+      },
+      {
+        "text": "Ismark checks the shutters. \"You have done what the church could not do alone. Speak to Ireena herself; the decision to travel belongs to her.\"",
+        "options": [
+          {
+            "name": "Rest and recover for free.",
+            "text": "A door is barred, a kettle warmed. Your strength returns. There is no charge.",
+            "options": [
+              {
+                "name": "Continue."
+              }
+            ],
+            "action": [
+              {
+                "addLife": 1000
+              }
+            ]
+          },
+          {
+            "name": "I will speak to Ireena."
+          }
+        ],
+        "condition": [
+          {
+            "checkQuestFlag": "cosBriefed"
+          },
+          {
+            "checkQuestFlag": "cosChurchResolved"
+          },
+          {
+            "checkQuestFlag": "cosEscortAccepted",
+            "not": true
+          }
+        ]
+      },
+      {
+        "text": "\"Tser Pool lies beyond the Old Svalich Road,\" Ismark says. \"Keep Ireena away from the pack, and listen to Eva when you reach camp.\"",
+        "options": [
+          {
+            "name": "Rest and recover for free.",
+            "text": "A door is barred, a kettle warmed. Your strength returns. There is no charge.",
+            "options": [
+              {
+                "name": "Continue."
+              }
+            ],
+            "action": [
+              {
+                "addLife": 1000
+              }
+            ]
+          },
+          {
+            "name": "Back to the road."
+          }
+        ],
+        "condition": [
+          {
+            "checkQuestFlag": "cosBriefed"
+          },
+          {
+            "checkQuestFlag": "cosEscortAccepted"
+          },
+          {
+            "checkQuestFlag": "cosChapterOneComplete",
+            "not": true
+          }
+        ]
+      },
+      {
+        "text": "The village lamps are still alight. Ismark listens to your account of the camp. \"Then there is a little more distance between my sister and the count tonight.\"",
+        "options": [
+          {
+            "name": "Rest and recover for free.",
+            "text": "A door is barred, a kettle warmed. Your strength returns. There is no charge.",
+            "options": [
+              {
+                "name": "Continue."
+              }
+            ],
+            "action": [
+              {
+                "addLife": 1000
+              }
+            ]
+          },
+          {
+            "name": "Leave the lamp burning."
+          }
+        ],
+        "condition": [
+          {
+            "checkQuestFlag": "cosBriefed"
+          },
+          {
+            "checkQuestFlag": "cosChapterOneComplete"
+          }
+        ]
+      }
+    ]
+  },
+  "village.ireena": {
+    "dialog": [
+      {
+        "text": "Ireena has packed a small bag but keeps her hand on the door. \"Speak to Ismark first. I will not ask a stranger to walk into this without knowing why.\"",
+        "options": [
+          {
+            "name": "Continue."
+          }
+        ],
+        "condition": [
+          {
+            "checkQuestFlag": "cosBriefed",
+            "not": true
+          }
+        ]
+      },
+      {
+        "text": "\"Donavich has enough grief without us leaving a danger at his door,\" Ireena says. \"Settle what is happening in the church. Then we can talk about the road.\"",
+        "options": [
+          {
+            "name": "Continue."
+          }
+        ],
+        "condition": [
+          {
+            "checkQuestFlag": "cosBriefed"
+          },
+          {
+            "checkQuestFlag": "cosChurchResolved",
+            "not": true
+          }
+        ]
+      },
+      {
+        "text": "Ireena shoulders her bag. \"I will go to Tser Pool, if you will help clear the road. I choose to leave this house. Can I count on you?\"",
+        "options": [
+          {
+            "name": "I will escort you to Tser Pool.",
+            "text": "\"Then take the Old Svalich Road. I will keep close when the mist thickens. We must deal with the wolves before we can call this a safe crossing.\"",
+            "options": [
+              {
+                "name": "Continue."
+              }
+            ],
+            "action": [
+              {
+                "setQuestFlag": {
+                  "key": "cosEscortAccepted",
+                  "val": 1
+                }
+              }
+            ]
+          },
+          {
+            "name": "I need to prepare first."
+          }
+        ],
+        "condition": [
+          {
+            "checkQuestFlag": "cosBriefed"
+          },
+          {
+            "checkQuestFlag": "cosChurchResolved"
+          },
+          {
+            "checkQuestFlag": "cosEscortAccepted",
+            "not": true
+          }
+        ]
+      },
+      {
+        "text": "\"The road first, then Tser Pool,\" Ireena says. \"We travel together, but I cannot fight the pack for you. Rest here if you need to.\"",
+        "options": [
+          {
+            "name": "Continue."
+          }
+        ],
+        "condition": [
+          {
+            "checkQuestFlag": "cosEscortAccepted"
+          },
+          {
+            "checkQuestFlag": "cosRoadCleared",
+            "not": true
+          }
+        ]
+      },
+      {
+        "text": "\"The pack is scattered. Let us speak to Madam Eva at Tser Pool,\" Ireena says. \"A safe fire is only a beginning.\"",
+        "options": [
+          {
+            "name": "Continue."
+          }
+        ],
+        "condition": [
+          {
+            "checkQuestFlag": "cosEscortAccepted"
+          },
+          {
+            "checkQuestFlag": "cosRoadCleared"
+          },
+          {
+            "checkQuestFlag": "cosChapterOneComplete",
+            "not": true
+          }
+        ]
+      },
+      {
+        "text": "Ireena has found shelter at Tser Pool. Her old room stands quiet; Ismark keeps a lamp burning for her.",
+        "options": [
+          {
+            "name": "Continue."
+          }
+        ],
+        "condition": [
+          {
+            "checkQuestFlag": "cosChapterOneComplete"
+          }
+        ]
+      }
+    ]
+  },
+  "village.practice": {
+    "dialog": [
+      {
+        "text": "The Roadwarden clears a table. \"Friendly practice? No entry fee, and a loss leaves you here. Your first victory earns two copies of one chosen spell. Later games are just practice.\"",
+        "options": [
+          {
+            "name": "Play a friendly practice game.",
+            "action": [
+              {
+                "battleWithActorID": -1
+              }
+            ]
+          },
+          {
+            "name": "Explain the starting decks.",
+            "text": "Village Vigil uses white mana: humans, spirits, protection and patient defense. Grave Resolve uses black mana: returning creatures and removal. Open Decks to edit your cards. Neither start requires a purchase.",
+            "options": [
+              {
+                "name": "Continue."
+              }
+            ]
+          },
+          {
+            "name": "Rest and recover for free.",
+            "text": "A door is barred, a kettle warmed. Your strength returns. There is no charge.",
+            "options": [
+              {
+                "name": "Continue."
+              }
+            ],
+            "action": [
+              {
+                "addLife": 1000
+              }
+            ]
+          },
+          {
+            "name": "Not now."
+          }
+        ]
+      }
+    ],
+    "defeatDialog": [
+      {
+        "text": "\"Well played. Pick two cards for your collection. Rebuke is white removal for an attacking creature; Murder is black removal for any creature. Open Decks afterward to choose replacements. Your deck never changes automatically.\"",
+        "options": [
+          {
+            "name": "Take two Rebukes (white).",
+            "text": "Two Rebukes are in your collection. Open Decks if you want to use them.",
+            "options": [
+              {
+                "name": "Continue."
+              }
+            ],
+            "action": [
+              {
+                "setQuestFlag": {
+                  "key": "cosTrainingRewarded",
+                  "val": 1
+                },
+                "grantRewards": [
+                  {
+                    "type": "card",
+                    "cardName": "Rebuke",
+                    "count": 2
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Take two Murders (black).",
+            "text": "Two Murders are in your collection. Open Decks if you want to use them.",
+            "options": [
+              {
+                "name": "Continue."
+              }
+            ],
+            "action": [
+              {
+                "setQuestFlag": {
+                  "key": "cosTrainingRewarded",
+                  "val": 1
+                },
+                "grantRewards": [
+                  {
+                    "type": "card",
+                    "cardName": "Murder",
+                    "count": 2
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "condition": [
+          {
+            "checkQuestFlag": "cosTrainingRewarded",
+            "not": true
+          }
+        ]
+      },
+      {
+        "text": "\"A good game. You already received your two cards, but the table is always open.\"",
+        "options": [
+          {
+            "name": "Continue."
+          }
+        ],
+        "condition": [
+          {
+            "checkQuestFlag": "cosTrainingRewarded"
+          }
+        ]
+      }
+    ]
+  },
+  "village.notice": {
+    "dialog": [
+      {
+        "text": "BAROVIA\nIsmark offers shelter and free recovery.\nIreena decides when to travel.\nThe Roadwarden offers optional friendly practice.\nInvestigate the Village Church, return to Ireena, clear the Old Svalich Road, then speak to Eva at Tser Pool.\nUse the overworld exit to travel between locations. Open the journal to check your current task.",
+        "options": [
+          {
+            "name": "Continue."
+          }
+        ]
+      }
+    ]
+  },
+  "church.doru": {
+    "dialog": [
+      {
+        "text": "A pale young man recoils from the light. \"Stay back. I can hear your heart.\" The cellar door will not hold against him forever.",
+        "options": [
+          {
+            "name": "Subdue Doru.",
+            "action": [
+              {
+                "battleWithActorID": -1
+              }
+            ]
+          },
+          {
+            "name": "Withdraw and prepare."
+          }
+        ],
+        "condition": [
+          {
+            "checkQuestFlag": "cosDoruSubdued",
+            "not": true
+          }
+        ]
+      },
+      {
+        "text": "Doru has fallen back against the cellar wall. His hunger has not left him. Donavich waits for your decision: bind his son securely, or end his suffering.",
+        "options": [
+          {
+            "name": "Restrain Doru.",
+            "text": "You secure Doru below the church. Donavich agrees to keep watch and warn the village. His son is still a vampire spawn; restraint buys safety, not a cure.",
+            "options": [
+              {
+                "name": "Continue.",
+                "action": [
+                  {
+                    "deleteMapObject": -1
+                  }
+                ]
+              }
+            ],
+            "action": [
+              {
+                "setCharacterFlag": {
+                  "key": "cosDoruFate",
+                  "val": 1
+                },
+                "setQuestFlag": {
+                  "key": "cosChurchResolved",
+                  "val": 1
+                }
+              }
+            ]
+          },
+          {
+            "name": "Put Doru to rest.",
+            "text": "You end the danger beneath the church. Donavich kneels beside his son. No one calls this a rescue, but the village will sleep behind fewer barricades.",
+            "options": [
+              {
+                "name": "Continue.",
+                "action": [
+                  {
+                    "deleteMapObject": -1
+                  }
+                ]
+              }
+            ],
+            "action": [
+              {
+                "setCharacterFlag": {
+                  "key": "cosDoruFate",
+                  "val": 2
+                },
+                "setQuestFlag": {
+                  "key": "cosChurchResolved",
+                  "val": 1
+                }
+              }
+            ]
+          }
+        ],
+        "condition": [
+          {
+            "checkQuestFlag": "cosDoruSubdued"
+          },
+          {
+            "checkQuestFlag": "cosChurchResolved",
+            "not": true
+          }
+        ]
+      },
+      {
+        "text": "Doru remains bound below the church. Donavich has taken the watch. The hunger is contained for now; it has not been cured.",
+        "options": [
+          {
+            "name": "Continue."
+          }
+        ],
+        "condition": [
+          {
+            "checkQuestFlag": "cosChurchResolved"
+          },
+          {
+            "getCharacterFlag": {
+              "key": "cosDoruFate",
+              "op": "=",
+              "val": 1
+            }
+          }
+        ]
+      },
+      {
+        "text": "The cellar is silent. Donavich has covered his son and closed the door.",
+        "options": [
+          {
+            "name": "Continue."
+          }
+        ],
+        "condition": [
+          {
+            "checkQuestFlag": "cosChurchResolved"
+          },
+          {
+            "getCharacterFlag": {
+              "key": "cosDoruFate",
+              "op": "=",
+              "val": 2
+            }
+          }
+        ]
+      }
+    ],
+    "defeatDialog": [
+      {
+        "text": "Doru can no longer press the attack. His father stands in the doorway. Decide whether to restrain him or put him to rest. If you leave now, speak to Doru again to finish this decision.",
+        "options": [
+          {
+            "name": "Restrain Doru.",
+            "text": "You secure Doru below the church. Donavich agrees to keep watch and warn the village. His son is still a vampire spawn; restraint buys safety, not a cure.",
+            "options": [
+              {
+                "name": "Continue.",
+                "action": [
+                  {
+                    "deleteMapObject": -1
+                  }
+                ]
+              }
+            ],
+            "action": [
+              {
+                "setCharacterFlag": {
+                  "key": "cosDoruFate",
+                  "val": 1
+                },
+                "setQuestFlag": {
+                  "key": "cosChurchResolved",
+                  "val": 1
+                }
+              }
+            ]
+          },
+          {
+            "name": "Put Doru to rest.",
+            "text": "You end the danger beneath the church. Donavich kneels beside his son. No one calls this a rescue, but the village will sleep behind fewer barricades.",
+            "options": [
+              {
+                "name": "Continue.",
+                "action": [
+                  {
+                    "deleteMapObject": -1
+                  }
+                ]
+              }
+            ],
+            "action": [
+              {
+                "setCharacterFlag": {
+                  "key": "cosDoruFate",
+                  "val": 2
+                },
+                "setQuestFlag": {
+                  "key": "cosChurchResolved",
+                  "val": 1
+                }
+              }
+            ]
+          }
+        ],
+        "action": [
+          {
+            "setQuestFlag": {
+              "key": "cosDoruSubdued",
+              "val": 1
+            }
+          }
+        ]
+      }
+    ],
+    "removeWhenQuestFlag": "cosChurchResolved"
+  },
+  "church.donavich": {
+    "dialog": [
+      {
+        "text": "Donavich keeps one hand on the cellar door. \"My son returned changed. I cannot feed his hunger, and I cannot keep pretending the lock is enough. Subdue him before he hurts someone.\"",
+        "options": [
+          {
+            "name": "Continue."
+          }
+        ],
+        "condition": [
+          {
+            "checkQuestFlag": "cosDoruSubdued",
+            "not": true
+          }
+        ]
+      },
+      {
+        "text": "\"You have stopped him for a moment,\" Donavich says. \"Go to Doru. Choose restraint or death. I will not mistake either for a cure.\"",
+        "options": [
+          {
+            "name": "Continue."
+          }
+        ],
+        "condition": [
+          {
+            "checkQuestFlag": "cosDoruSubdued"
+          },
+          {
+            "checkQuestFlag": "cosChurchResolved",
+            "not": true
+          }
+        ]
+      },
+      {
+        "text": "Donavich tests the bindings. \"I will keep watch. The village must know what is here. Thank you for leaving me this duty, even if I cannot call it hope.\"",
+        "options": [
+          {
+            "name": "Continue."
+          }
+        ],
+        "condition": [
+          {
+            "checkQuestFlag": "cosChurchResolved"
+          },
+          {
+            "getCharacterFlag": {
+              "key": "cosDoruFate",
+              "op": "=",
+              "val": 1
+            }
+          }
+        ]
+      },
+      {
+        "text": "Donavich sets a candle by the closed cellar door. \"There is nothing more to ask of him now. Tell Ismark the church is quiet.\"",
+        "options": [
+          {
+            "name": "Continue."
+          }
+        ],
+        "condition": [
+          {
+            "checkQuestFlag": "cosChurchResolved"
+          },
+          {
+            "getCharacterFlag": {
+              "key": "cosDoruFate",
+              "op": "=",
+              "val": 2
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "church.register": {
+    "dialog": [
+      {
+        "text": "The church register stops in the middle of a name. A newer note records Doru's return and the first broken lock. The handwriting grows smaller on each line. This is evidence of danger, not a recipe for reversing it.",
+        "options": [
+          {
+            "name": "Remember the warning.",
+            "text": "You mark the entry in memory. The register cannot settle Doru's fate.",
+            "options": [
+              {
+                "name": "Continue."
+              }
+            ],
+            "action": [
+              {
+                "setQuestFlag": {
+                  "key": "cosRegisterRead",
+                  "val": 1
+                }
+              }
+            ]
+          },
+          {
+            "name": "Close the register."
+          }
+        ]
+      }
+    ]
+  },
+  "road.wolves": {
+    "dialog": [
+      {
+        "text": "Shapes move between the trees. Without Ireena's agreement to travel, there is no reason to force this crossing. Return to the village and speak to her after resolving the church.",
+        "options": [
+          {
+            "name": "Continue."
+          }
+        ],
+        "condition": [
+          {
+            "checkQuestFlag": "cosEscortAccepted",
+            "not": true
+          }
+        ]
+      },
+      {
+        "text": "The pack fans across the track. Ireena draws back to the waystone. Break their line so you can reach Tser Pool together.",
+        "options": [
+          {
+            "name": "Drive off the pack.",
+            "action": [
+              {
+                "battleWithActorID": -1
+              }
+            ]
+          },
+          {
+            "name": "Retreat and recover."
+          }
+        ],
+        "condition": [
+          {
+            "checkQuestFlag": "cosEscortAccepted"
+          },
+          {
+            "checkQuestFlag": "cosRoadCleared",
+            "not": true
+          }
+        ]
+      },
+      {
+        "text": "Only pawprints remain. The road to Tser Pool is open. Speak to Madam Eva there to finish this leg of the journey.",
+        "options": [
+          {
+            "name": "Continue."
+          }
+        ],
+        "condition": [
+          {
+            "checkQuestFlag": "cosEscortAccepted"
+          },
+          {
+            "checkQuestFlag": "cosRoadCleared"
+          }
+        ]
+      }
+    ],
+    "defeatDialog": [
+      {
+        "text": "",
+        "options": [],
+        "action": [
+          {
+            "setQuestFlag": {
+              "key": "cosRoadCleared",
+              "val": 1
+            },
+            "deleteMapObject": -1
+          }
+        ]
+      }
+    ],
+    "removeWhenQuestFlag": "cosRoadCleared"
+  },
+  "road.waystone": {
+    "dialog": [
+      {
+        "text": "A weathered stone points toward Tser Pool. Someone has scratched a second message beneath the arrow: KEEP WALKING WHEN THE WOODS GO QUIET.",
+        "options": [
+          {
+            "name": "Remember the way.",
+            "text": "You note the turn toward camp. A sign can show the route; it cannot clear the wolves.",
+            "options": [
+              {
+                "name": "Continue."
+              }
+            ],
+            "action": [
+              {
+                "setQuestFlag": {
+                  "key": "cosWaystoneRead",
+                  "val": 1
+                }
+              }
+            ]
+          },
+          {
+            "name": "Leave the stone."
+          }
+        ]
+      }
+    ]
+  },
+  "road.strahd": {
+    "dialog": [
+      {
+        "text": "A rider waits beyond the trees, too still to have arrived by accident. \"You have begun to make choices in my valley,\" he says. \"Do keep making them.\" He turns his horse before you can answer. This is no battlefield, and the count offers no duel.",
+        "options": [
+          {
+            "name": "Keep to the road.",
+            "action": [
+              {
+                "setQuestFlag": {
+                  "key": "cosStrahdDeparted",
+                  "val": 1
+                },
+                "departMapObject": {
+                  "id": -1,
+                  "deltaX": 256,
+                  "deltaY": 160,
+                  "duration": 2.5,
+                  "mountSprite": "sprites/enemy/beast/horse/horseblack.atlas"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "removeWhenQuestFlag": "cosStrahdDeparted"
+  },
+  "pool.eva": {
+    "dialog": [
+      {
+        "text": "Madam Eva holds a place beside the fire. \"You have come ahead of the person you promised to protect. Go to Barovia. Let Ireena choose the journey, and make the old road safe for her.\"",
+        "options": [
+          {
+            "name": "Continue."
+          }
+        ],
+        "condition": [
+          {
+            "checkQuestFlag": "cosEscortAccepted",
+            "not": true
+          }
+        ]
+      },
+      {
+        "text": "\"The road has teeth yet,\" Eva says. \"A campfire is not proof that your crossing is safe. Face the pack on the Old Svalich Road, then return with Ireena.\"",
+        "options": [
+          {
+            "name": "Continue."
+          }
+        ],
+        "condition": [
+          {
+            "checkQuestFlag": "cosEscortAccepted"
+          },
+          {
+            "checkQuestFlag": "cosRoadCleared",
+            "not": true
+          }
+        ]
+      },
+      {
+        "text": "Eva studies you and Ireena across the fire. \"You have brought her this far. Before you rest, will you hear what the valley asks of those who would leave it?\"",
+        "options": [
+          {
+            "name": "Hear Eva's warning and finish this chapter.",
+            "text": "\"Do not mistake distance for freedom. Learn whom you can trust before you seek the count's house.\" Eva folds her hands. No reading is dealt tonight. Ireena is sheltered, and this opening chapter ends at Tser Pool. The wider journey is still to come.",
+            "options": [
+              {
+                "name": "Continue."
+              }
+            ],
+            "action": [
+              {
+                "setQuestFlag": {
+                  "key": "cosChapterOneComplete",
+                  "val": 1
+                }
+              }
+            ]
+          },
+          {
+            "name": "I will return to hear it."
+          }
+        ],
+        "condition": [
+          {
+            "checkQuestFlag": "cosEscortAccepted"
+          },
+          {
+            "checkQuestFlag": "cosRoadCleared"
+          },
+          {
+            "checkQuestFlag": "cosChapterOneComplete",
+            "not": true
+          }
+        ]
+      },
+      {
+        "text": "Eva tends the fire. \"The warning is yours to keep. Tonight, rest.\" You have completed Into the Mists. Future journeys beyond this camp are not yet part of this test chapter.",
+        "options": [
+          {
+            "name": "Continue."
+          }
+        ],
+        "condition": [
+          {
+            "checkQuestFlag": "cosChapterOneComplete"
+          }
+        ]
+      }
+    ]
+  },
+  "pool.ireena": {
+    "dialog": [
+      {
+        "text": "The place by the fire is empty. Ireena is still in Barovia. Speak to Ismark, resolve the church, and ask her to travel.",
+        "options": [
+          {
+            "name": "Continue."
+          }
+        ],
+        "condition": [
+          {
+            "checkQuestFlag": "cosEscortAccepted",
+            "not": true
+          }
+        ]
+      },
+      {
+        "text": "Ireena watches the tree line. \"We still owe the road an answer. Let us deal with the wolves before we settle here.\"",
+        "options": [
+          {
+            "name": "Continue."
+          }
+        ],
+        "condition": [
+          {
+            "checkQuestFlag": "cosEscortAccepted"
+          },
+          {
+            "checkQuestFlag": "cosRoadCleared",
+            "not": true
+          }
+        ]
+      },
+      {
+        "text": "Ireena warms her hands. \"You left Donavich a hard watch, but you did not leave him alone. Thank you for walking with me. Eva is waiting.\"",
+        "options": [
+          {
+            "name": "Continue."
+          }
+        ],
+        "condition": [
+          {
+            "checkQuestFlag": "cosEscortAccepted"
+          },
+          {
+            "checkQuestFlag": "cosRoadCleared"
+          },
+          {
+            "getCharacterFlag": {
+              "key": "cosDoruFate",
+              "op": "=",
+              "val": 1
+            }
+          }
+        ]
+      },
+      {
+        "text": "Ireena warms her hands. \"Donavich will need people around him after what happened. I will remember that when we can return. Thank you for getting us here. Eva is waiting.\"",
+        "options": [
+          {
+            "name": "Continue."
+          }
+        ],
+        "condition": [
+          {
+            "checkQuestFlag": "cosEscortAccepted"
+          },
+          {
+            "checkQuestFlag": "cosRoadCleared"
+          },
+          {
+            "getCharacterFlag": {
+              "key": "cosDoruFate",
+              "op": "=",
+              "val": 2
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "pool.sign": {
+    "dialog": [
+      {
+        "text": "WESTWARD ROAD\nOther settlements lie beyond the mists. This opening chapter ends at Tser Pool: speak to Madam Eva after escorting Ireena and clearing the pack. Later regions are not yet playable. You may return to Barovia to recover or practice.",
+        "options": [
+          {
+            "name": "Continue."
+          }
+        ]
+      }
+    ]
+  }
+}

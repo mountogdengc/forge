@@ -1,0 +1,51 @@
+[
+  {
+    "name": "Svalich Roadwarden",
+    "practice": true,
+    "sprite": "sprites/enemy/humanoid/knight.atlas",
+    "deck": [
+      "decks/roadwarden.dck"
+    ],
+    "life": 10,
+    "speed": 0,
+    "spawnRate": 0,
+    "difficulty": 0.1,
+    "colors": "W",
+    "questTags": [
+      "CosPractice"
+    ],
+    "rewards": []
+  },
+  {
+    "name": "Doru",
+    "sprite": "sprites/enemy/undead/vampire.atlas",
+    "deck": [
+      "decks/doru.dck"
+    ],
+    "life": 12,
+    "speed": 0,
+    "spawnRate": 0,
+    "difficulty": 0.2,
+    "colors": "B",
+    "questTags": [
+      "CosDoru"
+    ],
+    "rewards": []
+  },
+  {
+    "name": "Mist-Stalked Pack",
+    "sprite": "sprites/enemy/beast/largemammals/wolf.atlas",
+    "deck": [
+      "decks/mist-pack.dck"
+    ],
+    "life": 14,
+    "speed": 0,
+    "spawnRate": 0,
+    "difficulty": 0.2,
+    "colors": "G",
+    "questTags": [
+      "CosRoadPack"
+    ],
+    "rewards": []
+  }
+]

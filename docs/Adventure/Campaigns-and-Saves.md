@@ -6,7 +6,7 @@ Accepted product requirement, October 29, 2026: the player chooses a campaign wh
 
 The campaign picker, independent playthrough storage, save browser, campaign activation lifecycle, and legacy import path are implemented on `adventure/progression-foundation`. This document describes their contract and current limits. Build and interactive evidence are recorded separately in [Progression validation](Progression-Validation.md); implementation alone does not establish that every acceptance case has passed.
 
-A future adaptation of *Curse of Strahd* is an example of a distinct campaign this should support. It would supply its own adventure content while using the fork's card battles. The example does not select the first campaign to build. The inherited Forge Adventure is an optional campaign candidate, and may be retained, redesigned, or replaced as described in the [roadmap](Fork-Roadmap.md).
+*Curse of Strahd: Into the Mists* now supplies a separate opening-chapter test campaign (`fork.curse-of-strahd`, content 0.1.0), using the fork's card battles. It covers the village, church, old road and Tser Pool; later Barovia areas are not implemented. See its [design](Curse-of-Strahd-Design.md) and [manual playtests](Curse-of-Strahd-Playtests.md). Bellwake remains a separate campaign. The inherited Forge Adventure is an optional campaign candidate, and may be retained, redesigned, or replaced as described in the [roadmap](Fork-Roadmap.md).
 
 ## Player experience
 

@@ -82,7 +82,9 @@ public final class CampaignRegistry {
     private static CampaignDefinition readDefinition(Path root, Path commonRoot, String plane, boolean user) throws IOException {
         Path file = root.resolve("campaign.json");
         if (!Files.isRegularFile(file)) return legacyDefinition(root, commonRoot, plane, user);
-        Manifest manifest = new Json().fromJson(Manifest.class, Files.readString(file, StandardCharsets.UTF_8));
+        Json reader = new Json();
+        reader.setIgnoreUnknownFields(true);
+        Manifest manifest = reader.fromJson(Manifest.class, Files.readString(file, StandardCharsets.UTF_8));
         if (manifest == null || manifest.schemaVersion != CampaignDefinition.SCHEMA_VERSION) {
             throw new IllegalArgumentException("Unsupported campaign descriptor schema; expected " + CampaignDefinition.SCHEMA_VERSION + ".");
         }
@@ -111,6 +113,22 @@ public final class CampaignRegistry {
     }
 
     public List<CampaignDefinition> getCampaigns() { return campaigns; }
+
+    /** Read a project or hidden creation staging folder without discovery or activation. */
+    public static CampaignDefinition readProject(Path root,Path commonRoot) throws IOException {
+        CampaignDefinition definition = readProjectMetadata(root,commonRoot);
+        definition.validateResources();
+        return definition;
+    }
+
+    /** Editors must be able to list a draft even when its world/quest validation fails. */
+    public static CampaignDefinition readProjectMetadata(Path root,Path commonRoot) throws IOException {
+        return readDefinition(root,commonRoot,"<user>" + root.getFileName(),true);
+    }
+    /** Metadata-only editor read, retaining installed versus user plane semantics. */
+    public static CampaignDefinition readProjectMetadata(Path root, Path commonRoot, boolean user) throws IOException {
+        return readDefinition(root, commonRoot, (user ? "<user>" : "") + root.getFileName(), user);
+    }
     public List<String> getErrors() { return errors; }
 
     public CampaignDefinition find(String id, String version) {

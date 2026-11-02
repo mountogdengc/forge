@@ -1,0 +1,105 @@
+<?xml version='1.0' encoding='utf-8'?>
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="40" height="34" tilewidth="16" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="1058">
+ <tileset firstgid="1" source="../../tileset/main.tsx" />
+ <tileset firstgid="10113" source="../../tileset/buildings.tsx" />
+ <tileset firstgid="11905" source="../../tileset/main-nocollide.tsx" />
+ <layer id="1" name="Background" width="40" height="34">
+  <data encoding="base64" compression="zlib">eJztwzENAAAMA6CamsT67j8NkNBLqqqqqqpq/gHvldxO</data>
+ </layer>
+ <layer id="2" name="Ground" width="40" height="34">
+  <data encoding="base64" compression="zlib">eJzt1sEJgEAMRNH05Nbg0f7L2QYWTJAgq+/D3N9xIrTqHPfj4+Pje1KX7zpy4+Pj4+Pj+5Ov+x/w7e/LGvj4Kq6v+Crx8cWLvq4mGZsGGw==</data>
+ </layer>
+ <layer id="3" name="Foreground" width="40" height="34">
+  <properties>
+   <property name="spriteLayer" type="bool" value="true" />
+  </properties>
+  <data encoding="base64" compression="zlib">eJztmDkOwkAMRR8NcJW4StKzVLkBSAkcAOhZrsFyBuAswKEoaJAIi4gtJsJPmvbJM5r5YxkcDU4xnGO4xGE6JwlME5glev4y57c0U2il0E71/GVOTd75OwJdgZ5AXwiOXKAQGAmMA6xvLrAQWAqsAqxvLbAR2ArsAqyv7vmniWZW3ZNHtlkyqOg/ZrdlhbXfcTTypZE93lnNe/sqX4YV33AR2fYqz87i03PyDHCc+rLP4ODv9+f8aw+tte+yP07DbbVvLbflnMN6hkLNuQJwx0Wf</data>
+ </layer>
+ <layer id="4" name="AboveSprites" width="40" height="34">
+  <data encoding="base64" compression="zlib">eJztwYEAAAAAw6D5U1/gCFUBAAAAANAxFUAAAQ==</data>
+ </layer>
+ <objectgroup id="5" name="Objects">
+  <object id="38" template="../../obj/entry_up.tx" x="320" y="528" />
+  <object id="60" template="../../obj/dialog.tx" x="272" y="192">
+   <properties>
+    <property name="cosDialogKey" value="pool.eva" />
+    <property name="dialog" value="[{&quot;text&quot;:&quot;Madam Eva holds a place beside the fire. \&quot;You have come ahead of the person you promised to protect. Go to Barovia. Let Ireena choose the journey, and make the old road safe for her.\&quot;&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosEscortAccepted&quot;,&quot;not&quot;:true}]},{&quot;text&quot;:&quot;\&quot;The road has teeth yet,\&quot; Eva says. \&quot;A campfire is not proof that your crossing is safe. Face the pack on the Old Svalich Road, then return with Ireena.\&quot;&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosEscortAccepted&quot;},{&quot;checkQuestFlag&quot;:&quot;cosRoadCleared&quot;,&quot;not&quot;:true}]},{&quot;text&quot;:&quot;Eva studies you and Ireena across the fire. \&quot;You have brought her this far. Before you rest, will you hear what the valley asks of those who would leave it?\&quot;&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Hear Eva's warning and finish this chapter.&quot;,&quot;text&quot;:&quot;\&quot;Do not mistake distance for freedom. Learn whom you can trust before you seek the count's house.\&quot; Eva folds her hands. No reading is dealt tonight. Ireena is sheltered, and this opening chapter ends at Tser Pool. The wider journey is still to come.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;action&quot;:[{&quot;setQuestFlag&quot;:{&quot;key&quot;:&quot;cosChapterOneComplete&quot;,&quot;val&quot;:1}}]},{&quot;name&quot;:&quot;I will return to hear it.&quot;}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosEscortAccepted&quot;},{&quot;checkQuestFlag&quot;:&quot;cosRoadCleared&quot;},{&quot;checkQuestFlag&quot;:&quot;cosChapterOneComplete&quot;,&quot;not&quot;:true}]},{&quot;text&quot;:&quot;Eva tends the fire. \&quot;The warning is yours to keep. Tonight, rest.\&quot; You have completed Into the Mists. Future journeys beyond this camp are not yet part of this test chapter.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosChapterOneComplete&quot;}]}]" />
+    <property name="hidden" type="bool" value="false" />
+    <property name="sprite" value="sprites/heroes/human_f.atlas" />
+   </properties>
+  </object>
+  <object id="61" template="../../obj/dialog.tx" x="320" y="368">
+   <properties>
+    <property name="cosDialogKey" value="pool.ireena" />
+    <property name="dialog" value="[{&quot;text&quot;:&quot;The place by the fire is empty. Ireena is still in Barovia. Speak to Ismark, resolve the church, and ask her to travel.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosEscortAccepted&quot;,&quot;not&quot;:true}]},{&quot;text&quot;:&quot;Ireena watches the tree line. \&quot;We still owe the road an answer. Let us deal with the wolves before we settle here.\&quot;&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosEscortAccepted&quot;},{&quot;checkQuestFlag&quot;:&quot;cosRoadCleared&quot;,&quot;not&quot;:true}]},{&quot;text&quot;:&quot;Ireena warms her hands. \&quot;You left Donavich a hard watch, but you did not leave him alone. Thank you for walking with me. Eva is waiting.\&quot;&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosEscortAccepted&quot;},{&quot;checkQuestFlag&quot;:&quot;cosRoadCleared&quot;},{&quot;getCharacterFlag&quot;:{&quot;key&quot;:&quot;cosDoruFate&quot;,&quot;op&quot;:&quot;=&quot;,&quot;val&quot;:1}}]},{&quot;text&quot;:&quot;Ireena warms her hands. \&quot;Donavich will need people around him after what happened. I will remember that when we can return. Thank you for getting us here. Eva is waiting.\&quot;&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosEscortAccepted&quot;},{&quot;checkQuestFlag&quot;:&quot;cosRoadCleared&quot;},{&quot;getCharacterFlag&quot;:{&quot;key&quot;:&quot;cosDoruFate&quot;,&quot;op&quot;:&quot;=&quot;,&quot;val&quot;:2}}]}]" />
+    <property name="hidden" type="bool" value="false" />
+    <property name="sprite" value="sprites/heroes/human_f.atlas" />
+   </properties>
+  </object>
+  <object id="62" template="../../obj/dialog.tx" x="160" y="448">
+   <properties>
+    <property name="cosDialogKey" value="pool.sign" />
+    <property name="dialog" value="[{&quot;text&quot;:&quot;WESTWARD ROAD\nOther settlements lie beyond the mists. This opening chapter ends at Tser Pool: speak to Madam Eva after escorting Ireena and clearing the pack. Later regions are not yet playable. You may return to Barovia to recover or practice.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}]}]" />
+    <property name="hidden" type="bool" value="false" />
+   </properties>
+  </object>
+  <object id="1000" name="scenery footprint" type="collision" x="0" y="0" width="640" height="16" />
+  <object id="1001" name="scenery footprint" type="collision" x="0" y="528" width="640" height="16" />
+  <object id="1002" name="scenery footprint" type="collision" x="0" y="16" width="16" height="512" />
+  <object id="1003" name="scenery footprint" type="collision" x="624" y="16" width="16" height="512" />
+  <object id="1004" name="scenery footprint" type="collision" x="480" y="16" width="144" height="16" />
+  <object id="1005" name="scenery footprint" type="collision" x="480" y="32" width="144" height="16" />
+  <object id="1006" name="scenery footprint" type="collision" x="480" y="48" width="144" height="16" />
+  <object id="1007" name="scenery footprint" type="collision" x="480" y="64" width="144" height="16" />
+  <object id="1008" name="scenery footprint" type="collision" x="480" y="80" width="144" height="16" />
+  <object id="1009" name="scenery footprint" type="collision" x="480" y="96" width="144" height="16" />
+  <object id="1010" name="scenery footprint" type="collision" x="480" y="112" width="144" height="16" />
+  <object id="1011" name="scenery footprint" type="collision" x="512" y="128" width="112" height="16" />
+  <object id="1012" name="scenery footprint" type="collision" x="512" y="144" width="112" height="16" />
+  <object id="1013" name="scenery footprint" type="collision" x="512" y="160" width="112" height="16" />
+  <object id="1014" name="scenery footprint" type="collision" x="512" y="176" width="112" height="16" />
+  <object id="1015" name="scenery footprint" type="collision" x="512" y="192" width="112" height="16" />
+  <object id="1016" name="scenery footprint" type="collision" x="512" y="208" width="112" height="16" />
+  <object id="1017" name="scenery footprint" type="collision" x="512" y="224" width="112" height="16" />
+  <object id="1018" name="scenery footprint" type="collision" x="512" y="240" width="112" height="16" />
+  <object id="1019" name="scenery footprint" type="collision" x="512" y="256" width="112" height="16" />
+  <object id="1020" name="scenery footprint" type="collision" x="512" y="272" width="112" height="16" />
+  <object id="1021" name="scenery footprint" type="collision" x="512" y="288" width="112" height="16" />
+  <object id="1022" name="scenery footprint" type="collision" x="512" y="304" width="112" height="16" />
+  <object id="1023" name="scenery footprint" type="collision" x="480" y="320" width="144" height="16" />
+  <object id="1024" name="scenery footprint" type="collision" x="480" y="336" width="144" height="16" />
+  <object id="1025" name="scenery footprint" type="collision" x="480" y="352" width="144" height="16" />
+  <object id="1026" name="scenery footprint" type="collision" x="480" y="368" width="144" height="16" />
+  <object id="1027" name="scenery footprint" type="collision" x="480" y="384" width="144" height="16" />
+  <object id="1028" name="scenery footprint" type="collision" x="480" y="400" width="144" height="16" />
+  <object id="1029" name="scenery footprint" type="collision" x="480" y="416" width="144" height="16" />
+  <object id="1030" name="scenery footprint" type="collision" x="448" y="432" width="176" height="16" />
+  <object id="1031" name="scenery footprint" type="collision" x="448" y="448" width="176" height="16" />
+  <object id="1032" name="scenery footprint" type="collision" x="448" y="464" width="176" height="16" />
+  <object id="1033" name="scenery footprint" type="collision" x="448" y="480" width="176" height="16" />
+  <object id="1034" name="scenery footprint" type="collision" x="448" y="496" width="176" height="16" />
+  <object id="1035" name="scenery footprint" type="collision" x="448" y="512" width="176" height="16" />
+  <object id="1036" name="scenery footprint" type="collision" x="240" y="80" width="64" height="64" />
+  <object id="1037" name="scenery footprint" type="collision" x="128" y="192" width="16" height="16" />
+  <object id="1038" name="scenery footprint" type="collision" x="128" y="208" width="32" height="16" />
+  <object id="1039" name="scenery footprint" type="collision" x="144" y="288" width="16" height="16" />
+  <object id="1040" name="scenery footprint" type="collision" x="144" y="304" width="32" height="16" />
+  <object id="1041" name="scenery footprint" type="collision" x="384" y="176" width="16" height="16" />
+  <object id="1042" name="scenery footprint" type="collision" x="384" y="192" width="32" height="16" />
+  <object id="1043" name="scenery footprint" type="collision" x="400" y="288" width="16" height="16" />
+  <object id="1044" name="scenery footprint" type="collision" x="400" y="304" width="32" height="16" />
+  <object id="1045" name="scenery footprint" type="collision" x="288" y="272" width="16" height="16" />
+  <object id="1046" name="scenery footprint" type="collision" x="240" y="304" width="48" height="16" />
+  <object id="1047" name="scenery footprint" type="collision" x="336" y="272" width="48" height="16" />
+  <object id="1048" name="scenery footprint" type="collision" x="400" y="400" width="16" height="16" />
+  <object id="1049" name="scenery footprint" type="collision" x="416" y="400" width="16" height="16" />
+  <object id="1050" name="scenery footprint" type="collision" x="32" y="32" width="48" height="48" />
+  <object id="1051" name="scenery footprint" type="collision" x="112" y="48" width="48" height="48" />
+  <object id="1052" name="scenery footprint" type="collision" x="368" y="32" width="48" height="48" />
+  <object id="1053" name="scenery footprint" type="collision" x="32" y="160" width="48" height="48" />
+  <object id="1054" name="scenery footprint" type="collision" x="32" y="272" width="48" height="48" />
+  <object id="1055" name="scenery footprint" type="collision" x="48" y="448" width="48" height="48" />
+  <object id="1056" name="scenery footprint" type="collision" x="128" y="480" width="48" height="48" />
+  <object id="1057" name="scenery footprint" type="collision" x="400" y="464" width="48" height="48" />
+ </objectgroup>
+</map>

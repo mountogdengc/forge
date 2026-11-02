@@ -64,6 +64,17 @@ public class CampaignContentValidatorTest {
         } finally { remove(root); }
     }
 
+    @Test public void validatesAlternateStartersAndMapRewardAndDeckOverride() throws Exception {
+        Path root = fixture("[{id:1,stages:[]}]", "[]", "[Main]\n4 Known Card\n");
+        try {
+            Files.writeString(root.resolve("chapter/config.json"), "{starterDecksByEdition:{SET:{W:decks/missing-edition.dck}},difficulties:[{starterDecks:{W:decks/missing-standard.dck},pileDecks:{W:decks/missing-pile.dck},commanderDecks:{W:decks/missing-commander.dck}}]}");
+            Files.writeString(root.resolve("common/maps/home.tmx"), "<map><objectgroup><object id=\"60\"><properties><property name=\"reward\">[{cardName:Invented}]</property><property name=\"deckOverride\" value=\"decks/missing-override.dck\"/></properties></object></objectgroup></map>");
+            var errors = CampaignContentValidator.validate(root.resolve("chapter"), root.resolve("common"), "Known Card"::equals);
+            for (String expected : List.of("missing-edition", "missing-standard", "missing-pile", "missing-commander", "Invented", "missing-override"))
+                assertTrue(errors.stream().anyMatch(e -> e.contains(expected)), errors.toString());
+        } finally { remove(root); }
+    }
+
     private void remove(Path root) throws Exception {
         try (var paths = Files.walk(root)) {
             for (Path path : (Iterable<Path>) paths.sorted(java.util.Comparator.reverseOrder())::iterator) Files.delete(path);
