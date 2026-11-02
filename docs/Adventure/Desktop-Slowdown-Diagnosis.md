@@ -159,3 +159,10 @@ cap, audio, 1-GB heap, two reported processors, client JAR and portable profile
 remain unchanged. The installed 960×540 launcher is retained separately as
 `Start-Bellwake-Capped-960x540.cmd`. No game was launched for this change;
 the larger window still needs its next user playtest.
+
+David next requested 1920×1080 with everything else unchanged. The capped
+launcher now uses that size, retaining 30 FPS, audio, heap, processor count and
+all other arguments. The installed 1280×720 version is preserved as
+`Start-Bellwake-Capped-1280x720.cmd`; the 960×540 fallback remains available.
+The 1080p launcher was not executed automatically; responsiveness at this size
+remains a user playtest.
