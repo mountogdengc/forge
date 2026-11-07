@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1, "id": "midnight", "name": "Midnight Grimoire", "extends": "folio",
+  "colors": {
+    "surface.canvas": "#1b1b2b", "surface.panel": "#29283c", "surface.paper": "#d0cbdc",
+    "text.primary": "#eeebf7", "text.secondary": "#c3bdd4", "text.onPaper": "#2b2637",
+    "border.frame": "#9695ac", "border.frameText": "#1b1b2b", "border.highlight": "#dfd7ef",
+    "action.primary": "#a58bce", "action.onPrimary": "#1b1b2b",
+    "action.secondary": "#29283c", "action.onSecondary": "#eeebf7",
+    "state.hover": "#413654", "state.selected": "#a58bce", "state.onSelected": "#1b1b2b",
+    "state.disabled": "#3f3b4f", "state.onDisabled": "#d3ccdf", "state.focus": "#dfd7ef",
+    "phase.activeEnabled": "#a58bce", "phase.activeDisabled": "#d0cbdc",
+    "phase.inactiveEnabled": "#3c364b", "phase.inactiveDisabled": "#29283c",
+    "target.normal": "#b3b7ff", "target.combat": "#ef9ba7", "target.planeswalker": "#e2c06a"
+  },
+  "components": { "shape": "angular" },
+  "presentation": { "ornament": "full", "paperTexture": 0.10 }
+}

@@ -1,19 +1,25 @@
 {
-  "width": 120,
-  "height": 120,
-  "playerStartPosX": 0.5,
-  "playerStartPosY": 0.5,
+  "width": 300,
+  "height": 180,
+  "playerStartPosX": 0.8066666666666666,
+  "playerStartPosY": 0.36666666666666664,
   "noiseZoomBiome": 20,
   "miniMapTileSize": 4,
   "tileSize": 16,
   "roadTileset": {
-    "tilesetAtlas": "world/tilesets/terrain.atlas",
+    "tilesetAtlas": "world/tilesets/gothic-terrain.atlas",
     "tilesetName": "Road",
     "color": "ffffff"
   },
-  "biomesSprites": "world/sprites/map_sprites.json",
+  "biomesSprites": "world/barovia-sprites.json",
   "maxRoadDistance": 1000,
   "biomesNames": [
-    "world/barovia-mists.json"
-  ]
+    "world/barovia-mists.json",
+    "world/barovia-forest.json",
+    "world/barovia-hills.json",
+    "world/barovia-mountains.json",
+    "world/barovia-snow.json",
+    "world/barovia-water.json"
+  ],
+  "authoredMap": "world/barovia-map.json"
 }

@@ -2,6 +2,8 @@ package forge.adventure.campaign;
 
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.Json;
+import forge.adventure.data.AuthoredWorldMapData;
 import org.w3c.dom.Element;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -92,6 +94,7 @@ public final class CampaignContentValidator {
         }
         String start = manifest.getString("startingLocation", "");
         if (start != null && !start.isBlank() && !names.contains(start)) errors.add(manifestFile + ": missing starting location " + start);
+        validateAuthoredWorld(names);
         Path configFile = resource("config.json", "configuration");
         if (configFile != null) {
             JsonValue config = json(configFile);
@@ -102,6 +105,26 @@ public final class CampaignContentValidator {
                 for (String key : new String[]{"constructedStarterDecks", "starterDecks", "pileDecks", "commanderDecks"})
                     checkDeckValues(difficulty.get(key), configFile.toString());
             }
+        }
+    }
+
+    private void validateAuthoredWorld(Set<String> poiNames) {
+        Path worldFile = root.resolve("world/world.json");
+        if (!Files.isRegularFile(worldFile)) return;
+        JsonValue world = json(worldFile);
+        String file = world.getString("authoredMap", "");
+        if (file.isBlank()) return;
+        Path authoredFile = resource(file, worldFile.toString());
+        if (authoredFile == null) return;
+        try {
+            AuthoredWorldMapData authored = new Json().fromJson(AuthoredWorldMapData.class, Files.readString(authoredFile));
+            JsonValue biomes = world.get("biomesNames");
+            authored.validate(world.getInt("width"), world.getInt("height"), biomes == null ? 0 : biomes.size);
+            Set<String> anchors = new HashSet<>();
+            for (AuthoredWorldMapData.Location anchor : authored.locations) anchors.add(anchor.name);
+            if (!anchors.equals(poiNames)) errors.add(authoredFile + ": location anchors must match the POI catalog");
+        } catch (Exception error) {
+            errors.add(authoredFile + ": " + error.getMessage());
         }
     }
 

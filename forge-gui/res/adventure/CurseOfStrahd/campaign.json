@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "id": "fork.curse-of-strahd",
-  "version": "0.1.0",
+  "version": "0.5.0",
   "title": "Curse of Strahd: Into the Mists",
-  "description": "The mists close around Barovia. Help a frightened village, face the hunger beneath its church, and bring Ireena safely to Tser Pool. An original opening-chapter card-adventure adaptation.",
+  "description": "Three playable chapters from Barovia through Vallaki to Krezk. Investigate the blessed spring and the Abbey of Saint Markovia, then decide how Krezk keeps watch. Explore 25 other short arrival areas across the valley.",
   "startingQuestIds": [
     "8101"
   ],

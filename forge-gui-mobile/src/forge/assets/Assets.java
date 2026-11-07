@@ -661,6 +661,14 @@ public class Assets implements Disposable {
         return textrafonts.get(key);
     }
 
+    /** Theme font views borrow atlas textures. Drop wrappers after their scenes retire. */
+    public void forgetAdventureThemeFonts(java.util.Collection<BitmapFont> fonts) {
+        if (textrafonts == null || fonts.isEmpty()) return;
+        java.util.List<AdventureFontKey> remove = new java.util.ArrayList<>();
+        for (AdventureFontKey key : textrafonts.keys()) if (fonts.contains(key.font)) remove.add(key);
+        for (AdventureFontKey key : remove) textrafonts.remove(key);
+    }
+
     public Font getKeysFont(BitmapFont bitmapFont, TextureAtlas keys_atlas) {
         AdventureFontKey key = new AdventureFontKey("keysfont", bitmapFont, keys_atlas);
         if (textrafonts == null)

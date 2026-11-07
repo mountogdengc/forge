@@ -1,0 +1,104 @@
+donavich.png
+size: 64,16
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+IdleRight
+  xy: 0, 0
+  size: 16, 16
+  index: 0
+IdleRight
+  xy: 16, 0
+  size: 16, 16
+  index: 1
+IdleLeft
+  xy: 32, 0
+  size: 16, 16
+  index: 0
+IdleLeft
+  xy: 48, 0
+  size: 16, 16
+  index: 1
+WalkRight
+  xy: 0, 0
+  size: 16, 16
+  index: 0
+WalkRight
+  xy: 16, 0
+  size: 16, 16
+  index: 1
+WalkLeft
+  xy: 32, 0
+  size: 16, 16
+  index: 0
+WalkLeft
+  xy: 48, 0
+  size: 16, 16
+  index: 1
+AttackRight
+  xy: 0, 0
+  size: 16, 16
+  index: 0
+AttackRight
+  xy: 16, 0
+  size: 16, 16
+  index: 1
+AttackLeft
+  xy: 32, 0
+  size: 16, 16
+  index: 0
+AttackLeft
+  xy: 48, 0
+  size: 16, 16
+  index: 1
+HitRight
+  xy: 0, 0
+  size: 16, 16
+  index: 0
+HitRight
+  xy: 16, 0
+  size: 16, 16
+  index: 1
+HitLeft
+  xy: 32, 0
+  size: 16, 16
+  index: 0
+HitLeft
+  xy: 48, 0
+  size: 16, 16
+  index: 1
+DeathRight
+  xy: 0, 0
+  size: 16, 16
+  index: 0
+DeathRight
+  xy: 16, 0
+  size: 16, 16
+  index: 1
+DeathLeft
+  xy: 32, 0
+  size: 16, 16
+  index: 0
+DeathLeft
+  xy: 48, 0
+  size: 16, 16
+  index: 1
+WakeRight
+  xy: 0, 0
+  size: 16, 16
+  index: 0
+WakeRight
+  xy: 16, 0
+  size: 16, 16
+  index: 1
+WakeLeft
+  xy: 32, 0
+  size: 16, 16
+  index: 0
+WakeLeft
+  xy: 48, 0
+  size: 16, 16
+  index: 1
+Avatar
+  xy: 0, 0
+  size: 16, 16

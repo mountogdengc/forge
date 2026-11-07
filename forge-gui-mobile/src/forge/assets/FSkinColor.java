@@ -168,7 +168,7 @@ public class FSkinColor {
 
     protected void updateColor() {
         if (baseColor != null) {
-            color = baseColor.color;
+            color = forge.adventure.theme.ThemePaletteBridge.adventureColor(baseColor, baseColor.color);
         }
         if (brightnessDelta != NO_BRIGHTNESS_DELTA) {
             if (brightnessDelta < 0) {

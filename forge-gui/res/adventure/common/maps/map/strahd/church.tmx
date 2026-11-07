@@ -1,19 +1,20 @@
 <?xml version='1.0' encoding='utf-8'?>
-<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="40" height="34" tilewidth="16" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="1029">
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="40" height="34" tilewidth="16" tileheight="16" infinite="0" nextlayerid="8" nextobjectid="1029">
  <tileset firstgid="1" source="../../tileset/main.tsx" />
  <tileset firstgid="10113" source="../../tileset/buildings.tsx" />
  <tileset firstgid="11905" source="../../tileset/main-nocollide.tsx" />
+ <tileset firstgid="23000" source="../../tileset/strahd-gothic/tiles.tsx" />
  <layer id="1" name="Background" width="40" height="34">
-  <data encoding="base64" compression="zlib">eJztwzENAAAMA6DK21//XvpPAyT0kqqqqqqqmn8MrDee</data>
+  <data encoding="base64" compression="zlib">eJztwzENAAAMA6DanPWq6T8NkNBLqqqqqqpq/gGogV9L</data>
  </layer>
  <layer id="2" name="Ground" width="40" height="34">
-  <data encoding="base64" compression="zlib">eJzt0DEKwCAURME9XbD3HjlNDpxasRDBxGIeiNWHZRJJqz3X3LtLUkv7z95+sa/fVg/bx48fP378+PHjx4/fSfv48ePHb1cjP+X3Xgg+E9g=</data>
+  <data encoding="base64" compression="zlib">eJztzrEJADAMA0GvmdWTZbKAC+EmBO5BpeCqJE07K9tuln75+Pj4+Pj4+Pj4+Pj4+Pj+9qV1PtXzLpZ4E7M=</data>
  </layer>
  <layer id="3" name="Foreground" width="40" height="34">
   <properties>
    <property name="spriteLayer" type="bool" value="true" />
   </properties>
-  <data encoding="base64" compression="zlib">eJztl8sJwkAURY/13DZCsCxbiFqEGz8FuMlG8NOGnzLErQYyTJLn/A681XC5h8kLIZAHjWApWAnWIji2gp1gLzgE6HcWXARXwS1Av7vgIXgKXkZ+bQVHx+nCNfvp8fWzIBW/U/V/v28H19yUpPJ8fXKzeti5a8/Q3Kb+nbF7yvsxbk9sfr471pfL5f6mIhe/sn82uT4W8zy/H2X/bHJWPbH5lf1L6/+8QPS8AQLknOU=</data>
+  <data encoding="base64" compression="zlib">eJztlzkOwjAQRV/B0gEK29nmnz+EC7C09FDESmLjZZ40lfU1T/ZYlqENeoObwWBwN7LjYfA0eBm8M/RbCdaCjWArsuMkOAsugmsiv07hFSMf4peCWvx2+r/ft0NoLia1nO+U3F7z1kP7zM0d9VtL9/H7sWyf0vymzthYrpX9i0Urfj5/aXJjHNTm++HzlyaXqk9pfj5/df3PHYrnAwRtSxY=</data>
  </layer>
  <layer id="4" name="AboveSprites" width="40" height="34">
   <data encoding="base64" compression="zlib">eJztwYEAAAAAw6D5U1/gCFUBAAAAANAxFUAAAQ==</data>
@@ -34,7 +35,7 @@
     <property name="cosDialogKey" value="church.donavich" />
     <property name="dialog" value="[{&quot;text&quot;:&quot;Donavich keeps one hand on the cellar door. \&quot;My son returned changed. I cannot feed his hunger, and I cannot keep pretending the lock is enough. Subdue him before he hurts someone.\&quot;&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosDoruSubdued&quot;,&quot;not&quot;:true}]},{&quot;text&quot;:&quot;\&quot;You have stopped him for a moment,\&quot; Donavich says. \&quot;Go to Doru. Choose restraint or death. I will not mistake either for a cure.\&quot;&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosDoruSubdued&quot;},{&quot;checkQuestFlag&quot;:&quot;cosChurchResolved&quot;,&quot;not&quot;:true}]},{&quot;text&quot;:&quot;Donavich tests the bindings. \&quot;I will keep watch. The village must know what is here. Thank you for leaving me this duty, even if I cannot call it hope.\&quot;&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosChurchResolved&quot;},{&quot;getCharacterFlag&quot;:{&quot;key&quot;:&quot;cosDoruFate&quot;,&quot;op&quot;:&quot;=&quot;,&quot;val&quot;:1}}]},{&quot;text&quot;:&quot;Donavich sets a candle by the closed cellar door. \&quot;There is nothing more to ask of him now. Tell Ismark the church is quiet.\&quot;&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosChurchResolved&quot;},{&quot;getCharacterFlag&quot;:{&quot;key&quot;:&quot;cosDoruFate&quot;,&quot;op&quot;:&quot;=&quot;,&quot;val&quot;:2}}]}]" />
     <property name="hidden" type="bool" value="false" />
-    <property name="sprite" value="sprites/heroes/human_m.atlas" />
+    <property name="sprite" value="sprites/strahd/donavich.atlas" />
    </properties>
   </object>
   <object id="62" template="../../obj/dialog.tx" x="480" y="384">
@@ -74,4 +75,10 @@
   <object id="1027" name="scenery footprint" type="collision" x="48" y="368" width="16" height="16" />
   <object id="1028" name="scenery footprint" type="collision" x="576" y="368" width="16" height="16" />
  </objectgroup>
+ <layer id="6" name="Lantern Light" width="40" height="34" opacity="0.7">
+  <data encoding="base64" compression="zlib">eJztzrEJACAQA8DM6cou9aV2goUPcgepUiQJALCbY+Wmf+G03fkNAAAgHyluIQkp</data>
+ </layer>
+ <layer id="7" name="Barovian Mist" width="40" height="34" opacity="0.14">
+  <data encoding="base64" compression="zlib">eJzt1iEOgDAQRNF/PCSSjEIikUgkEolEIpFIjoZqsgZFSNtknv1ZO1mwr1pBJ+gFg2AUTIJZ0ChfT1bBJtgFh+AUXIJbsChfN7P6lbR5sSclbV7sZla/vzYt+nJf0ubFbmb1y/3nvfWkpM2L3cyo2gNwtAV6</data>
+ </layer>
 </map>

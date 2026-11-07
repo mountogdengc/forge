@@ -1,0 +1,53 @@
+{
+  "textureAtlas": "world/sprites/gothic-sprites.atlas",
+  "sprites": [
+    {
+      "name": "WoodTree",
+      "startArea": 0,
+      "endArea": 1,
+      "layer": 1,
+      "resolution": 4,
+      "density": 0.26
+    },
+    {
+      "name": "WoodTree2",
+      "startArea": 0,
+      "endArea": 1,
+      "layer": 1,
+      "resolution": 4,
+      "density": 0.26
+    },
+    {
+      "name": "MountainTree",
+      "startArea": 0,
+      "endArea": 1,
+      "layer": 1,
+      "resolution": 4,
+      "density": 0.09
+    },
+    {
+      "name": "MountainRock",
+      "startArea": 0,
+      "layer": 1,
+      "endArea": 1,
+      "density": 0.09,
+      "resolution": 4
+    },
+    {
+      "name": "LargeMountainRock",
+      "startArea": 0,
+      "layer": 1,
+      "endArea": 1,
+      "density": 0.09,
+      "resolution": 4
+    },
+    {
+      "name": "SnowMountain",
+      "startArea": 0,
+      "endArea": 1,
+      "layer": 1,
+      "resolution": 4,
+      "density": 0.1
+    }
+  ]
+}

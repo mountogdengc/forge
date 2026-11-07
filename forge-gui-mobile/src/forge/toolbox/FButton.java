@@ -283,6 +283,16 @@ public class FButton extends FDisplayObject implements IButton {
 
     @Override
     public void draw(Graphics g) {
+        if (forge.adventure.theme.ThemePaletteBridge.presentationForAdventure() != null) {
+            float w = getWidth(), h = getHeight();
+            forge.adventure.theme.ThemePaletteBridge.drawButton(g, w, h, isHovered(), pressed, isEnabled(), toggled);
+            if (!StringUtils.isEmpty(text)) {
+                String caption = corner == Corner.BottomLeft || corner == Corner.BottomRight ? text.replaceFirst(" ", "\n") : text;
+                g.drawText(caption, font, forge.adventure.theme.ThemePaletteBridge.buttonText(forge.adventure.theme.ThemePaletteBridge.presentationForAdventure(),isEnabled(), toggled || pressed,isHovered()),
+                        PADDING, 0, Math.max(0, w - 2 * PADDING), h, false, Align.center, true);
+            }
+            return;
+        }
         if (Frost.isOn() /*&& corner == Corner.None*/) {
             drawFrosted(g);
             return;

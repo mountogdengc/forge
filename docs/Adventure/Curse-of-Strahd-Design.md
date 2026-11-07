@@ -1,5 +1,22 @@
 # Curse of Strahd: Into the Mists — opening chapter
 
+The opening contract below records 0.1.0. The new-run 0.2.0 extension is specified
+in [A Light in Vallaki](../superpowers/specs/2026-11-03-strahd-vallaki-design.md).
+It adds four western locations and a second chapter; 0.1.0 saves are not migrated.
+
+The 0.4.0 extension added fixed reference-map geography and 26
+short arrival destinations, for 34 locations total. See the
+[destination design](../superpowers/specs/2026-11-03-strahd-landmarks-design.md).
+Castle Ravenloft, Krezk and the other new sites have explorable exteriors with
+two interactions and an overworld exit; their full stories remain future work.
+The existing two chapters and eight maps retain their content and progression.
+
+Current 0.5.0 expands Krezk into **A Bell Against the Mists**, a complete third
+chapter with four local scenes, three battles, nine objectives and two final
+accords. There are 37 overworld locations and 25 remaining passive arrivals.
+See the [Krezk design](../superpowers/specs/2026-11-03-strahd-krezk-design.md).
+It requires a new run; frozen earlier builds and their saves remain separate.
+
 ## Intent
 
 David selected Curse of Strahd as the next campaign after completing Bellwake

@@ -41,6 +41,7 @@ public class WorldStage extends GameStage implements SaveFileContent {
     private float spawnDelay = 0;
     private static final float spawnInterval = 4;//todo config
     private PointOfInterestMapSprite collidingPoint;
+    private final PointOfInterestEntryCooldown pointOfInterestEntryCooldown = new PointOfInterestEntryCooldown();
     protected ArrayList<Pair<Float, EnemySprite>> enemies = new ArrayList<>();
     private final static Float dieTimer = 20f;//todo config
     private Float globalTimer = 0f;
@@ -86,6 +87,7 @@ public class WorldStage extends GameStage implements SaveFileContent {
     protected void onActing(float delta) {
         if (isPaused() || MapStage.getInstance().isDialogOnlyInput() || Forge.advFreezePlayerControls)
             return;
+        pointOfInterestEntryCooldown.update(delta);
         drawNavigationArrow();
         if (player.isMoving()) {
             handleMonsterSpawn(delta);
@@ -225,7 +227,14 @@ public class WorldStage extends GameStage implements SaveFileContent {
     }
 
 
+    public void delayPointOfInterestEntry() {
+        pointOfInterestEntryCooldown.start();
+    }
+
     public boolean handlePointsOfInterestCollision() {
+        if (pointOfInterestEntryCooldown.isActive()) {
+            return false;
+        }
         for (Actor actor : foregroundSprites.getChildren()) {
             if (!(actor instanceof PointOfInterestMapSprite)) {
                 continue;
@@ -551,8 +560,8 @@ public class WorldStage extends GameStage implements SaveFileContent {
     private void drawNavigationArrow() {
         Vector2 navDirection = null;
         for (AdventureQuestData adq : Current.player().getQuests()) {
-            if (adq.isTracked) {
-                PointOfInterest nearestValidPOI = adq.getClosestValidPOI(player.getCenter());
+            if (adq.isTracked && !adq.completed && !adq.failed && !adq.getActiveStages().isEmpty()) {
+                PointOfInterest nearestValidPOI = QuestNavigation.destination(adq, player.getCenter());
                 if (nearestValidPOI != null) {
                     navDirectionVec.set(nearestValidPOI.getCenter()).sub(player.getCenter());
                     navDirection = navDirectionVec;

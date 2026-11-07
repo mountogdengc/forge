@@ -126,8 +126,8 @@
   "allowedStarterModes": [
     "Constructed"
   ],
-  "chapterCompletionQuestFlag": "cosChapterOneComplete",
-  "chapterCompletionText": "Into the Mists - Opening Chapter Complete\n\nIreena has reached Tser Pool. Eva has warned you of the road ahead. This test chapter ends here; Vallaki and the wider campaign are not yet playable. You may revisit the village or practice with the Roadwarden.",
+  "chapterCompletionQuestFlag": "cosChapterThreeComplete",
+  "chapterCompletionText": "A Bell Against the Mists - Chapter Three Complete\n\nKrezk has clear water and a watch it chose. The Abbey must answer to the people below it, and Vasilka has a voice in her future. Your accord is remembered. You can revisit all three chapters, recover with Anna in Krezk Village, or explore the other arrival areas. Full winery, relic and Ravenloft stories remain future content.",
   "allowedEditions": [
     "ISD",
     "DKA",

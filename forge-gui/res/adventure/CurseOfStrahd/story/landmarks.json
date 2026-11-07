@@ -1,0 +1,727 @@
+[
+  {
+    "name": "Castle Ravenloft",
+    "slug": "ravenloft",
+    "reference": "K",
+    "x": 232,
+    "y": 88,
+    "archetype": "castle",
+    "sprite": "VampireCastle",
+    "type": "dungeon",
+    "clearingRadius": 3,
+    "route": [
+      [
+        214,
+        84
+      ],
+      [
+        218,
+        88
+      ],
+      [
+        232,
+        88
+      ]
+    ],
+    "arrival": "The road ends in a stone forecourt beneath dark towers. The barred doors admit neither the wind nor an invitation.",
+    "look": "A dry fountain stands beneath the windows. Tracks stop at the great doors, but the return path is clear."
+  },
+  {
+    "name": "Krezk",
+    "slug": "krezk",
+    "reference": "S",
+    "x": 28,
+    "y": 55,
+    "archetype": "gate",
+    "sprite": "PlainsTown",
+    "type": "dungeon",
+    "clearingRadius": 3,
+    "route": [
+      [
+        35,
+        59
+      ],
+      [
+        28,
+        55
+      ]
+    ],
+    "arrival": "A sentry watches from the wall above a sheltered gate approach. Smoke rises from houses beyond the palisade.",
+    "look": "Fresh timber braces the gate. A covered bench offers a place to wait, while the abbey roofs show above the town.",
+    "questArea": true
+  },
+  {
+    "name": "Old Bonegrinder",
+    "slug": "bonegrinder",
+    "reference": "O",
+    "x": 151,
+    "y": 80,
+    "archetype": "mill",
+    "sprite": "farm",
+    "type": "dungeon",
+    "clearingRadius": 3,
+    "route": [
+      [
+        154,
+        73
+      ],
+      [
+        151,
+        80
+      ]
+    ],
+    "arrival": "A leaning windmill turns above the trees. Flour dust clings to a stone beside the path, though no worker comes out.",
+    "look": "The mill's shutter knocks against its frame. A worn track circles the building and returns to the road."
+  },
+  {
+    "name": "Argynvostholt",
+    "slug": "argynvostholt",
+    "reference": "Q",
+    "x": 101,
+    "y": 94,
+    "archetype": "ruins",
+    "sprite": "ruinedcity",
+    "type": "dungeon",
+    "clearingRadius": 3,
+    "route": [
+      [
+        93,
+        93
+      ],
+      [
+        101,
+        94
+      ]
+    ],
+    "arrival": "A ruined manor rises above a broken courtyard. Fragments of a dragon crest remain over the closed entrance.",
+    "look": "Cold air passes through empty window frames. The outer stones offer a view of the valley, but the manor's story lies beyond these grounds."
+  },
+  {
+    "name": "Tsolenka Pass",
+    "slug": "tsolenka",
+    "reference": "T",
+    "x": 88,
+    "y": 140,
+    "archetype": "mountain",
+    "sprite": "Gate",
+    "type": "dungeon",
+    "clearingRadius": 2,
+    "route": [
+      [
+        84,
+        128
+      ],
+      [
+        88,
+        140
+      ]
+    ],
+    "arrival": "The pass narrows between pale rock and a wind-scoured gate. A path crosses the exposed approach.",
+    "look": "Snow catches in the joints of the parapet. From this lookout you can trace the lower roads before returning."
+  },
+  {
+    "name": "Ruins of Berez",
+    "slug": "berez",
+    "reference": "U",
+    "x": 105,
+    "y": 115,
+    "archetype": "marsh",
+    "sprite": "ruinedcity",
+    "type": "dungeon",
+    "clearingRadius": 2,
+    "route": [
+      [
+        94,
+        111
+      ],
+      [
+        105,
+        115
+      ]
+    ],
+    "arrival": "Water gathers between the remains of a drowned street. The arrival path reaches a small patch of firm ground.",
+    "look": "A doorway leans over reeds where a house once stood. The flooded town beyond is still waiting for its own chapter."
+  },
+  {
+    "name": "Van Richten's Tower",
+    "slug": "tower",
+    "reference": "V",
+    "x": 77,
+    "y": 50,
+    "archetype": "tower",
+    "sprite": "MageTower",
+    "type": "dungeon",
+    "clearingRadius": 2,
+    "route": [
+      [
+        65,
+        57
+      ],
+      [
+        77,
+        50
+      ]
+    ],
+    "arrival": "A narrow approach reaches a solitary tower beside the water. Its dark windows face the far bank.",
+    "look": "An empty mooring creaks against the shore. You can inspect the grounds, but the tower's door remains closed."
+  },
+  {
+    "name": "Wizard of Wines",
+    "slug": "winery",
+    "reference": "W",
+    "x": 36,
+    "y": 88,
+    "archetype": "winery",
+    "sprite": "farm",
+    "type": "dungeon",
+    "clearingRadius": 3,
+    "route": [
+      [
+        65,
+        85
+      ],
+      [
+        50,
+        86
+      ],
+      [
+        36,
+        88
+      ]
+    ],
+    "arrival": "Rows of tired vines lead to the winery yard. Barrels wait under an awning beside the shut doors.",
+    "look": "A cart has left deep ruts in the soil. The vineyard paths are quiet; the troubles of the winery are a story still to come."
+  },
+  {
+    "name": "Amber Temple",
+    "slug": "amber-temple",
+    "reference": "X",
+    "x": 105,
+    "y": 155,
+    "archetype": "temple",
+    "sprite": "StonePyramid",
+    "type": "dungeon",
+    "clearingRadius": 3,
+    "route": [
+      [
+        88,
+        140
+      ],
+      [
+        95,
+        149
+      ],
+      [
+        105,
+        155
+      ]
+    ],
+    "arrival": "A severe stone facade emerges from the high mountain mist. The exposed approach ends at a sealed entrance.",
+    "look": "Pale deposits mark the stone around the doorway. The outer terrace is safe to examine; the temple depths remain beyond this visit."
+  },
+  {
+    "name": "Yester Hill",
+    "slug": "yester-hill",
+    "reference": "Y",
+    "x": 24,
+    "y": 119,
+    "archetype": "hill",
+    "sprite": "EvilGrove",
+    "type": "dungeon",
+    "clearingRadius": 2,
+    "route": [
+      [
+        36,
+        88
+      ],
+      [
+        29,
+        103
+      ],
+      [
+        24,
+        119
+      ]
+    ],
+    "arrival": "A ring of weathered stones crowns the rise. Wind bends the grass along an open path to the crest.",
+    "look": "A dead branch has been wedged into one of the stones. The hill is quiet during this visit, with no rite or battle underway."
+  },
+  {
+    "name": "Werewolf Den",
+    "slug": "werewolf-den",
+    "reference": "Z",
+    "x": 55,
+    "y": 43,
+    "archetype": "den",
+    "sprite": "Cave",
+    "type": "cave",
+    "clearingRadius": 2,
+    "route": [
+      [
+        53,
+        59
+      ],
+      [
+        55,
+        43
+      ]
+    ],
+    "arrival": "Tracks converge outside a dark opening in the hillside. The arrival trail ends on a shelf of bare stone.",
+    "look": "The cavern carries sound farther than you expect. The den's interior and its inhabitants belong to a later adventure."
+  },
+  {
+    "name": "Gates of Barovia East",
+    "slug": "east-gates",
+    "reference": "B",
+    "x": 286,
+    "y": 104,
+    "archetype": "gate",
+    "sprite": "Gate",
+    "type": "dungeon",
+    "clearingRadius": 3,
+    "route": [
+      [
+        282,
+        103
+      ],
+      [
+        286,
+        104
+      ]
+    ],
+    "arrival": "Stone sentinels stand above the eastern road. Mist catches against ironwork and spills between the open approaches.",
+    "look": "Beyond the gate the road fades into the valley's border. This visit neither frees you from Barovia nor changes the current journey."
+  },
+  {
+    "name": "Gates of Barovia West",
+    "slug": "west-gates",
+    "reference": "B",
+    "x": 177,
+    "y": 67,
+    "archetype": "gate",
+    "sprite": "Gate",
+    "type": "dungeon",
+    "clearingRadius": 3,
+    "route": [
+      [
+        165,
+        70
+      ],
+      [
+        177,
+        67
+      ]
+    ],
+    "arrival": "An old gate marks the western stretch of the valley road. Moss has softened the faces carved above it.",
+    "look": "Wheel marks cross the worn threshold. The side path returns to the same road you followed in."
+  },
+  {
+    "name": "Svalich Woods",
+    "slug": "svalich-woods",
+    "reference": "C",
+    "x": 278,
+    "y": 118,
+    "archetype": "forest",
+    "sprite": "Grove",
+    "type": "dungeon",
+    "clearingRadius": 1,
+    "route": [
+      [
+        275,
+        113
+      ],
+      [
+        278,
+        118
+      ]
+    ],
+    "arrival": "Dark pines close around a small trail clearing. The road remains visible through a gap in the branches.",
+    "look": "The forest floor holds old tracks and fresh needles. Nothing here demands a fight, and no hidden timer starts when you enter."
+  },
+  {
+    "name": "River Ivlis",
+    "slug": "ivlis-bank",
+    "reference": "D",
+    "x": 266,
+    "y": 135,
+    "archetype": "river",
+    "sprite": "Waypoint",
+    "type": "dungeon",
+    "clearingRadius": 1,
+    "route": [
+      [
+        258,
+        114
+      ],
+      [
+        267,
+        124
+      ],
+      [
+        266,
+        135
+      ]
+    ],
+    "arrival": "A bank path reaches the cold Ivlis. Water moves past the stones without revealing what lies beneath.",
+    "look": "A snag of driftwood turns slowly in the current. The marked crossing is the way back; the deep channel is impassable."
+  },
+  {
+    "name": "River Ivlis Crossroads",
+    "slug": "ivlis-crossroads",
+    "reference": "F",
+    "x": 231,
+    "y": 115,
+    "archetype": "crossroads",
+    "sprite": "Waypoint",
+    "type": "dungeon",
+    "clearingRadius": 1,
+    "route": [
+      [
+        233,
+        114
+      ],
+      [
+        231,
+        115
+      ]
+    ],
+    "arrival": "Several tracks meet beneath a weathered roadside marker. One points toward Barovia; another bends into the trees.",
+    "look": "Names have been cut over older names in the stone. The junction offers bearings without advancing the escort or church investigation."
+  },
+  {
+    "name": "Tser Falls",
+    "slug": "tser-falls",
+    "reference": "H",
+    "x": 181,
+    "y": 102,
+    "archetype": "river",
+    "sprite": "Waypoint",
+    "type": "dungeon",
+    "clearingRadius": 1,
+    "route": [
+      [
+        190,
+        108
+      ],
+      [
+        181,
+        102
+      ]
+    ],
+    "arrival": "Spray drifts across a stone approach above the falling water. The river sounds louder than any voice.",
+    "look": "A sheltered ledge looks down the gorge. Keep to the clear crossing; the falls themselves cannot be entered."
+  },
+  {
+    "name": "Black Carriage",
+    "slug": "black-carriage",
+    "reference": "I",
+    "x": 184,
+    "y": 85,
+    "archetype": "carriage",
+    "sprite": "VehicleShop",
+    "type": "dungeon",
+    "clearingRadius": 2,
+    "route": [
+      [
+        182,
+        86
+      ],
+      [
+        184,
+        85
+      ]
+    ],
+    "arrival": "A black carriage waits at a roadside turnout. Its door is closed, and no driver offers a bargain.",
+    "look": "The wheels are clean despite the mud. For now the carriage is a landmark; it will not transport you or begin an invitation scene."
+  },
+  {
+    "name": "Gates of Ravenloft",
+    "slug": "ravenloft-gates",
+    "reference": "J",
+    "x": 218,
+    "y": 88,
+    "archetype": "gate",
+    "sprite": "Gate",
+    "type": "dungeon",
+    "clearingRadius": 3,
+    "route": [
+      [
+        214,
+        84
+      ],
+      [
+        218,
+        88
+      ]
+    ],
+    "arrival": "The road rises to a gate beneath the castle's shadow. The open outer approach gives way to heavy ironwork.",
+    "look": "Through the bars you can make out the forecourt beyond. The castle's larger adventure remains ahead, but you can return to the valley."
+  },
+  {
+    "name": "Lake Zarovich",
+    "slug": "zarovich-bank",
+    "reference": "L",
+    "x": 145,
+    "y": 53,
+    "archetype": "lake",
+    "sprite": "Waypoint",
+    "type": "dungeon",
+    "clearingRadius": 1,
+    "route": [
+      [
+        138,
+        63
+      ],
+      [
+        145,
+        53
+      ]
+    ],
+    "arrival": "The northern lake spreads beyond a quiet landing. Vallaki lies behind the tree line to the south.",
+    "look": "A rope has been looped around a shore post. The water remains a boundary; this arrival scene offers no boat trip or rescue quest."
+  },
+  {
+    "name": "Mount Baratok Trail",
+    "slug": "baratok-trail",
+    "reference": "M",
+    "x": 190,
+    "y": 26,
+    "archetype": "mountain",
+    "sprite": "SnowAbbey",
+    "type": "dungeon",
+    "clearingRadius": 2,
+    "route": [
+      [
+        145,
+        53
+      ],
+      [
+        160,
+        53
+      ],
+      [
+        170,
+        46
+      ],
+      [
+        179,
+        37
+      ],
+      [
+        190,
+        26
+      ]
+    ],
+    "arrival": "A narrow trail reaches a cold mountain shelf. The northern ridge disappears into low cloud.",
+    "look": "From the shelf the lake looks like a dark plate between the woods. No hidden mountain encounter is triggered by this visit."
+  },
+  {
+    "name": "Luna River Crossroads",
+    "slug": "luna-crossroads",
+    "reference": "P",
+    "x": 100,
+    "y": 71,
+    "archetype": "crossroads",
+    "sprite": "Waypoint",
+    "type": "dungeon",
+    "clearingRadius": 1,
+    "route": [
+      [
+        97,
+        65
+      ],
+      [
+        100,
+        71
+      ]
+    ],
+    "arrival": "A fork in the western road overlooks the river country. Old markers point toward the lower valleys.",
+    "look": "The wheel ruts divide around a mossy stone. Follow the marked road to leave this quiet stopping place."
+  },
+  {
+    "name": "Raven River Crossroads",
+    "slug": "raven-crossroads",
+    "reference": "R",
+    "x": 68,
+    "y": 65,
+    "archetype": "crossroads",
+    "sprite": "Waypoint",
+    "type": "dungeon",
+    "clearingRadius": 1,
+    "route": [
+      [
+        65,
+        57
+      ],
+      [
+        68,
+        65
+      ]
+    ],
+    "arrival": "A roadside clearing opens where the western tracks divide. The river can be heard beyond the trees.",
+    "look": "A raven settles on a leaning marker, then takes flight. The branches of the road remain available in either direction."
+  },
+  {
+    "name": "Lake Baratok",
+    "slug": "baratok-bank",
+    "reference": "",
+    "x": 65,
+    "y": 30,
+    "archetype": "lake",
+    "sprite": "Waypoint",
+    "type": "dungeon",
+    "clearingRadius": 1,
+    "route": [
+      [
+        53,
+        59
+      ],
+      [
+        49,
+        35
+      ],
+      [
+        65,
+        30
+      ]
+    ],
+    "arrival": "A short shore trail opens toward the western lake. The water is still enough to hold the mountain's outline.",
+    "look": "Reeds hide the shallows. This bank is a viewpoint, with the tower and other western destinations reached by their own road markers."
+  },
+  {
+    "name": "Lake Luna",
+    "slug": "luna-bank",
+    "reference": "",
+    "x": 55,
+    "y": 155,
+    "archetype": "lake",
+    "sprite": "Waypoint",
+    "type": "dungeon",
+    "clearingRadius": 1,
+    "route": [
+      [
+        72,
+        143
+      ],
+      [
+        64,
+        153
+      ],
+      [
+        55,
+        155
+      ]
+    ],
+    "arrival": "The lower lake lies beneath the western ridges. A small landing interrupts the reeds along the bank.",
+    "look": "Water reflects the pale sky between mountain shadows. The dry trail leads back to the valley roads."
+  },
+  {
+    "name": "Mount Ghakis Lookout",
+    "slug": "ghakis-lookout",
+    "reference": "",
+    "x": 135,
+    "y": 166,
+    "archetype": "mountain",
+    "sprite": "SnowAbbey",
+    "type": "dungeon",
+    "clearingRadius": 2,
+    "route": [
+      [
+        105,
+        155
+      ],
+      [
+        116,
+        152
+      ],
+      [
+        122,
+        158
+      ],
+      [
+        135,
+        166
+      ]
+    ],
+    "arrival": "The southern climb reaches a lookout above a sweep of pale stone. The higher summits remain lost in cloud.",
+    "look": "The lower pass and the temple approach can be traced from here. This is a stopping place, with no summit trial or permanent penalty."
+  },
+  {
+    "name": "Krezk Village",
+    "slug": "krezk-village",
+    "x": 24,
+    "y": 43,
+    "archetype": "gate",
+    "sprite": "Spawn",
+    "reference": "",
+    "type": "dungeon",
+    "clearingRadius": 3,
+    "route": [
+      [
+        28,
+        55
+      ],
+      [
+        24,
+        49
+      ],
+      [
+        24,
+        43
+      ]
+    ],
+    "questArea": true
+  },
+  {
+    "name": "Blessed Pool of Krezk",
+    "slug": "krezk-pool",
+    "x": 15,
+    "y": 34,
+    "archetype": "lake",
+    "sprite": "Waypoint",
+    "reference": "",
+    "type": "dungeon",
+    "clearingRadius": 3,
+    "route": [
+      [
+        24,
+        43
+      ],
+      [
+        15,
+        43
+      ],
+      [
+        15,
+        34
+      ]
+    ],
+    "questArea": true
+  },
+  {
+    "name": "Abbey of Saint Markovia",
+    "slug": "krezk-abbey",
+    "x": 34,
+    "y": 29,
+    "archetype": "temple",
+    "sprite": "SnowAbbey",
+    "reference": "",
+    "type": "dungeon",
+    "clearingRadius": 3,
+    "route": [
+      [
+        24,
+        43
+      ],
+      [
+        34,
+        39
+      ],
+      [
+        34,
+        29
+      ]
+    ],
+    "questArea": true
+  }
+]

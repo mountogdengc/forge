@@ -1,0 +1,20 @@
+{
+  "name": "barovia-hills",
+  "startPointX": 0.5,
+  "startPointY": 0.5,
+  "width": 0,
+  "height": 0,
+  "noiseWeight": 0,
+  "distWeight": 0,
+  "color": "757775",
+  "tilesetAtlas": "world/tilesets/gothic-terrain.atlas",
+  "tilesetName": "Colorless",
+  "collision": true,
+  "terrain": [],
+  "spriteNames": [
+    "MountainTree",
+    "MountainRock"
+  ],
+  "enemies": [],
+  "pointsOfInterest": []
+}

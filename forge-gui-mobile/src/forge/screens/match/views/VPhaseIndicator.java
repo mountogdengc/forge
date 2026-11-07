@@ -144,7 +144,13 @@ public class VPhaseIndicator extends FContainer {
             text = "--";
             textColor = player.getHasPriority() ? getPhaseColor(false, true).getColor() : IDLE_NAME_COLOR;
         }
-        g.drawText(text, NAME_FONT, textColor, 0, 0, w, h, false, Align.center, true);
+        forge.adventure.theme.ResolvedTheme adventureTheme = forge.adventure.theme.ThemePaletteBridge.presentationForAdventure();
+        Color captionColor = textColor;
+        if (adventureTheme != null) {
+            g.fillRect(Color.valueOf(adventureTheme.color("surface.panel")), 0, 0, w, h);
+            captionColor = Color.valueOf(adventureTheme.color(myTurn || player.getHasPriority() ? "text.primary" : "text.secondary"));
+        }
+        g.drawText(text, NAME_FONT, captionColor, 0, 0, w, h, false, Align.center, true);
         //stops open: the band just lightens, no outline
     }
 
@@ -509,6 +515,14 @@ public class VPhaseIndicator extends FContainer {
                 g.fillRect(YIELD_MARKER_COLOR, x, 0, w, h);
                 drawChevron(g, x, w, h);
                 // Skip the caption when marked — chevron replaces the phase abbreviation.
+            } else if (forge.adventure.theme.ThemePaletteBridge.presentationForAdventure() != null) {
+                forge.adventure.theme.ResolvedTheme theme = forge.adventure.theme.ThemePaletteBridge.presentationForAdventure();
+                Color fill = forge.adventure.theme.ThemePaletteBridge.phaseFill(theme, active, stopAtPhase);
+                Color text = forge.adventure.theme.ThemePaletteBridge.phaseText(theme, active, stopAtPhase);
+                g.fillRect(fill, x, 0, w, h);
+                if (isHovered()) g.drawRect(Math.max(1f, Utils.scale(1)), Color.valueOf(theme.color("state.focus")), x, 0, w, h);
+                if (stopAtPhase) g.fillRect(text, x + PADDING_X, h - Math.max(1f, Utils.scale(2)), Math.max(0, w - 2 * PADDING_X), Math.max(1f, Utils.scale(2)));
+                g.drawText(caption, font, text, x, 0, w, h, false, Align.center, true);
             } else if (VPlayerPanel.isFrosted()) { //modern: soft translucent cells, the stop colour tints them
                 final Color tint = getPhaseColor(active, stopAtPhase).getColor();
                 if (isHovered()) { FROST_FILL.set(1f, 1f, 1f, 0.18f); }

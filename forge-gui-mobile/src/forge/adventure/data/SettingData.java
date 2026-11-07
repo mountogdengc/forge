@@ -23,6 +23,8 @@ public class SettingData {
 	public int width;
     public int height;
     public String plane;
+    /** Pending Adventure-only appearance; consumed on a full process restart. */
+    public String adventureThemeId;
     public boolean fullScreen;
     public String videomode;
     public String lastActiveSave;

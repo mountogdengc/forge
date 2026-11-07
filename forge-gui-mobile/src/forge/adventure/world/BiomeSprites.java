@@ -22,7 +22,7 @@ public class BiomeSprites {
         if (sprites.isEmpty()) {
             sprites.addAll(Config.instance().getAtlas(textureAtlas).createSprites(name));
         }
-        int index = seed % sprites.size;
+        int index = Math.floorMod(seed, sprites.size);
         if (index >= sprites.size || index < 0) {
             System.err.println("Invalid index: " + index + " [" + name + "]");
             return null;

@@ -1,0 +1,77 @@
+<?xml version='1.0' encoding='utf-8'?>
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="40" height="34" tilewidth="16" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="1022">
+ <tileset firstgid="1" source="../../tileset/main.tsx" />
+ <tileset firstgid="10113" source="../../tileset/buildings.tsx" />
+ <tileset firstgid="11905" source="../../tileset/main-nocollide.tsx" />
+ <layer id="1" name="Background" width="40" height="34">
+  <data encoding="base64" compression="zlib">eJztwzENAAAMA6CamsT67j8NkNBLqqqqqqpq/gHvldxO</data>
+ </layer>
+ <layer id="2" name="Ground" width="40" height="34">
+  <data encoding="base64" compression="zlib">eJztljEKwCAQBPd51+cfkv9XwSKdBnKL5ggzIHed62yjBF/TQjpiPCswy9ZnBfDngT8P/M3v7eeMtXuW1bnu3fG3I6OTj349f/Sbz0e/9Eu/z/no97/9vnkH/+c8+PPAnwf+VJYLHaNEpA==</data>
+ </layer>
+ <layer id="3" name="Foreground" width="40" height="34">
+  <properties>
+   <property name="spriteLayer" type="bool" value="true" />
+  </properties>
+  <data encoding="base64" compression="zlib">eJzt1zkKAjEUgOHf67wHFmLrUoiFhdi6XMPlGqOeQW1cDmBj6XINl2OInQMuGY3MA/NDqkzxQciEB6F/aVOBdcrrZnjlS7s0fZHCUGGkMFZ7vrnCQmGpsPLgKwgUBUoCZfnet1XYKewVDh58TYGWQFug48F3VDgpnBUuHnxdgZ5AX2DgwedSEl8kMBQYCYwN+t6Vqfr5xtXw7/8/l4LPtm+S8D4kMTzam1Xj613TBL6c2j7fuiGf6zm4+rJP3sdf5+qrGfelVXh/v8uKL29w/rivYdz3ieHT+fxVPufzUChErCsW5pKI</data>
+ </layer>
+ <layer id="4" name="AboveSprites" width="40" height="34">
+  <data encoding="base64" compression="zlib">eJztwYEAAAAAw6D5U1/gCFUBAAAAANAxFUAAAQ==</data>
+ </layer>
+ <objectgroup id="5" name="Objects">
+  <object id="38" template="../../obj/entry_up.tx" x="320" y="528" />
+  <object id="60" template="../../obj/dialog.tx" x="320" y="416">
+   <properties>
+    <property name="cosDialogKey" value="vallaki.gate" />
+    <property name="dialog" value="[{&quot;text&quot;:&quot;Hear Madam Eva's warning at Tser Pool after bringing Ireena safely along the old road.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosChapterOneComplete&quot;,&quot;not&quot;:true}]},{&quot;text&quot;:&quot;Clear the ambush on West Svalich Road before bringing Ireena into Vallaki.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosChapterOneComplete&quot;},{&quot;checkQuestFlag&quot;:&quot;cosWestRoadCleared&quot;,&quot;not&quot;:true}]},{&quot;text&quot;:&quot;The gatekeeper studies the mud on your boots. \&quot;Keep the road trouble outside. If you need a bed, ask Urwin by the square. If you need a sanctuary, ask Father Lucian. Those are different questions.\&quot; Ireena steps through beside you.&quot;,&quot;options&quot;:[{&quot;text&quot;:&quot;The gate closes behind you. Find Father Lucian at Saint Andral's Church. Urwin offers free recovery in the town square.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;action&quot;:[{&quot;setQuestFlag&quot;:{&quot;key&quot;:&quot;cosVallakiEntered&quot;,&quot;val&quot;:1}}],&quot;name&quot;:&quot;Enter Vallaki with Ireena.&quot;},{&quot;name&quot;:&quot;We will return shortly.&quot;}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosChapterOneComplete&quot;},{&quot;checkQuestFlag&quot;:&quot;cosWestRoadCleared&quot;},{&quot;checkQuestFlag&quot;:&quot;cosVallakiEntered&quot;,&quot;not&quot;:true}]},{&quot;text&quot;:&quot;\&quot;The gate is open to you,\&quot; the guard says. \&quot;Urwin by the square; Father Lucian at the church. And mind the notices. Someone is always checking whether you look cheerful enough.\&quot;&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosChapterOneComplete&quot;},{&quot;checkQuestFlag&quot;:&quot;cosWestRoadCleared&quot;},{&quot;checkQuestFlag&quot;:&quot;cosVallakiEntered&quot;}]}]" />
+    <property name="hidden" type="bool" value="false" />
+    <property name="sprite" value="sprites/heroes/human_m.atlas" />
+   </properties>
+  </object>
+  <object id="61" template="../../obj/dialog.tx" x="176" y="256">
+   <properties>
+    <property name="cosDialogKey" value="vallaki.urwin" />
+    <property name="dialog" value="[{&quot;text&quot;:&quot;Urwin keeps his voice below the clatter of dishes. \&quot;You can rest here without owing me coin. Ireena should speak for herself about the church. The notices promise happiness; we try to offer supper.\&quot;&quot;,&quot;options&quot;:[{&quot;text&quot;:&quot;Urwin sets out bread and a clean cup. Your wounds are tended without a charge. Outside, the town bell insists everything is well.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;action&quot;:[{&quot;addLife&quot;:1000}],&quot;name&quot;:&quot;Rest and recover for free.&quot;},{&quot;text&quot;:&quot;Urwin points across the square. \&quot;Father Lucian tends Saint Andral's Church. The coffin shop belongs to Henrik. Talk before you start opening doors. If something drives you out, recover here and try again.\&quot;&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;name&quot;:&quot;Ask about the town.&quot;},{&quot;name&quot;:&quot;Back to the square.&quot;}]}]" />
+    <property name="hidden" type="bool" value="false" />
+    <property name="sprite" value="sprites/heroes/human_m.atlas" />
+   </properties>
+  </object>
+  <object id="62" template="../../obj/dialog.tx" x="432" y="208">
+   <properties>
+    <property name="cosDialogKey" value="vallaki.ireena" />
+    <property name="dialog" value="[{&quot;text&quot;:&quot;Hear Madam Eva's warning at Tser Pool after bringing Ireena safely along the old road.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosChapterOneComplete&quot;,&quot;not&quot;:true}]},{&quot;text&quot;:&quot;Clear the ambush on West Svalich Road before bringing Ireena into Vallaki.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosChapterOneComplete&quot;},{&quot;checkQuestFlag&quot;:&quot;cosWestRoadCleared&quot;,&quot;not&quot;:true}]},{&quot;text&quot;:&quot;Speak to the gatekeeper in Vallaki; then seek Father Lucian at Saint Andral's Church.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosChapterOneComplete&quot;},{&quot;checkQuestFlag&quot;:&quot;cosWestRoadCleared&quot;},{&quot;checkQuestFlag&quot;:&quot;cosVallakiEntered&quot;,&quot;not&quot;:true}]},{&quot;text&quot;:&quot;Ireena watches a guard straighten a festival notice. \&quot;I wanted walls. Now I want to know what happens inside them. Find Father Lucian at Saint Andral's Church. I will meet you there when we know whether its sanctuary is sound.\&quot;&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosChapterOneComplete&quot;},{&quot;checkQuestFlag&quot;:&quot;cosWestRoadCleared&quot;},{&quot;checkQuestFlag&quot;:&quot;cosVallakiEntered&quot;},{&quot;checkQuestFlag&quot;:&quot;cosChapterTwoComplete&quot;,&quot;not&quot;:true}]},{&quot;text&quot;:&quot;Ireena has chosen to stay at Saint Andral's Church. Urwin keeps a room ready if she needs the square's noise for company. Speak to her at the church to revisit the journey.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}],&quot;condition&quot;:[{&quot;checkQuestFlag&quot;:&quot;cosChapterOneComplete&quot;},{&quot;checkQuestFlag&quot;:&quot;cosWestRoadCleared&quot;},{&quot;checkQuestFlag&quot;:&quot;cosVallakiEntered&quot;},{&quot;checkQuestFlag&quot;:&quot;cosChapterTwoComplete&quot;}]}]" />
+    <property name="hidden" type="bool" value="false" />
+    <property name="sprite" value="sprites/heroes/human_f.atlas" />
+   </properties>
+  </object>
+  <object id="63" template="../../obj/dialog.tx" x="448" y="384">
+   <properties>
+    <property name="cosDialogKey" value="vallaki.notice" />
+    <property name="dialog" value="[{&quot;text&quot;:&quot;VALLAKI: ALL WILL BE WELL\nUrwin offers free recovery by the square.\nSaint Andral's Church stands beyond the houses.\nHenrik keeps the Coffin Maker's Shop.\nSpeak to the gatekeeper after clearing West Svalich Road. Use the overworld exit between locations; consult the journal for your next step. No festival timer is running in this chapter.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}]}]" />
+    <property name="hidden" type="bool" value="false" />
+   </properties>
+  </object>
+  <object id="1000" name="scenery footprint" type="collision" x="0" y="0" width="640" height="16" />
+  <object id="1001" name="scenery footprint" type="collision" x="0" y="528" width="640" height="16" />
+  <object id="1002" name="scenery footprint" type="collision" x="0" y="16" width="16" height="512" />
+  <object id="1003" name="scenery footprint" type="collision" x="624" y="16" width="16" height="512" />
+  <object id="1004" name="scenery footprint" type="collision" x="48" y="48" width="16" height="416" />
+  <object id="1005" name="scenery footprint" type="collision" x="576" y="48" width="16" height="416" />
+  <object id="1006" name="scenery footprint" type="collision" x="64" y="48" width="512" height="16" />
+  <object id="1007" name="scenery footprint" type="collision" x="64" y="448" width="208" height="16" />
+  <object id="1008" name="scenery footprint" type="collision" x="384" y="448" width="192" height="16" />
+  <object id="1009" name="scenery footprint" type="collision" x="112" y="112" width="64" height="64" />
+  <object id="1010" name="scenery footprint" type="collision" x="432" y="80" width="64" height="64" />
+  <object id="1011" name="scenery footprint" type="collision" x="96" y="320" width="16" height="32" />
+  <object id="1012" name="scenery footprint" type="collision" x="496" y="272" width="16" height="32" />
+  <object id="1013" name="scenery footprint" type="collision" x="480" y="400" width="16" height="32" />
+  <object id="1014" name="scenery footprint" type="collision" x="128" y="272" width="64" height="16" />
+  <object id="1015" name="scenery footprint" type="collision" x="416" y="304" width="64" height="16" />
+  <object id="1016" name="scenery footprint" type="collision" x="240" y="176" width="16" height="16" />
+  <object id="1017" name="scenery footprint" type="collision" x="384" y="176" width="16" height="16" />
+  <object id="1018" name="scenery footprint" type="collision" x="240" y="368" width="16" height="16" />
+  <object id="1019" name="scenery footprint" type="collision" x="384" y="368" width="16" height="16" />
+  <object id="1020" name="scenery footprint" type="collision" x="320" y="256" width="16" height="16" />
+  <object id="1021" name="scenery footprint" type="collision" x="320" y="272" width="16" height="16" />
+ </objectgroup>
+</map>

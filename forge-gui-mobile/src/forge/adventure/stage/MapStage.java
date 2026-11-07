@@ -841,6 +841,7 @@ public class MapStage extends GameStage {
             WorldStage.getInstance().resetPlayerLocation();
         else if (defeatedByBoss)
             WorldStage.getInstance().defeatedFromBoss();
+        WorldStage.getInstance().delayPointOfInterestEntry();
         Forge.switchScene(GameScene.instance());
         isPlayerLeavingDungeon = false;
         dialogOnlyInput = false;

@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='utf-8'?>
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="40" height="34" tilewidth="16" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="1013">
+ <tileset firstgid="1" source="../../tileset/main.tsx" />
+ <tileset firstgid="10113" source="../../tileset/buildings.tsx" />
+ <tileset firstgid="11905" source="../../tileset/main-nocollide.tsx" />
+ <layer id="1" name="Background" width="40" height="34">
+  <data encoding="base64" compression="zlib">eJztwzENAAAMA6CamsT67j8NkNBLqqqqqqpq/gHvldxO</data>
+ </layer>
+ <layer id="2" name="Ground" width="40" height="34">
+  <data encoding="base64" compression="zlib">eJztz8EJACAMBMH0ZB/2X44VqI+FeMIu3DuTKrNzc+yXkD6WPpY+lj6WvvudzunTl+h7Yabp06fvXx/9ISF9LH0sfRXbAtA66dE=</data>
+ </layer>
+ <layer id="3" name="Foreground" width="40" height="34">
+  <properties>
+   <property name="spriteLayer" type="bool" value="true" />
+  </properties>
+  <data encoding="base64" compression="zlib">eJzt1bENgDAMRNE/CDBFXEGNmAoyDjMAu0GNEEWUBFzck9ydLBcnGUTqmAMsAWKok8/VGLQGndXJ59oMdoPD6uTFZy9Tfd3LVOqlH3H6+wIRkXf6t3n0b+/Up//6tI7P8ebsCy8cCu8TETy6AKskJEA=</data>
+ </layer>
+ <layer id="4" name="AboveSprites" width="40" height="34">
+  <data encoding="base64" compression="zlib">eJztwYEAAAAAw6D5U1/gCFUBAAAAANAxFUAAAQ==</data>
+ </layer>
+ <objectgroup id="5" name="Objects">
+  <object id="38" template="../../obj/entry_up.tx" x="320" y="528" />
+  <object id="60" template="../../obj/dialog.tx" x="320" y="368">
+   <properties>
+    <property name="cosDialogKey" value="landmark.raven-crossroads.arrival" />
+    <property name="dialog" value="[{&quot;text&quot;:&quot;A roadside clearing opens where the western tracks divide. The river can be heard beyond the trees. This arrival area is open. Further stories here continue in a future chapter. The southern exit returns to the overworld.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Look around.&quot;,&quot;text&quot;:&quot;A raven settles on a leaning marker, then takes flight. The branches of the road remain available in either direction.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}]},{&quot;name&quot;:&quot;Where does the current story continue?&quot;,&quot;text&quot;:&quot;Your journal follows the village church, Eva's camp and Vallaki's sanctuary. These arrival visits do not advance or replace those objectives.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}]},{&quot;name&quot;:&quot;Return to exploring.&quot;}]}]" />
+    <property name="hidden" type="bool" value="false" />
+   </properties>
+  </object>
+  <object id="61" template="../../obj/dialog.tx" x="448" y="224">
+   <properties>
+    <property name="cosDialogKey" value="landmark.raven-crossroads.detail" />
+    <property name="dialog" value="[{&quot;text&quot;:&quot;A raven settles on a leaning marker, then takes flight. The branches of the road remain available in either direction.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}]}]" />
+    <property name="hidden" type="bool" value="false" />
+   </properties>
+  </object>
+  <object id="1000" name="scenery footprint" type="collision" x="0" y="0" width="640" height="16" />
+  <object id="1001" name="scenery footprint" type="collision" x="0" y="528" width="640" height="16" />
+  <object id="1002" name="scenery footprint" type="collision" x="0" y="16" width="16" height="512" />
+  <object id="1003" name="scenery footprint" type="collision" x="624" y="16" width="16" height="512" />
+  <object id="1004" name="scenery footprint" type="collision" x="48" y="64" width="48" height="48" />
+  <object id="1005" name="scenery footprint" type="collision" x="496" y="48" width="48" height="48" />
+  <object id="1006" name="scenery footprint" type="collision" x="80" y="320" width="48" height="48" />
+  <object id="1007" name="scenery footprint" type="collision" x="528" y="368" width="48" height="48" />
+  <object id="1008" name="scenery footprint" type="collision" x="144" y="128" width="48" height="48" />
+  <object id="1009" name="scenery footprint" type="collision" x="128" y="416" width="80" height="16" />
+  <object id="1010" name="scenery footprint" type="collision" x="144" y="432" width="16" height="16" />
+  <object id="1011" name="scenery footprint" type="collision" x="464" y="432" width="16" height="16" />
+  <object id="1012" name="scenery footprint" type="collision" x="448" y="192" width="16" height="16" />
+ </objectgroup>
+</map>

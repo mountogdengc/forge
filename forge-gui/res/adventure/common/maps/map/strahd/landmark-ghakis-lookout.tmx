@@ -1,0 +1,56 @@
+<?xml version='1.0' encoding='utf-8'?>
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="40" height="34" tilewidth="16" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="1018">
+ <tileset firstgid="1" source="../../tileset/main.tsx" />
+ <tileset firstgid="10113" source="../../tileset/buildings.tsx" />
+ <tileset firstgid="11905" source="../../tileset/main-nocollide.tsx" />
+ <layer id="1" name="Background" width="40" height="34">
+  <data encoding="base64" compression="zlib">eJztwzENAAAMA6DK21//XvpPAyT0kqqqqqqqmn8MrDee</data>
+ </layer>
+ <layer id="2" name="Ground" width="40" height="34">
+  <data encoding="base64" compression="zlib">eJzt1LsJACAQBNGrTsxtzYKtQBGGAz8zsPmLNsJsXavznZA+lj6WPpY+lj6WPpa+e3295E6fPn3/+nbyn1n6WPre9kViA9Rh8Iw=</data>
+ </layer>
+ <layer id="3" name="Foreground" width="40" height="34">
+  <properties>
+   <property name="spriteLayer" type="bool" value="true" />
+  </properties>
+  <data encoding="base64" compression="zlib">eJzt1rENwjAQheF/kMAArn0VlAgxFWSRULMCITVrhQFAyNHFR0TeJ7nzs134pAci33UJronFuifoJ77vnOGSoc3T7/NkSzUGG4OtxWZL9QYPg8FisyIRnoc6e3+tPbEat+P7Einh/TcRHcEjoiN4qCPIHNY2h54u8in7z3M47iodvK90roiwJC/InSmX</data>
+ </layer>
+ <layer id="4" name="AboveSprites" width="40" height="34">
+  <data encoding="base64" compression="zlib">eJztwYEAAAAAw6D5U1/gCFUBAAAAANAxFUAAAQ==</data>
+ </layer>
+ <objectgroup id="5" name="Objects">
+  <object id="38" template="../../obj/entry_up.tx" x="320" y="528" />
+  <object id="60" template="../../obj/dialog.tx" x="320" y="368">
+   <properties>
+    <property name="cosDialogKey" value="landmark.ghakis-lookout.arrival" />
+    <property name="dialog" value="[{&quot;text&quot;:&quot;The southern climb reaches a lookout above a sweep of pale stone. The higher summits remain lost in cloud. This arrival area is open. Further stories here continue in a future chapter. The southern exit returns to the overworld.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Look around.&quot;,&quot;text&quot;:&quot;The lower pass and the temple approach can be traced from here. This is a stopping place, with no summit trial or permanent penalty.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}]},{&quot;name&quot;:&quot;Where does the current story continue?&quot;,&quot;text&quot;:&quot;Your journal follows the village church, Eva's camp and Vallaki's sanctuary. These arrival visits do not advance or replace those objectives.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}]},{&quot;name&quot;:&quot;Return to exploring.&quot;}]}]" />
+    <property name="hidden" type="bool" value="false" />
+   </properties>
+  </object>
+  <object id="61" template="../../obj/dialog.tx" x="448" y="224">
+   <properties>
+    <property name="cosDialogKey" value="landmark.ghakis-lookout.detail" />
+    <property name="dialog" value="[{&quot;text&quot;:&quot;The lower pass and the temple approach can be traced from here. This is a stopping place, with no summit trial or permanent penalty.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}]}]" />
+    <property name="hidden" type="bool" value="false" />
+   </properties>
+  </object>
+  <object id="1000" name="scenery footprint" type="collision" x="0" y="0" width="640" height="16" />
+  <object id="1001" name="scenery footprint" type="collision" x="0" y="528" width="640" height="16" />
+  <object id="1002" name="scenery footprint" type="collision" x="0" y="16" width="16" height="512" />
+  <object id="1003" name="scenery footprint" type="collision" x="624" y="16" width="16" height="512" />
+  <object id="1004" name="scenery footprint" type="collision" x="272" y="48" width="32" height="32" />
+  <object id="1005" name="scenery footprint" type="collision" x="80" y="80" width="48" height="48" />
+  <object id="1006" name="scenery footprint" type="collision" x="480" y="64" width="48" height="48" />
+  <object id="1007" name="scenery footprint" type="collision" x="96" y="288" width="48" height="48" />
+  <object id="1008" name="scenery footprint" type="collision" x="512" y="368" width="48" height="48" />
+  <object id="1009" name="scenery footprint" type="collision" x="224" y="176" width="16" height="16" />
+  <object id="1010" name="scenery footprint" type="collision" x="400" y="176" width="16" height="16" />
+  <object id="1011" name="scenery footprint" type="collision" x="192" y="400" width="16" height="16" />
+  <object id="1012" name="scenery footprint" type="collision" x="432" y="400" width="16" height="16" />
+  <object id="1013" name="scenery footprint" type="collision" x="112" y="224" width="80" height="16" />
+  <object id="1014" name="scenery footprint" type="collision" x="480" y="272" width="64" height="16" />
+  <object id="1015" name="scenery footprint" type="collision" x="112" y="432" width="16" height="16" />
+  <object id="1016" name="scenery footprint" type="collision" x="464" y="432" width="16" height="16" />
+  <object id="1017" name="scenery footprint" type="collision" x="448" y="192" width="16" height="16" />
+ </objectgroup>
+</map>

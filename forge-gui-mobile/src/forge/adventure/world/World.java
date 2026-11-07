@@ -298,7 +298,7 @@ public class World implements Disposable, SaveFileContent {
 
     public boolean isStructure(int x, int y) {
         try {
-            return (terrainMap[x][height - y - 1] & ~isStructureBit) != 0;
+            return (terrainMap[x][height - y - 1] & isStructureBit) != 0;
         } catch (ArrayIndexOutOfBoundsException e) {
             return false;
         }
@@ -325,6 +325,7 @@ public class World implements Disposable, SaveFileContent {
     }
 
     private void clearTerrain(int x, int y, int size) {
+        if (data.hasAuthoredMap()) return;
 
         for (int xclear = -size; xclear < size; xclear++)
             for (int yclear = -size; yclear < size; yclear++) {
@@ -362,6 +363,20 @@ public class World implements Disposable, SaveFileContent {
             float noiseZoom = data.noiseZoomBiome;
             width = data.width;
             height = data.height;
+            AuthoredWorldMapData authored = null;
+            if (data.hasAuthoredMap()) {
+                authored = new Json().fromJson(AuthoredWorldMapData.class, Config.instance().getFile(data.authoredMap));
+                authored.validate(width, height, data.GetBiomes().size());
+                Set<String> poiNames = new HashSet<>();
+                for (BiomeData biome : data.GetBiomes()) for (PointOfInterestData poi : biome.getPointsOfInterest()) {
+                    AuthoredWorldMapData.Location anchor = authored.location(poi.name);
+                    if (poi.count != 1 || authored.biomeAt(anchor.x, anchor.y) != data.GetBiomes().indexOf(biome))
+                        throw new IllegalArgumentException("Authored world: POI must have one anchor in its biome: " + poi.name);
+                    if (!poiNames.add(poi.name)) throw new IllegalArgumentException("Authored world: duplicate POI " + poi.name);
+                }
+                if (poiNames.size() != authored.locations.length)
+                    throw new IllegalArgumentException("Authored world: unused or duplicate POI anchors");
+            }
             //save at all data
             biomeMap = new long[width][height];
             terrainMap = new int[width][height];
@@ -487,6 +502,7 @@ public class World implements Disposable, SaveFileContent {
                 }
             }
             currentTime[0] = measureGenerationTime("biomes in total", currentTime[0]);
+            if (authored != null) authored.paint(biomeMap, terrainMap);
 
 //////////////////
 ///////// set poi placement
@@ -525,8 +541,14 @@ public class World implements Disposable, SaveFileContent {
 
                                 y += (poi.offsetY * (biome.height * height));
                                 x += (poi.offsetX * (biome.width * width));
+                                if (authored != null) {
+                                    AuthoredWorldMapData.Location anchor = authored.location(poi.name);
+                                    x = anchor.x;
+                                    y = height - anchor.y - 1;
+                                }
 
                                 if ((int) x < 0 || (int) y <= 0 || (int) y >= height || (int) x >= width || biomeIndex2 != highestBiome(getBiome((int) x, (int) y))) {
+                                    if (authored != null) throw new IllegalArgumentException("Authored world: cannot place " + poi.name);
                                     continue;
                                 }
 
@@ -541,6 +563,7 @@ public class World implements Disposable, SaveFileContent {
                                     }
                                 }
                                 if (breakNextLoop) {
+                                    if (authored != null) throw new IllegalArgumentException("Authored world: overlapping POI " + poi.name);
                                     boolean foundSolution = false;
                                     boolean noSolution = false;
                                     breakNextLoop = false;
@@ -611,10 +634,13 @@ public class World implements Disposable, SaveFileContent {
                 }
             }
             currentTime[0] = measureGenerationTime("poi placement", currentTime[0]);
+            if (authored != null && mapPoiIds.getAllPointOfInterest().size() != authored.locations.length)
+                throw new IllegalArgumentException("Authored world: not all POIs were placed");
 
 //////////////////
 ///////// sort towns and build roads in between
 //////////////////
+            if (authored == null) {
             List<Pair<PointOfInterest, PointOfInterest>> allSortedTowns = new ArrayList<>();
 
             HashSet<Long> usedEdges = new HashSet<>();//edge is first 32 bits id of first id and last 32 bits id of second
@@ -754,6 +780,9 @@ public class World implements Disposable, SaveFileContent {
             CompletableFuture.allOf(futuresArray).join();
             futures.clear();
             currentTime[0] = measureGenerationTime("roads", currentTime[0]);
+            } else {
+                authored.paintRoads(biomeMap, terrainMap, data.GetBiomes().size());
+            }
 
 //////////////////
 ///////// draw mini map
@@ -895,7 +924,11 @@ public class World implements Disposable, SaveFileContent {
             Pixmap smallPixmap = new Pixmap(data.miniMapTileSize, data.miniMapTileSize, Pixmap.Format.RGBA8888);
             smallPixmap.setColor(0, 0, 0, 0);
             smallPixmap.fill();
-            smallPixmap.drawPixmap(pair.getLeft(), 0, 0, region.getRegionX(), region.getRegionY(), data.miniMapTileSize, data.miniMapTileSize);
+            // Authored geography needs a solid interior tile sample, rather than
+            // the transparent upper-left autotile corner, on the world map.
+            int interiorX = data.hasAuthoredMap() ? data.tileSize : 0;
+            int interiorY = data.hasAuthoredMap() ? data.tileSize * 2 : 0;
+            smallPixmap.drawPixmap(pair.getLeft(), 0, 0, region.getRegionX() + interiorX, region.getRegionY() + interiorY, data.miniMapTileSize, data.miniMapTileSize);
             pair.getRight().put(tileSetNameWithIndex, smallPixmap);
         }
         return pair.getRight().get(tileSetNameWithIndex);

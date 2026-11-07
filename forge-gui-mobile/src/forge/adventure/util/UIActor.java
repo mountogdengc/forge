@@ -30,6 +30,7 @@ import java.util.regex.Pattern;
  * Group of controls that will be loaded from a configuration file
  */
 public class UIActor extends Group {
+    private com.badlogic.gdx.scenes.scene2d.utils.Drawable themeChrome;
     private final Config resourceConfig;
     UIData data;
     Actor lastActor = null;
@@ -43,6 +44,8 @@ public class UIActor extends Group {
 
     public UIActor(FileHandle handle, Config resourceConfig) {
         this.resourceConfig = resourceConfig;
+        Skin presentationSkin = Controls.getSkin();
+        themeChrome = forge.adventure.theme.ThemePresentation.chromeFor(presentationSkin);
         data = (new Json()).fromJson(UIData.class, handle);
 
         setWidth(data.width);
@@ -150,9 +153,19 @@ public class UIActor extends Group {
                 }
             }
             lastActor = newActor;
+            if (newActor instanceof Image image) {
+                forge.adventure.theme.ThemePresentation.drawableFor(handle.name(), newActor.getName(), element.get("image"), presentationSkin)
+                        .ifPresent(image::setDrawable);
+            }
+            if (themeChrome != null) forge.adventure.theme.ThemePresentation.style(newActor, handle.name(), newActor.getName());
             addActor(newActor);
         }
 
+    }
+
+    @Override public void draw(com.badlogic.gdx.graphics.g2d.Batch batch, float parentAlpha) {
+        super.draw(batch, parentAlpha);
+        if (themeChrome != null) themeChrome.draw(batch, getX(), getY(), getWidth(), getHeight());
     }
 
     public Button buttonPressed(int key) {

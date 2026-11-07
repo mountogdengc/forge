@@ -1,0 +1,20 @@
+{
+  "name": "barovia-forest",
+  "startPointX": 0.5,
+  "startPointY": 0.5,
+  "width": 0,
+  "height": 0,
+  "noiseWeight": 0,
+  "distWeight": 0,
+  "color": "253f38",
+  "tilesetAtlas": "world/tilesets/gothic-terrain.atlas",
+  "tilesetName": "Black",
+  "collision": false,
+  "terrain": [],
+  "spriteNames": [
+    "WoodTree",
+    "WoodTree2"
+  ],
+  "enemies": [],
+  "pointsOfInterest": []
+}

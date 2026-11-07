@@ -1,0 +1,19 @@
+{
+  "name": "barovia-snow",
+  "startPointX": 0.5,
+  "startPointY": 0.5,
+  "width": 0,
+  "height": 0,
+  "noiseWeight": 0,
+  "distWeight": 0,
+  "color": "d6ddd9",
+  "tilesetAtlas": "world/tilesets/terrain.atlas",
+  "tilesetName": "Blue_2",
+  "collision": true,
+  "terrain": [],
+  "spriteNames": [
+    "SnowMountain"
+  ],
+  "enemies": [],
+  "pointsOfInterest": []
+}

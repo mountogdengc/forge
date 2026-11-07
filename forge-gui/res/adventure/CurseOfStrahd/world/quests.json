@@ -20,6 +20,7 @@
         "name": "Shelter in Barovia",
         "description": "Speak to Ismark in Barovia.",
         "objective": "QuestFlag",
+        "navigationTarget": "Spawn",
         "mapFlag": "cosBriefed",
         "mapFlagValue": 1
       },
@@ -28,6 +29,7 @@
         "name": "Subdue Doru",
         "description": "Subdue Doru in the Village Church.",
         "objective": "QuestFlag",
+        "navigationTarget": "Village Church",
         "mapFlag": "cosDoruSubdued",
         "mapFlagValue": 1,
         "prerequisiteIDs": [
@@ -39,6 +41,7 @@
         "name": "Decide Doru's fate",
         "description": "Speak to Doru; decide his fate.",
         "objective": "QuestFlag",
+        "navigationTarget": "Village Church",
         "mapFlag": "cosChurchResolved",
         "mapFlagValue": 1,
         "prerequisiteIDs": [
@@ -50,6 +53,7 @@
         "name": "Escort Ireena",
         "description": "Ask Ireena in Barovia to travel.",
         "objective": "QuestFlag",
+        "navigationTarget": "Spawn",
         "mapFlag": "cosEscortAccepted",
         "mapFlagValue": 1,
         "prerequisiteIDs": [
@@ -61,6 +65,7 @@
         "name": "Clear the old road",
         "description": "Defeat the pack on Old Svalich Road.",
         "objective": "QuestFlag",
+        "navigationTarget": "Old Svalich Road",
         "mapFlag": "cosRoadCleared",
         "mapFlagValue": 1,
         "prerequisiteIDs": [
@@ -72,10 +77,253 @@
         "name": "Hear Madam Eva",
         "description": "Speak to Madam Eva at Tser Pool.",
         "objective": "QuestFlag",
+        "navigationTarget": "Tser Pool",
         "mapFlag": "cosChapterOneComplete",
         "mapFlagValue": 1,
         "prerequisiteIDs": [
           5
+        ]
+      }
+    ]
+  },
+  {
+    "id": 8102,
+    "isTemplate": true,
+    "storyQuest": true,
+    "autoTrack": true,
+    "name": "A Light in Vallaki",
+    "description": "Bring Ireena to Vallaki, recover the stolen bones of Saint Andral, and decide how to restore trust as well as sanctuary.",
+    "stages": [
+      {
+        "id": 1,
+        "name": "The western road",
+        "description": "Clear the West Svalich Road ambush.",
+        "objective": "QuestFlag",
+        "navigationTarget": "West Svalich Road",
+        "mapFlag": "cosWestRoadCleared",
+        "mapFlagValue": 1
+      },
+      {
+        "id": 2,
+        "name": "Enter Vallaki",
+        "description": "Speak to the gatekeeper in Vallaki.",
+        "objective": "QuestFlag",
+        "navigationTarget": "Vallaki",
+        "mapFlag": "cosVallakiEntered",
+        "mapFlagValue": 1,
+        "prerequisiteIDs": [
+          1
+        ]
+      },
+      {
+        "id": 3,
+        "name": "A broken sanctuary",
+        "description": "Ask Lucian at Saint Andral's Church.",
+        "objective": "QuestFlag",
+        "navigationTarget": "Saint Andral's Church",
+        "mapFlag": "cosBonesInvestigation",
+        "mapFlagValue": 1,
+        "prerequisiteIDs": [
+          2
+        ]
+      },
+      {
+        "id": 4,
+        "name": "The missing bones",
+        "description": "Speak to Milivoj in the churchyard.",
+        "objective": "QuestFlag",
+        "navigationTarget": "Saint Andral's Church",
+        "mapFlag": "cosCoffinLead",
+        "mapFlagValue": 1,
+        "prerequisiteIDs": [
+          3
+        ]
+      },
+      {
+        "id": 5,
+        "name": "Henrik confesses",
+        "description": "Confront Henrik at the Coffin Shop.",
+        "objective": "QuestFlag",
+        "navigationTarget": "Coffin Maker's Shop",
+        "mapFlag": "cosHenrikConfessed",
+        "mapFlagValue": 1,
+        "prerequisiteIDs": [
+          4
+        ]
+      },
+      {
+        "id": 6,
+        "name": "The storeroom",
+        "description": "Defeat the Coffin Shop Spawn.",
+        "objective": "QuestFlag",
+        "navigationTarget": "Coffin Maker's Shop",
+        "mapFlag": "cosCoffinCleared",
+        "mapFlagValue": 1,
+        "prerequisiteIDs": [
+          5
+        ]
+      },
+      {
+        "id": 7,
+        "name": "Recover the bones",
+        "description": "Collect the bones in the Coffin Shop.",
+        "objective": "QuestFlag",
+        "navigationTarget": "Coffin Maker's Shop",
+        "mapFlag": "cosBonesRecovered",
+        "mapFlagValue": 1,
+        "prerequisiteIDs": [
+          6
+        ]
+      },
+      {
+        "id": 8,
+        "name": "The belfry intruder",
+        "description": "Defeat the church Belfry Stalker.",
+        "objective": "QuestFlag",
+        "navigationTarget": "Saint Andral's Church",
+        "mapFlag": "cosSanctuaryDefended",
+        "mapFlagValue": 1,
+        "prerequisiteIDs": [
+          7
+        ]
+      },
+      {
+        "id": 9,
+        "name": "Restore sanctuary",
+        "description": "Return the bones to Father Lucian.",
+        "objective": "QuestFlag",
+        "navigationTarget": "Saint Andral's Church",
+        "mapFlag": "cosBonesRestored",
+        "mapFlagValue": 1,
+        "prerequisiteIDs": [
+          8
+        ]
+      },
+      {
+        "id": 10,
+        "name": "Ireena decides",
+        "description": "Speak to Ireena at the church.",
+        "objective": "QuestFlag",
+        "navigationTarget": "Saint Andral's Church",
+        "mapFlag": "cosChapterTwoComplete",
+        "mapFlagValue": 1,
+        "prerequisiteIDs": [
+          9
+        ]
+      }
+    ]
+  },
+  {
+    "id": 8103,
+    "isTemplate": true,
+    "storyQuest": true,
+    "autoTrack": true,
+    "name": "A Bell Against the Mists",
+    "description": "Investigate Krezk's failing spring and silent Abbey. Help its people choose how to keep watch.",
+    "stages": [
+      {
+        "id": 1,
+        "name": "Gate wolves",
+        "description": "Defeat the wolves at Krezk gate.",
+        "objective": "QuestFlag",
+        "navigationTarget": "Krezk",
+        "mapFlag": "cosKrezkRoadCleared",
+        "mapFlagValue": 1
+      },
+      {
+        "id": 2,
+        "name": "Enter Krezk",
+        "description": "Speak to the captain at Krezk gate.",
+        "objective": "QuestFlag",
+        "navigationTarget": "Krezk",
+        "mapFlag": "cosKrezkAdmitted",
+        "mapFlagValue": 1,
+        "prerequisiteIDs": [
+          1
+        ]
+      },
+      {
+        "id": 3,
+        "name": "Dmitri's request",
+        "description": "Meet Dmitri in Krezk Village.",
+        "objective": "QuestFlag",
+        "navigationTarget": "Krezk Village",
+        "mapFlag": "cosKrezkHeardDmitri",
+        "mapFlagValue": 1,
+        "prerequisiteIDs": [
+          2
+        ]
+      },
+      {
+        "id": 4,
+        "name": "The spring watcher",
+        "description": "Defeat the Blessed Pool's watcher.",
+        "objective": "QuestFlag",
+        "navigationTarget": "Blessed Pool of Krezk",
+        "mapFlag": "cosKrezkSpringCleared",
+        "mapFlagValue": 1,
+        "prerequisiteIDs": [
+          3
+        ]
+      },
+      {
+        "id": 5,
+        "name": "Draw clear water",
+        "description": "Draw water from the Blessed Pool.",
+        "objective": "QuestFlag",
+        "navigationTarget": "Blessed Pool of Krezk",
+        "mapFlag": "cosKrezkWaterDrawn",
+        "mapFlagValue": 1,
+        "prerequisiteIDs": [
+          4
+        ]
+      },
+      {
+        "id": 6,
+        "name": "Question the Abbot",
+        "description": "Speak to the Abbot at the Abbey.",
+        "objective": "QuestFlag",
+        "navigationTarget": "Abbey of Saint Markovia",
+        "mapFlag": "cosKrezkAbbotHeard",
+        "mapFlagValue": 1,
+        "prerequisiteIDs": [
+          5
+        ]
+      },
+      {
+        "id": 7,
+        "name": "The Abbey sentinel",
+        "description": "Defeat the Abbey Sentinel.",
+        "objective": "QuestFlag",
+        "navigationTarget": "Abbey of Saint Markovia",
+        "mapFlag": "cosKrezkSentinelCleared",
+        "mapFlagValue": 1,
+        "prerequisiteIDs": [
+          6
+        ]
+      },
+      {
+        "id": 8,
+        "name": "Choose the watch",
+        "description": "Choose an accord with Vasilka.",
+        "objective": "QuestFlag",
+        "navigationTarget": "Abbey of Saint Markovia",
+        "mapFlag": "cosKrezkAccord",
+        "mapFlagValue": 1,
+        "prerequisiteIDs": [
+          7
+        ]
+      },
+      {
+        "id": 9,
+        "name": "Return to Dmitri",
+        "description": "Settle the accord with Dmitri.",
+        "objective": "QuestFlag",
+        "navigationTarget": "Krezk Village",
+        "mapFlag": "cosChapterThreeComplete",
+        "mapFlagValue": 1,
+        "prerequisiteIDs": [
+          8
         ]
       }
     ]

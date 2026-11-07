@@ -101,6 +101,7 @@ public class AdventureQuestData implements Serializable {
         enemyTokens = data.enemyTokens;
         otherTokens = data.otherTokens;
         isTracked = data.isTracked;
+        autoTrack = data.autoTrack;
     }
 
     public AdventureQuestData()

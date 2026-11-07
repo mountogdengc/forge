@@ -75,6 +75,16 @@ public class CampaignContentValidatorTest {
         } finally { remove(root); }
     }
 
+    @Test public void reportsMissingAuthoredGeographyBeforeStartingARun() throws Exception {
+        Path root = fixture("[{id:1,stages:[]}]", "[]", "[Main]\n4 Known Card\n");
+        try {
+            Files.writeString(root.resolve("chapter/world/world.json"),
+                    "{width:300,height:180,biomesNames:[world/biome.json],authoredMap:world/missing-geography.json}");
+            var errors = CampaignContentValidator.validate(root.resolve("chapter"), root.resolve("common"), "Known Card"::equals);
+            assertTrue(errors.stream().anyMatch(e -> e.contains("missing-geography")), errors.toString());
+        } finally { remove(root); }
+    }
+
     private void remove(Path root) throws Exception {
         try (var paths = Files.walk(root)) {
             for (Path path : (Iterable<Path>) paths.sorted(java.util.Comparator.reverseOrder())::iterator) Files.delete(path);

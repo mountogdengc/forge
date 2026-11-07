@@ -54,5 +54,438 @@
     "questTags": [
       "CosPool"
     ]
+  },
+  {
+    "name": "West Svalich Road",
+    "displayName": "West Svalich Road",
+    "type": "dungeon",
+    "count": 1,
+    "spriteAtlas": "maps/tileset/buildings.atlas",
+    "sprite": "Graveyard",
+    "map": "../common/maps/map/strahd/west-road.tmx",
+    "radiusFactor": 0,
+    "offsetX": -0.1,
+    "questTags": [
+      "CosWestRoad"
+    ]
+  },
+  {
+    "name": "Vallaki",
+    "displayName": "Vallaki",
+    "type": "town",
+    "count": 1,
+    "spriteAtlas": "maps/tileset/buildings.atlas",
+    "sprite": "Spawn",
+    "map": "../common/maps/map/strahd/vallaki.tmx",
+    "radiusFactor": 0,
+    "offsetX": -0.2,
+    "questTags": [
+      "CosVallaki"
+    ]
+  },
+  {
+    "name": "Saint Andral's Church",
+    "displayName": "Saint Andral's Church",
+    "type": "dungeon",
+    "count": 1,
+    "spriteAtlas": "maps/tileset/buildings.atlas",
+    "sprite": "Graveyard",
+    "map": "../common/maps/map/strahd/saint-andral.tmx",
+    "radiusFactor": 0,
+    "offsetX": -0.3,
+    "questTags": [
+      "CosAndral"
+    ]
+  },
+  {
+    "name": "Coffin Maker's Shop",
+    "displayName": "Coffin Maker's Shop",
+    "type": "dungeon",
+    "count": 1,
+    "spriteAtlas": "maps/tileset/buildings.atlas",
+    "sprite": "Graveyard",
+    "map": "../common/maps/map/strahd/coffin-shop.tmx",
+    "radiusFactor": 0,
+    "offsetX": -0.4,
+    "questTags": [
+      "CosCoffin"
+    ]
+  },
+  {
+    "name": "Castle Ravenloft",
+    "displayName": "Castle Ravenloft",
+    "type": "dungeon",
+    "count": 1,
+    "spriteAtlas": "maps/tileset/buildings.atlas",
+    "sprite": "VampireCastle",
+    "map": "../common/maps/map/strahd/landmark-ravenloft.tmx",
+    "radiusFactor": 0,
+    "questTags": [
+      "CosReferenceArrival"
+    ]
+  },
+  {
+    "name": "Old Bonegrinder",
+    "displayName": "Old Bonegrinder",
+    "type": "dungeon",
+    "count": 1,
+    "spriteAtlas": "maps/tileset/buildings.atlas",
+    "sprite": "farm",
+    "map": "../common/maps/map/strahd/landmark-bonegrinder.tmx",
+    "radiusFactor": 0,
+    "questTags": [
+      "CosReferenceArrival"
+    ]
+  },
+  {
+    "name": "Argynvostholt",
+    "displayName": "Argynvostholt",
+    "type": "dungeon",
+    "count": 1,
+    "spriteAtlas": "maps/tileset/buildings.atlas",
+    "sprite": "ruinedcity",
+    "map": "../common/maps/map/strahd/landmark-argynvostholt.tmx",
+    "radiusFactor": 0,
+    "questTags": [
+      "CosReferenceArrival"
+    ]
+  },
+  {
+    "name": "Tsolenka Pass",
+    "displayName": "Tsolenka Pass",
+    "type": "dungeon",
+    "count": 1,
+    "spriteAtlas": "maps/tileset/buildings.atlas",
+    "sprite": "Gate",
+    "map": "../common/maps/map/strahd/landmark-tsolenka.tmx",
+    "radiusFactor": 0,
+    "questTags": [
+      "CosReferenceArrival"
+    ]
+  },
+  {
+    "name": "Ruins of Berez",
+    "displayName": "Ruins of Berez",
+    "type": "dungeon",
+    "count": 1,
+    "spriteAtlas": "maps/tileset/buildings.atlas",
+    "sprite": "ruinedcity",
+    "map": "../common/maps/map/strahd/landmark-berez.tmx",
+    "radiusFactor": 0,
+    "questTags": [
+      "CosReferenceArrival"
+    ]
+  },
+  {
+    "name": "Van Richten's Tower",
+    "displayName": "Van Richten's Tower",
+    "type": "dungeon",
+    "count": 1,
+    "spriteAtlas": "maps/tileset/buildings.atlas",
+    "sprite": "MageTower",
+    "map": "../common/maps/map/strahd/landmark-tower.tmx",
+    "radiusFactor": 0,
+    "questTags": [
+      "CosReferenceArrival"
+    ]
+  },
+  {
+    "name": "Wizard of Wines",
+    "displayName": "Wizard of Wines",
+    "type": "dungeon",
+    "count": 1,
+    "spriteAtlas": "maps/tileset/buildings.atlas",
+    "sprite": "farm",
+    "map": "../common/maps/map/strahd/landmark-winery.tmx",
+    "radiusFactor": 0,
+    "questTags": [
+      "CosReferenceArrival"
+    ]
+  },
+  {
+    "name": "Amber Temple",
+    "displayName": "Amber Temple",
+    "type": "dungeon",
+    "count": 1,
+    "spriteAtlas": "maps/tileset/buildings.atlas",
+    "sprite": "StonePyramid",
+    "map": "../common/maps/map/strahd/landmark-amber-temple.tmx",
+    "radiusFactor": 0,
+    "questTags": [
+      "CosReferenceArrival"
+    ]
+  },
+  {
+    "name": "Yester Hill",
+    "displayName": "Yester Hill",
+    "type": "dungeon",
+    "count": 1,
+    "spriteAtlas": "maps/tileset/buildings.atlas",
+    "sprite": "EvilGrove",
+    "map": "../common/maps/map/strahd/landmark-yester-hill.tmx",
+    "radiusFactor": 0,
+    "questTags": [
+      "CosReferenceArrival"
+    ]
+  },
+  {
+    "name": "Werewolf Den",
+    "displayName": "Werewolf Den",
+    "type": "cave",
+    "count": 1,
+    "spriteAtlas": "maps/tileset/buildings.atlas",
+    "sprite": "Cave",
+    "map": "../common/maps/map/strahd/landmark-werewolf-den.tmx",
+    "radiusFactor": 0,
+    "questTags": [
+      "CosReferenceArrival"
+    ]
+  },
+  {
+    "name": "Gates of Barovia East",
+    "displayName": "Gates of Barovia East",
+    "type": "dungeon",
+    "count": 1,
+    "spriteAtlas": "maps/tileset/buildings.atlas",
+    "sprite": "Gate",
+    "map": "../common/maps/map/strahd/landmark-east-gates.tmx",
+    "radiusFactor": 0,
+    "questTags": [
+      "CosReferenceArrival"
+    ]
+  },
+  {
+    "name": "Gates of Barovia West",
+    "displayName": "Gates of Barovia West",
+    "type": "dungeon",
+    "count": 1,
+    "spriteAtlas": "maps/tileset/buildings.atlas",
+    "sprite": "Gate",
+    "map": "../common/maps/map/strahd/landmark-west-gates.tmx",
+    "radiusFactor": 0,
+    "questTags": [
+      "CosReferenceArrival"
+    ]
+  },
+  {
+    "name": "Svalich Woods",
+    "displayName": "Svalich Woods",
+    "type": "dungeon",
+    "count": 1,
+    "spriteAtlas": "maps/tileset/buildings.atlas",
+    "sprite": "Grove",
+    "map": "../common/maps/map/strahd/landmark-svalich-woods.tmx",
+    "radiusFactor": 0,
+    "questTags": [
+      "CosReferenceArrival"
+    ]
+  },
+  {
+    "name": "River Ivlis",
+    "displayName": "River Ivlis",
+    "type": "dungeon",
+    "count": 1,
+    "spriteAtlas": "maps/tileset/buildings.atlas",
+    "sprite": "Waypoint",
+    "map": "../common/maps/map/strahd/landmark-ivlis-bank.tmx",
+    "radiusFactor": 0,
+    "questTags": [
+      "CosReferenceArrival"
+    ]
+  },
+  {
+    "name": "River Ivlis Crossroads",
+    "displayName": "River Ivlis Crossroads",
+    "type": "dungeon",
+    "count": 1,
+    "spriteAtlas": "maps/tileset/buildings.atlas",
+    "sprite": "Waypoint",
+    "map": "../common/maps/map/strahd/landmark-ivlis-crossroads.tmx",
+    "radiusFactor": 0,
+    "questTags": [
+      "CosReferenceArrival"
+    ]
+  },
+  {
+    "name": "Tser Falls",
+    "displayName": "Tser Falls",
+    "type": "dungeon",
+    "count": 1,
+    "spriteAtlas": "maps/tileset/buildings.atlas",
+    "sprite": "Waypoint",
+    "map": "../common/maps/map/strahd/landmark-tser-falls.tmx",
+    "radiusFactor": 0,
+    "questTags": [
+      "CosReferenceArrival"
+    ]
+  },
+  {
+    "name": "Black Carriage",
+    "displayName": "Black Carriage",
+    "type": "dungeon",
+    "count": 1,
+    "spriteAtlas": "maps/tileset/buildings.atlas",
+    "sprite": "VehicleShop",
+    "map": "../common/maps/map/strahd/landmark-black-carriage.tmx",
+    "radiusFactor": 0,
+    "questTags": [
+      "CosReferenceArrival"
+    ]
+  },
+  {
+    "name": "Gates of Ravenloft",
+    "displayName": "Gates of Ravenloft",
+    "type": "dungeon",
+    "count": 1,
+    "spriteAtlas": "maps/tileset/buildings.atlas",
+    "sprite": "Gate",
+    "map": "../common/maps/map/strahd/landmark-ravenloft-gates.tmx",
+    "radiusFactor": 0,
+    "questTags": [
+      "CosReferenceArrival"
+    ]
+  },
+  {
+    "name": "Lake Zarovich",
+    "displayName": "Lake Zarovich",
+    "type": "dungeon",
+    "count": 1,
+    "spriteAtlas": "maps/tileset/buildings.atlas",
+    "sprite": "Waypoint",
+    "map": "../common/maps/map/strahd/landmark-zarovich-bank.tmx",
+    "radiusFactor": 0,
+    "questTags": [
+      "CosReferenceArrival"
+    ]
+  },
+  {
+    "name": "Mount Baratok Trail",
+    "displayName": "Mount Baratok Trail",
+    "type": "dungeon",
+    "count": 1,
+    "spriteAtlas": "maps/tileset/buildings.atlas",
+    "sprite": "SnowAbbey",
+    "map": "../common/maps/map/strahd/landmark-baratok-trail.tmx",
+    "radiusFactor": 0,
+    "questTags": [
+      "CosReferenceArrival"
+    ]
+  },
+  {
+    "name": "Luna River Crossroads",
+    "displayName": "Luna River Crossroads",
+    "type": "dungeon",
+    "count": 1,
+    "spriteAtlas": "maps/tileset/buildings.atlas",
+    "sprite": "Waypoint",
+    "map": "../common/maps/map/strahd/landmark-luna-crossroads.tmx",
+    "radiusFactor": 0,
+    "questTags": [
+      "CosReferenceArrival"
+    ]
+  },
+  {
+    "name": "Raven River Crossroads",
+    "displayName": "Raven River Crossroads",
+    "type": "dungeon",
+    "count": 1,
+    "spriteAtlas": "maps/tileset/buildings.atlas",
+    "sprite": "Waypoint",
+    "map": "../common/maps/map/strahd/landmark-raven-crossroads.tmx",
+    "radiusFactor": 0,
+    "questTags": [
+      "CosReferenceArrival"
+    ]
+  },
+  {
+    "name": "Lake Baratok",
+    "displayName": "Lake Baratok",
+    "type": "dungeon",
+    "count": 1,
+    "spriteAtlas": "maps/tileset/buildings.atlas",
+    "sprite": "Waypoint",
+    "map": "../common/maps/map/strahd/landmark-baratok-bank.tmx",
+    "radiusFactor": 0,
+    "questTags": [
+      "CosReferenceArrival"
+    ]
+  },
+  {
+    "name": "Lake Luna",
+    "displayName": "Lake Luna",
+    "type": "dungeon",
+    "count": 1,
+    "spriteAtlas": "maps/tileset/buildings.atlas",
+    "sprite": "Waypoint",
+    "map": "../common/maps/map/strahd/landmark-luna-bank.tmx",
+    "radiusFactor": 0,
+    "questTags": [
+      "CosReferenceArrival"
+    ]
+  },
+  {
+    "name": "Mount Ghakis Lookout",
+    "displayName": "Mount Ghakis Lookout",
+    "type": "dungeon",
+    "count": 1,
+    "spriteAtlas": "maps/tileset/buildings.atlas",
+    "sprite": "SnowAbbey",
+    "map": "../common/maps/map/strahd/landmark-ghakis-lookout.tmx",
+    "radiusFactor": 0,
+    "questTags": [
+      "CosReferenceArrival"
+    ]
+  },
+  {
+    "name": "Krezk",
+    "displayName": "Krezk",
+    "type": "dungeon",
+    "count": 1,
+    "spriteAtlas": "maps/tileset/buildings.atlas",
+    "sprite": "PlainsTown",
+    "map": "../common/maps/map/strahd/landmark-krezk.tmx",
+    "radiusFactor": 0,
+    "questTags": [
+      "CosKrezkChapter"
+    ]
+  },
+  {
+    "name": "Krezk Village",
+    "displayName": "Krezk Village",
+    "type": "dungeon",
+    "count": 1,
+    "spriteAtlas": "maps/tileset/buildings.atlas",
+    "sprite": "Spawn",
+    "map": "../common/maps/map/strahd/krezk-village.tmx",
+    "radiusFactor": 0,
+    "questTags": [
+      "CosKrezkChapter"
+    ]
+  },
+  {
+    "name": "Blessed Pool of Krezk",
+    "displayName": "Blessed Pool of Krezk",
+    "type": "dungeon",
+    "count": 1,
+    "spriteAtlas": "maps/tileset/buildings.atlas",
+    "sprite": "Waypoint",
+    "map": "../common/maps/map/strahd/krezk-pool.tmx",
+    "radiusFactor": 0,
+    "questTags": [
+      "CosKrezkChapter"
+    ]
+  },
+  {
+    "name": "Abbey of Saint Markovia",
+    "displayName": "Abbey of Saint Markovia",
+    "type": "dungeon",
+    "count": 1,
+    "spriteAtlas": "maps/tileset/buildings.atlas",
+    "sprite": "SnowAbbey",
+    "map": "../common/maps/map/strahd/krezk-abbey.tmx",
+    "radiusFactor": 0,
+    "questTags": [
+      "CosKrezkChapter"
+    ]
   }
 ]

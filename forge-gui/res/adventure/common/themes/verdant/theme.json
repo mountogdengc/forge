@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1, "id": "verdant", "name": "Verdant Sanctuary", "extends": "folio",
+  "colors": {
+    "surface.canvas": "#233127", "surface.panel": "#334335", "surface.paper": "#e0dcc1",
+    "text.primary": "#f0edd5", "text.secondary": "#c4d0b7", "text.onPaper": "#303b2b",
+    "border.frame": "#b79c6a", "border.frameText": "#233127", "border.highlight": "#d9c697",
+    "action.primary": "#a3be79", "action.onPrimary": "#233127",
+    "action.secondary": "#334335", "action.onSecondary": "#f0edd5",
+    "state.hover": "#465b3b", "state.selected": "#a3be79", "state.onSelected": "#233127",
+    "state.disabled": "#41533f", "state.onDisabled": "#f0edd5", "state.focus": "#d9c697",
+    "phase.activeEnabled": "#a3be79", "phase.activeDisabled": "#e0dcc1",
+    "phase.inactiveEnabled": "#43563d", "phase.inactiveDisabled": "#334335",
+    "target.normal": "#9ed8d1", "target.combat": "#edb1a2", "target.planeswalker": "#dfcf86"
+  },
+  "components": { "shape": "leaf" },
+  "presentation": { "ornament": "full", "paperTexture": 0.22 }
+}

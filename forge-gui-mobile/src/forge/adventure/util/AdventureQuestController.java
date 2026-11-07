@@ -522,6 +522,13 @@ public class AdventureQuestController implements Serializable {
         activateNextStages();
     }
 
+    public AdventureQuestData getQuestTemplate(int id) {
+        for (AdventureQuestData template : allQuests) {
+            if (template.isTemplate && template.getID() == id) return template;
+        }
+        return null;
+    }
+
     public AdventureQuestData generateQuest(int id){
         AdventureQuestData generated = null;
         for (AdventureQuestData template: allQuests) {

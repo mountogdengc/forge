@@ -26,6 +26,7 @@ public class AdventureQuestStage implements Serializable {
     private AdventureQuestController.QuestStatus status = INACTIVE;
     public String name = "";
     public String description = "";
+    public String navigationTarget; //Authored POI name; guidance only, never a progress condition.
     public boolean anyPOI = false; //false: Pick one PoI. True: Any PoI matching tags is usable
     public String mapFlag; //Map (or quest) flag to check
     public int mapFlagValue; //Minimum value for the flag
@@ -251,6 +252,7 @@ public class AdventureQuestStage implements Serializable {
         this.failureDialog = new DialogData(other.failureDialog);
         this.name = other.name;
         this.description = other.description;
+        this.navigationTarget = other.navigationTarget;
         this.progress1 = other.progress1;
         this.progress2 = other.progress2;
         this.progress3 = other.progress3;

@@ -121,6 +121,11 @@ public class SettingsScene extends UIScene {
                 "lblChooseCampaignNewGame", "Choose a campaign when starting a new game."));
         campaignHint.setWrap(true);
         settingGroup.add(campaignHint).colspan(2).fillX().pad(2);
+        addLabel(localizer.getMessageorUseDefault("lblAdventureAppearance", "Adventure appearance"));
+        TextraButton appearanceButton = Controls.newTextButton(localizer.getMessageorUseDefault("lblThemeOpenAppearance", "Appearance and themes"),
+                () -> Forge.switchScene(new AppearanceScene()));
+        appearanceButton.setName("open-theme-appearance");
+        settingGroup.add(appearanceButton).align(Align.right).pad(2);
 
         if (!GuiBase.isAndroid()) {
             SelectBox<String> videomode = Controls.newComboBox(ForgeConstants.VIDEO_MODES, Config.instance().getSettingData().videomode, o -> {

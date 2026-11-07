@@ -24,6 +24,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -57,6 +60,7 @@ import forge.adventure.util.Controls;
 import forge.adventure.util.Current;
 import forge.adventure.util.KeyBinding;
 import forge.adventure.util.NavArrowActor;
+import forge.adventure.util.QuestNavigation;
 import forge.adventure.util.UIActor;
 import forge.adventure.world.WorldSave;
 import forge.deck.Deck;
@@ -78,6 +82,10 @@ public class GameHUD extends Stage {
     private final TypingLabel shards;
     private final TypingLabel enemyCounterText;
     private final Image enemyCounterBackground;
+    private final Table questTracker = new Table();
+    private final Label questObjective;
+    private String questObjectiveText = "";
+    private float questTrackerRefresh;
     private final TextraLabel notificationText = Controls.newTextraLabel("");
     private final Image miniMap, gamehud, mapborder, avatarborder, blank;
     private final InputEvent eventTouchDown, eventTouchUp;
@@ -173,11 +181,26 @@ public class GameHUD extends Stage {
         money.setText("[%95][+Gold]");
         lifePoints.setText("[%95][+Life]");
         enemyCounterText = Controls.newTypingLabel(Forge.getLocalizer().getMessage("lblRemainingEnemies", String.valueOf(0)));
-        enemyCounterText.setColor(Color.BLACK);
+        enemyCounterText.setColor(forge.adventure.theme.ThemePresentation.activeColor("text.onPaper", Color.BLACK));
         enemyCounterText.skipToTheEnd();
         enemyCounterText.setVisible(false);
 
         ScrollPaneStyle paperStyle = Controls.getSkin().get("paper", ScrollPaneStyle.class);
+        questObjective = Controls.newLabel("");
+        questObjective.setName("tracked-quest-objective");
+        questObjective.setWrap(true);
+        questObjective.setFontScale(0.65f);
+        questObjective.setColor(forge.adventure.theme.ThemePresentation.activeColor("text.onPaper", Color.BLACK));
+        questTracker.setName("quest-tracker");
+        questTracker.setBackground(paperStyle.background);
+        questTracker.pad(4f);
+        questTracker.add(questObjective).growX();
+        questTracker.setVisible(false);
+        questTracker.addListener(new ClickListener() {
+            @Override public void clicked(InputEvent event, float x, float y) {
+                openMap();
+            }
+        });
         enemyCounterBackground = new Image(paperStyle.background);
         enemyCounterBackground.setVisible(false);
         AdventurePlayer.current().onLifeChange(() -> {
@@ -206,6 +229,7 @@ public class GameHUD extends Stage {
         addActor(miniMapPlayer);
         addActor(enemyCounterBackground);
         addActor(enemyCounterText);
+        addActor(questTracker);
         console = new Console();
         console.setBounds(0, GuiBase.isAndroid() ? getHeight() : 0, getWidth(), getHeight() / 2);
         console.setVisible(false);
@@ -343,6 +367,7 @@ public class GameHUD extends Stage {
         if (GuiBase.isAndroid() && !MapStage.getInstance().isDialogOnlyInput() && !console.isVisible()) {
             if (!(Controls.actorContainsVector(avatar, touchDownCoords)) // not inside avatar bounds
                     && !(Controls.actorContainsVector(miniMap, touchDownCoords)) // not inside map bounds
+                    && !(questTracker.isVisible() && Controls.actorContainsVector(questTracker, touchDownCoords))
                     && !(Controls.actorContainsVector(gamehud, touchDownCoords)) //not inside gamehud bounds
                     && !(Controls.actorContainsVector(menuActor, touchDownCoords)) //not inside menu button
                     && !(Controls.actorContainsVector(deckActor, touchDownCoords)) //not inside deck button
@@ -422,7 +447,7 @@ public class GameHUD extends Stage {
         if (openMapActor != null) {
             String val = "[%80]" + Forge.getLocalizer().getMessageorUseDefault("lblZoom", "Zoom");
             for (AdventureQuestData adq : Current.player().getQuests()) {
-                if (adq.getTargetPOI() != null) {
+                if (adq.isTracked && QuestNavigation.destination(adq, WorldStage.getInstance().getPlayerSprite().getCenter()) != null) {
                     val = "[%80][+GPS] " + Forge.getLocalizer().getMessageorUseDefault("lblZoom", "Zoom");
                     break;
                 }
@@ -668,6 +693,13 @@ public class GameHUD extends Stage {
     public void act(float delta) {
         super.act(delta);
 
+        questTrackerRefresh -= delta;
+        if (questTrackerRefresh <= 0f) {
+            questTrackerRefresh = 0.25f;
+            updateQuestTracker();
+        }
+        questTracker.setVisible(!hidden && !dialogOnlyInput && !console.isVisible() && !questObjectiveText.isEmpty());
+
         updateBGM();
 
         updateAudioFades(delta);
@@ -705,6 +737,36 @@ public class GameHUD extends Stage {
             miniMapRegion.setRegion(sourceX, sourceY, viewWidth, viewHeight);
             ((TextureRegionDrawable) miniMap.getDrawable()).setRegion(miniMapRegion);
         }
+    }
+
+    private void updateQuestTracker() {
+        AdventureQuestData quest = QuestNavigation.trackedQuest(Current.player().getQuests());
+        String text = "";
+        if (quest != null) {
+            String objective = quest.getActiveStages().get(0).description;
+            var destination = QuestNavigation.destination(quest, WorldStage.getInstance().getPlayerSprite().getCenter());
+            text = quest.name + "\n" + objective;
+            if (destination != null) text += "\n" + Forge.getLocalizer().getMessageorUseDefault("lblQuestDestination", "Destination")
+                    + ": " + destination.getDisplayName();
+        }
+        if (!text.equals(questObjectiveText)) {
+            questObjectiveText = text;
+            questObjective.setText(text);
+        }
+        float x = miniMap.getX() + miniMap.getWidth() + 4f;
+        float width = Math.max(90f, Math.min(220f, getWidth() - x - 80f));
+        // Wrapped labels need their content width before measuring their height.
+        questObjective.setWidth(width - 8f);
+        questTracker.setSize(width, questObjective.getPrefHeight() + 8f);
+        questTracker.validate();
+        float top = getHeight() - 4f;
+        for (Actor control : new Actor[]{menuActor, deckActor, inventoryActor, logbookActor, exitToWorldMapActor, bookmarkActor}) {
+            if (control.isVisible() && control.getY() > getHeight() / 2f
+                    && control.getX() < x + width && control.getRight() > x) {
+                top = Math.min(top, control.getY() - 4f);
+            }
+        }
+        questTracker.setPosition(x, top - questTracker.getHeight());
     }
 
     private void updateAudioFades(float delta) {

@@ -47,5 +47,101 @@
       "CosRoadPack"
     ],
     "rewards": []
+  },
+  {
+    "name": "Western Road Ambush",
+    "sprite": "sprites/enemy/beast/largemammals/wolf.atlas",
+    "deck": [
+      "decks/west-ambush.dck"
+    ],
+    "life": 16,
+    "speed": 0,
+    "spawnRate": 0,
+    "difficulty": 0.3,
+    "colors": "G",
+    "questTags": [
+      "CosWestAmbush"
+    ],
+    "rewards": []
+  },
+  {
+    "name": "Coffin Shop Spawn",
+    "sprite": "sprites/enemy/undead/vampire.atlas",
+    "deck": [
+      "decks/coffin-spawn.dck"
+    ],
+    "life": 18,
+    "speed": 0,
+    "spawnRate": 0,
+    "difficulty": 0.3,
+    "colors": "B",
+    "questTags": [
+      "CosCoffinSpawn"
+    ],
+    "rewards": []
+  },
+  {
+    "name": "Belfry Stalker",
+    "sprite": "sprites/enemy/undead/vampire.atlas",
+    "deck": [
+      "decks/belfry-stalker.dck"
+    ],
+    "life": 18,
+    "speed": 0,
+    "spawnRate": 0,
+    "difficulty": 0.3,
+    "colors": "B",
+    "questTags": [
+      "CosBelfry"
+    ],
+    "rewards": []
+  },
+  {
+    "name": "Krezk Mist Wolves",
+    "deck": [
+      "decks/krezk-wolves.dck"
+    ],
+    "sprite": "sprites/enemy/beast/largemammals/wolf.atlas",
+    "life": 18,
+    "speed": 0,
+    "spawnRate": 0,
+    "difficulty": 0.3,
+    "colors": "G",
+    "questTags": [
+      "CosKrezkChapter"
+    ],
+    "rewards": []
+  },
+  {
+    "name": "Spring Watcher",
+    "deck": [
+      "decks/spring-watcher.dck"
+    ],
+    "sprite": "sprites/enemy/undead/ghost.atlas",
+    "life": 18,
+    "speed": 0,
+    "spawnRate": 0,
+    "difficulty": 0.3,
+    "colors": "U",
+    "questTags": [
+      "CosKrezkChapter"
+    ],
+    "rewards": []
+  },
+  {
+    "name": "Abbey Sentinel",
+    "deck": [
+      "decks/abbey-sentinel.dck"
+    ],
+    "sprite": "sprites/enemy/construct/gargoyle.atlas",
+    "life": 20,
+    "speed": 0,
+    "spawnRate": 0,
+    "difficulty": 0.3,
+    "colors": "WB",
+    "questTags": [
+      "CosKrezkChapter"
+    ],
+    "rewards": []
   }
 ]

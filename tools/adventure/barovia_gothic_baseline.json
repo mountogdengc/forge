@@ -1,0 +1,150 @@
+{
+  "church": {
+    "objects": "8d44b1984f93a55f6186be010e7a1e8e1b78917ec236dc33aab2bdf5f5b1efd2",
+    "collision": "28dd2538cf5060a2e2e50a451f6e71dd3e29a57e8ea8f3ce368769a1f00394b1"
+  },
+  "coffin-shop": {
+    "objects": "e2662073fac3d1faf35730e0108274bad1e8f915766a47eb0c9855e31a0b9f64",
+    "collision": "5eb3275af6545c7f07e4af216c6c9fc96799355d62a65f586f6bf7fa30630114"
+  },
+  "krezk-abbey": {
+    "objects": "d6bbf7c40109002330218efda8b814732abb7ba3d28a9ac1687f291631081eaf",
+    "collision": "9a2b18d54f465c2c5a768025bcd288b42faee55ed5b68f42c2b16a399f04e96c"
+  },
+  "krezk-pool": {
+    "objects": "382da8561bdf7a04acd58252350ce820d4358ec61a3c33ccbda6c79aa98347c1",
+    "collision": "f392541e697974bcb50b477ae426ed3640e06986bda9731e81895aafff503437"
+  },
+  "krezk-village": {
+    "objects": "a865d8f57b94a5b0b51ea7839d9423520cba26dffa64aafbd192dce58bf3e663",
+    "collision": "9d40601b3e44138758add31a6c3d6f471667ccb43423f299ee6ce9623f8c75a9"
+  },
+  "landmark-amber-temple": {
+    "objects": "d78bb1af5f06d170f53e725ee305f9b7db2ca66fe5cbf124fbf12bf09e1c0af9",
+    "collision": "64db70a462dffd32117ad165e0e5133caafb7a833ea764fd2d0f40130b8cd881"
+  },
+  "landmark-argynvostholt": {
+    "objects": "53e4d1bb625e0da9615e22ac20b35bf84bf9685e36414a7094238053717a6008",
+    "collision": "2bff37b8e8086bda18f1350b65c3bfc1bb1e505c78c407f9061e60e7c3b19965"
+  },
+  "landmark-baratok-bank": {
+    "objects": "273203198b86d0259d68f56ebfe01af0be4d9ace8bf63187393a7fdaee583299",
+    "collision": "9d1c7d2b6f3aa9be6e2dda837edac0072f7ed3a1d35002ae832677d939e2149f"
+  },
+  "landmark-baratok-trail": {
+    "objects": "59289f9f7c89fe643d59ec2e9611113d04ed86f3f00cbc8b7877b1499cae1b1c",
+    "collision": "64db70a462dffd32117ad165e0e5133caafb7a833ea764fd2d0f40130b8cd881"
+  },
+  "landmark-berez": {
+    "objects": "fb29007621061a475efaa09e5875e1cdebeb119f278d75513160802fe4f7ff19",
+    "collision": "468e3c90f0d83604904e7da77c38b5fd71e830355dd5ce46204ebc4f84ae612c"
+  },
+  "landmark-black-carriage": {
+    "objects": "0097344b562eb9e95853a5de7dbe3642d2534373c1f9575a728b0ac3cb1c93f6",
+    "collision": "9a42517a826890bad4d0cef1e98dbff47ddda42e0374ec79c98e363718d36463"
+  },
+  "landmark-bonegrinder": {
+    "objects": "bf6b72973ccb10aedbcaf230b363f711c4f064ffee5f9101f0ceab9e5e2f7beb",
+    "collision": "5af91be13a4fe81d4068688a4cc5758613611fbf4357064e1360a200a0df6eb5"
+  },
+  "landmark-east-gates": {
+    "objects": "9c9c103dd118694bc4132fab47db2d94b604bc316c0a7831a107ab45ba7fcdf1",
+    "collision": "5e6a190961757cf1c6ee85c3679d1d4448e5c207a39f1a2ed6c6dbb6e8f754e4"
+  },
+  "landmark-ghakis-lookout": {
+    "objects": "84d229c867d34048d856857b45431189adcd781b4ad68f30ef11c944be891635",
+    "collision": "c8f5d63e58715689cad30035089cf79fe7272874e443e2203fd9ffae91179157"
+  },
+  "landmark-ivlis-bank": {
+    "objects": "657f5a94e1295758fc675b948abe1a638f3c9f81acc2257f35accf37d6a6fe3b",
+    "collision": "9d1c7d2b6f3aa9be6e2dda837edac0072f7ed3a1d35002ae832677d939e2149f"
+  },
+  "landmark-ivlis-crossroads": {
+    "objects": "ab3263e636f8e4597fd9c6fc5ca9f75e2d50785eee46ee0cb7d8a7f7dbc07304",
+    "collision": "5a8c08b033b4550560a74d0b3566ea6b6ec1eeefc31f1f7653ab6e00232e6a51"
+  },
+  "landmark-krezk": {
+    "objects": "34c24c50d84c2e581e0d03f3a1dd19952dee362a36f1af5ed40ab0b2987732e2",
+    "collision": "9b86d539eb2b1fbd4a51b50ba20b3a5d08f815ee06d3b93f76cfce77d4fb24d8"
+  },
+  "landmark-luna-bank": {
+    "objects": "52080cf8f58a61808900966416126c1cfe10de31764824059bb5c51e440e9bd8",
+    "collision": "bd05b3ce3a8cf7818e08df6677562baa2a085318e82b483e01d37093c85d2997"
+  },
+  "landmark-luna-crossroads": {
+    "objects": "3b8d4dc021ff9590dd2089686941067ffc20204a142f9b13c19471807aa1ac87",
+    "collision": "34687904ce58247e0afd7e4c5f54789a6825ba210902590669433f2929693ba4"
+  },
+  "landmark-raven-crossroads": {
+    "objects": "322137acc22c36eadc32047166fe6697abff9bb455f1adb3bc440e0a9d9b5043",
+    "collision": "e31586c9ae0e839633ccf879b3f711e9d13e60b9625b3cdf1c786db59a6b4fb8"
+  },
+  "landmark-ravenloft-gates": {
+    "objects": "5cd2a2de9163c21fe047bfba49548e944a723424b0fa4608a9f8d77063625157",
+    "collision": "4db53a47bd4512378d3072c3176d0811b727ea1d30609a93eb0b3d6f9eb2c2fd"
+  },
+  "landmark-ravenloft": {
+    "objects": "ec38c7ab42eddd64d67e7f5031423777968d3862eeb273df2d46031970398429",
+    "collision": "2fc33d33278fa7fd777f986b3ca80e26dcf096dc435db19fe04da9187938a35c"
+  },
+  "landmark-svalich-woods": {
+    "objects": "ade5e8fdbb3e353ef055838b50471618a5e1bf55ca56f7663e0b25e54e030b02",
+    "collision": "a2a0e2127b2189c8a19ada20945ba3467870d0598a48345afafc72fddc8b62b2"
+  },
+  "landmark-tower": {
+    "objects": "214c8b49ab230094998209ef4027fda2c1e1aa4f9630dcfe4f8972c33e56efaf",
+    "collision": "72e72b07eb11755128ab289b4155ee613fd03f88dbb4d4e4859e1b8c8c4cb22b"
+  },
+  "landmark-tser-falls": {
+    "objects": "0ed0a6720197f5607f1b963f870695a9016a0b4009a6e31cfb5b5ace8a3349e9",
+    "collision": "404fe33cd70ce1bdddd83e00448a62bbf5db18e8596aee62b995ade8956b9996"
+  },
+  "landmark-tsolenka": {
+    "objects": "ad8fc3897bf892e28b355c131003a33b2b3324f981cd26a7908fc8704cbbf5f8",
+    "collision": "102b61e14dcef92e72f844886e29f75ea754f6c227f7801f23b7336b8781cc8f"
+  },
+  "landmark-werewolf-den": {
+    "objects": "382efd4514ad3c31735322d285e51fb521217bef3b4d52b4c33af89e4e4bbe6b",
+    "collision": "d86ab62356ca04598e14b5296275ed7640342c3cc3bdbab16b179cf220b69210"
+  },
+  "landmark-west-gates": {
+    "objects": "4f2e0546afcbfad10857f9ee2d98a8732d7aadfb3d3049aa1ab72c9d0b5549a2",
+    "collision": "5092576f9d78f054c6d41f735c7db46eff8e8bcf89059db2ba90c8fbebf93ecc"
+  },
+  "landmark-winery": {
+    "objects": "4b485b1a7c57544f85f4e6660f9befaa0f59aefe00003197692a1fcc54f230ed",
+    "collision": "6cea259cd46a9c52ee0e17e5dbf02c72013a5f0dd94bccdb510be1c17a9e6d08"
+  },
+  "landmark-yester-hill": {
+    "objects": "8c4a7d5a68854a9cf0932e09c9bd9fb7f578aae92ae3c208824fb8418b07fbab",
+    "collision": "2e4e08f8b331b0194ac5b7b3e807d1aae53c0de96938eaf1dd7f76a445cfeb3c"
+  },
+  "landmark-zarovich-bank": {
+    "objects": "cc3fa61606c8b2e5f2ce27a189aaaccc67e24ee4e8aaf86e6ca3117b061d2707",
+    "collision": "404fe33cd70ce1bdddd83e00448a62bbf5db18e8596aee62b995ade8956b9996"
+  },
+  "road": {
+    "objects": "4ed0c57fcb0d8e1c52e1defed8c868a459d1f83f094182c9e13b14a3f1b8da9d",
+    "collision": "2bf7aa4ad6917af0c541726d342aed3ed04e71355041ca415f581996bd3ad054"
+  },
+  "saint-andral": {
+    "objects": "5f6c9ac88557b3ed7d9abe24b9544eb756ef146ca172fb4884503a44a437fbb6",
+    "collision": "00ce49b578d4fe5b9a755b38d69dea7341f4155d32950be68d8712f1996f6bdc"
+  },
+  "tser-pool": {
+    "objects": "f071e0217c75968cbc76bfb2ee82c2cc37cd3311bd1cc9790af14047d01ba917",
+    "collision": "f8b81c2579bf1da80ca8a933584ff1544e829dc07ce4f0db628ce9df6fb7ae09"
+  },
+  "vallaki": {
+    "objects": "4dc268ad1ee7a99f4a2582991462c3d6498036e149410756f446e568c1d315cd",
+    "collision": "55c30a76e9147019488f9fbd43c86f7deff279fb546c19f3f1aad9041838379c"
+  },
+  "village": {
+    "objects": "158833350f641e9d7f24692d0ea5f2a3242443e02ff0561175c3240e6e360288",
+    "collision": "56871d5769430c328f62ff7bcd25fb7b4ba821e14acafe9e423f69e75116a5cb"
+  },
+  "west-road": {
+    "objects": "e692e36cf1ded1f71958d62deddb84ee0cfb7a7ee14088a79537b415efabd68c",
+    "collision": "2d18e0a44b8be5d2ac4fbaf605857ef4b4dc52f9ffd1dc0f590aa0c484afa8df"
+  }
+}

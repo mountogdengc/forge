@@ -11,6 +11,7 @@ param(
     [switch]$Hidden,
     [switch]$RequireDeferred,
     [switch]$StrahdProbe,
+    [switch]$KrezkProbe,
     [switch]$EditorButtonProbe,
     [ValidateRange(320, 3840)][int]$Width = 1280,
     [ValidateRange(240, 2160)][int]$Height = 720,
@@ -18,6 +19,7 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+if ($KrezkProbe) { $StrahdProbe = $true }
 $repository = (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
 if ($HelpProbe -and $PromptProbe) { throw 'Choose either HelpProbe or PromptProbe.' }
 if ($ResumeFrom -and ($PackageRoot -or $HelpProbe -or $PromptProbe)) { throw 'ResumeFrom uses an AssemblyJar and its own disposable copied profile.' }
@@ -111,6 +113,7 @@ if ($StrahdProbe) {
     if ($ResumeFrom) { $runtimeArgs = "-Dstrahd.resume=true`n" + $runtimeArgs }
 }
 if ($EditorButtonProbe) { $runtimeArgs = "-Deditor.buttonProbe=true`n" + $runtimeArgs }
+if ($KrezkProbe) { $runtimeArgs = "-Dstrahd.krezk=true`n-Dbellwake.timeoutSeconds=900`n" + $runtimeArgs }
 if ($authoringCampaignId) { $runtimeArgs = "-Dbellwake.campaignId=$authoringCampaignId`n" + $runtimeArgs }
 [IO.File]::WriteAllText($runtimeFile, $runtimeArgs)
 $priorAppData = $env:APPDATA

@@ -1,19 +1,20 @@
 <?xml version='1.0' encoding='utf-8'?>
-<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="40" height="34" tilewidth="16" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="1030">
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="40" height="34" tilewidth="16" tileheight="16" infinite="0" nextlayerid="8" nextobjectid="1030">
  <tileset firstgid="1" source="../../tileset/main.tsx" />
  <tileset firstgid="10113" source="../../tileset/buildings.tsx" />
  <tileset firstgid="11905" source="../../tileset/main-nocollide.tsx" />
+ <tileset firstgid="23000" source="../../tileset/strahd-gothic/tiles.tsx" />
  <layer id="1" name="Background" width="40" height="34">
-  <data encoding="base64" compression="zlib">eJztwzENAAAMA6CamsT67j8NkNBLqqqqqqpq/gHvldxO</data>
+  <data encoding="base64" compression="zlib">eJztwzENAAAMA6DanPPK6T8NkNBLqqqqqqpq/gGoolSr</data>
  </layer>
  <layer id="2" name="Ground" width="40" height="34">
-  <data encoding="base64" compression="zlib">eJzt08EJACAMBMH0ZB/2X44dCBpzyGUX8s58LoLIoznODx++Lr5d+HLh+9t3s03lfvHhc/O9TPEjE76ePuUG8OHDVxM+b18UtQCkErFh</data>
+  <data encoding="base64" compression="zlib">eJzt08EJACAMBMG0ael2YweCxhxy2YW8M5+LIPJojvPDh6+Lbxe+XPj+9t1sU7lffPjcfC9T/MiEr6dPuQF8+PDVhM/bF0UtsdKk0A==</data>
  </layer>
  <layer id="3" name="Foreground" width="40" height="34">
   <properties>
    <property name="spriteLayer" type="bool" value="true" />
   </properties>
-  <data encoding="base64" compression="zlib">eJztVkESAiEMy0N0X0FPetx3qe9aPe+3dDzKwEAlrbBrzgxp2qQAbBeXAFwDcAv+XDXcBwGOAkzC5y9xpbjjOxYB7gI8CPWVtMZcKW5mv0r8v7pjq/DM4hvrrDsfe0tbr7W+2FvaLLTqa63XWp+3v7T6LHcXA6PvLu/5azHa/P/9/IS2H955Gs1f3eDsR5XyUA85e57yHmL5iqEz5SHW3vLKz7c8NfnR/nk1PD34dC/7b4+9Zmq28HBOM7Pulr7mNDNnZfGGL73+CyrxAnaNhLU=</data>
+  <data encoding="base64" compression="zlib">eJztltERwjAMQ/VfYAHoBIUJYBLvvwccn/Ull7iRTdKiAfIsR3YC7FeTACcBzhLPqmFfBbgJMBPqK/E0K8XWZywC3AV4EOoredWsFJvZrxL/V2fsVZGz+NXFyNHZstbr7U9nyzoLrf5a6/X2F50vqz/P3cXQ6Lsr+v6tGu3+//1cy9qP6HkaLV/d6BWHSmWohzl7P/MZYuWK4TOVIdbeipqfrZya+bH+eS2cHnJ6lP13xF4zPXtkOOeZWXdLX3OemXfl8YYvvf4LKvUBSj9diw==</data>
  </layer>
  <layer id="4" name="AboveSprites" width="40" height="34">
   <data encoding="base64" compression="zlib">eJztwYEAAAAAw6D5U1/gCFUBAAAAANAxFUAAAQ==</data>
@@ -41,7 +42,7 @@
     <property name="cosDialogKey" value="road.strahd" />
     <property name="dialog" value="[{&quot;text&quot;:&quot;A rider waits beyond the trees, too still to have arrived by accident. \&quot;You have begun to make choices in my valley,\&quot; he says. \&quot;Do keep making them.\&quot; He turns his horse before you can answer. This is no battlefield, and the count offers no duel.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Keep to the road.&quot;,&quot;action&quot;:[{&quot;setQuestFlag&quot;:{&quot;key&quot;:&quot;cosStrahdDeparted&quot;,&quot;val&quot;:1},&quot;departMapObject&quot;:{&quot;id&quot;:-1,&quot;deltaX&quot;:256,&quot;deltaY&quot;:160,&quot;duration&quot;:2.5,&quot;mountSprite&quot;:&quot;sprites/enemy/beast/horse/horseblack.atlas&quot;}}]}]}]" />
     <property name="hidden" type="bool" value="false" />
-    <property name="sprite" value="sprites/heroes/undead_m.atlas" />
+    <property name="sprite" value="sprites/strahd/strahd.atlas" />
     <property name="removeWhenQuestFlag" value="cosStrahdDeparted" />
    </properties>
   </object>
@@ -76,4 +77,10 @@
   <object id="1028" name="scenery footprint" type="collision" x="272" y="352" width="16" height="16" />
   <object id="1029" name="scenery footprint" type="collision" x="512" y="320" width="16" height="16" />
  </objectgroup>
+ <layer id="6" name="Lantern Light" width="40" height="34" opacity="0.7">
+  <data encoding="base64" compression="zlib">eJztwYEAAAAAw6D5U1/gCFUBAAAAANAxFUAAAQ==</data>
+ </layer>
+ <layer id="7" name="Barovian Mist" width="40" height="34" opacity="0.28">
+  <data encoding="base64" compression="zlib">eJzt16EOwlAQRNH7eUgkGYVEIpFIZCUSiaxE9tMaxCbreKTJe91kjp2svcmCbXUUnARnwUVwFdwEd8FB4/YwCZ6Cl+AtmAUfwSJ4aNxuZvWNaNrXr/uwp+bl3czq69m0f/awp+bl3czqa21S1uM3Dq1Nyno00cwobQWLK/4Z</data>
+ </layer>
 </map>

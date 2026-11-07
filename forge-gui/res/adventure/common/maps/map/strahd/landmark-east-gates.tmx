@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='utf-8'?>
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="40" height="34" tilewidth="16" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="1016">
+ <tileset firstgid="1" source="../../tileset/main.tsx" />
+ <tileset firstgid="10113" source="../../tileset/buildings.tsx" />
+ <tileset firstgid="11905" source="../../tileset/main-nocollide.tsx" />
+ <layer id="1" name="Background" width="40" height="34">
+  <data encoding="base64" compression="zlib">eJztwzENAAAMA6CamsT67j8NkNBLqqqqqqpq/gHvldxO</data>
+ </layer>
+ <layer id="2" name="Ground" width="40" height="34">
+  <data encoding="base64" compression="zlib">eJztz7ENACAMxMDfiT3YfxwmII1TBGFLX+eSmNXtdd+E9LH0sfSx9LH0sfSx9L3rq253TJ8+ff/66A8T0sfSx9KXsR0Ho6XK</data>
+ </layer>
+ <layer id="3" name="Foreground" width="40" height="34">
+  <properties>
+   <property name="spriteLayer" type="bool" value="true" />
+  </properties>
+  <data encoding="base64" compression="zlib">eJztzrsNwlAQRNFLDbiI0UtwbkJk0RKfwE3YUAIpn5DeoAACZLHwntEcabPV1YBZeeYJqlRue5GgHtHYCLaCnWCv2HaEXjAIDoLjm305nAUXwVVwK3DfL91X4y6qZdPXrXMvsH8xa2P/zMxKcmpfL2fHvufRfBhYBg0xM6bgCTE7LmM=</data>
+ </layer>
+ <layer id="4" name="AboveSprites" width="40" height="34">
+  <data encoding="base64" compression="zlib">eJztwYEAAAAAw6D5U1/gCFUBAAAAANAxFUAAAQ==</data>
+ </layer>
+ <objectgroup id="5" name="Objects">
+  <object id="38" template="../../obj/entry_up.tx" x="320" y="528" />
+  <object id="60" template="../../obj/dialog.tx" x="320" y="368">
+   <properties>
+    <property name="cosDialogKey" value="landmark.east-gates.arrival" />
+    <property name="dialog" value="[{&quot;text&quot;:&quot;Stone sentinels stand above the eastern road. Mist catches against ironwork and spills between the open approaches. This arrival area is open. Further stories here continue in a future chapter. The southern exit returns to the overworld.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Look around.&quot;,&quot;text&quot;:&quot;Beyond the gate the road fades into the valley's border. This visit neither frees you from Barovia nor changes the current journey.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}]},{&quot;name&quot;:&quot;Where does the current story continue?&quot;,&quot;text&quot;:&quot;Your journal follows the village church, Eva's camp and Vallaki's sanctuary. These arrival visits do not advance or replace those objectives.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}]},{&quot;name&quot;:&quot;Return to exploring.&quot;}]}]" />
+    <property name="hidden" type="bool" value="false" />
+   </properties>
+  </object>
+  <object id="61" template="../../obj/dialog.tx" x="448" y="224">
+   <properties>
+    <property name="cosDialogKey" value="landmark.east-gates.detail" />
+    <property name="dialog" value="[{&quot;text&quot;:&quot;Beyond the gate the road fades into the valley's border. This visit neither frees you from Barovia nor changes the current journey.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}]}]" />
+    <property name="hidden" type="bool" value="false" />
+   </properties>
+  </object>
+  <object id="1000" name="scenery footprint" type="collision" x="0" y="0" width="640" height="16" />
+  <object id="1001" name="scenery footprint" type="collision" x="0" y="528" width="640" height="16" />
+  <object id="1002" name="scenery footprint" type="collision" x="0" y="16" width="16" height="512" />
+  <object id="1003" name="scenery footprint" type="collision" x="624" y="16" width="16" height="512" />
+  <object id="1004" name="scenery footprint" type="collision" x="80" y="144" width="192" height="16" />
+  <object id="1005" name="scenery footprint" type="collision" x="384" y="144" width="176" height="16" />
+  <object id="1006" name="scenery footprint" type="collision" x="288" y="80" width="64" height="48" />
+  <object id="1007" name="scenery footprint" type="collision" x="96" y="64" width="32" height="32" />
+  <object id="1008" name="scenery footprint" type="collision" x="464" y="64" width="32" height="32" />
+  <object id="1009" name="scenery footprint" type="collision" x="128" y="384" width="80" height="16" />
+  <object id="1010" name="scenery footprint" type="collision" x="416" y="384" width="80" height="16" />
+  <object id="1011" name="scenery footprint" type="collision" x="240" y="256" width="16" height="16" />
+  <object id="1012" name="scenery footprint" type="collision" x="400" y="256" width="16" height="16" />
+  <object id="1013" name="scenery footprint" type="collision" x="176" y="432" width="16" height="16" />
+  <object id="1014" name="scenery footprint" type="collision" x="432" y="432" width="16" height="16" />
+  <object id="1015" name="scenery footprint" type="collision" x="448" y="192" width="16" height="16" />
+ </objectgroup>
+</map>

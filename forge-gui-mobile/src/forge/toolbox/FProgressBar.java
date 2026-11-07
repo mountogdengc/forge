@@ -19,22 +19,22 @@ public class FProgressBar extends FDisplayObject implements IProgressBar {
     public static Color BACK_COLOR, FORE_COLOR, SEL_BACK_COLOR, SEL_FORE_COLOR, ADV_BACK_COLOR, ADV_FORE_COLOR, ADV_SEL_BACK_COLOR, ADV_SEL_FORE_COLOR;
     public static Color getBackColor() {
         if (Forge.isMobileAdventureMode)
-            return ADV_BACK_COLOR;
+            return forge.adventure.theme.ThemePaletteBridge.progressColor(false, false, ADV_BACK_COLOR);
         return BACK_COLOR;
     }
     public static Color getForeColor() {
         if (Forge.isMobileAdventureMode)
-            return ADV_FORE_COLOR;
+            return forge.adventure.theme.ThemePaletteBridge.progressColor(false, true, ADV_FORE_COLOR);
         return FORE_COLOR;
     }
     public static Color getSelBackColor() {
         if (Forge.isMobileAdventureMode)
-            return ADV_SEL_BACK_COLOR;
+            return forge.adventure.theme.ThemePaletteBridge.progressColor(true, false, ADV_SEL_BACK_COLOR);
         return SEL_BACK_COLOR;
     }
     public static Color getSelForeColor() {
         if (Forge.isMobileAdventureMode)
-            return ADV_SEL_FORE_COLOR;
+            return forge.adventure.theme.ThemePaletteBridge.progressColor(true, true, ADV_SEL_FORE_COLOR);
         return SEL_FORE_COLOR;
     }
     private static FSkinFont MSG_FONT;

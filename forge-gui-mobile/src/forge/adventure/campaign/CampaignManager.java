@@ -39,6 +39,7 @@ public final class CampaignManager {
         AdventurePlayerRuntime.clearUiListeners(AdventurePlayer.current());
         Forge.clearAdventureSceneHistory();
         resetScenes();
+        forge.adventure.util.Controls.retireThemeSkins();
         GameHUD.resetForCampaign();
         MapStage.resetForCampaign();
         WorldStage.resetForCampaign();

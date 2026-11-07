@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "folio",
+  "name": "Planeswalker's Folio",
+  "colors": {
+    "surface.canvas": "#162c29", "surface.panel": "#203630", "surface.paper": "#ddd0ad",
+    "text.primary": "#f1e6ce", "text.secondary": "#c4d0bd", "text.onPaper": "#302b22",
+    "border.frame": "#ac8953", "border.frameText": "#101810", "border.highlight": "#e3c892",
+    "action.primary": "#70bca5", "action.onPrimary": "#102820",
+    "action.secondary": "#203630", "action.onSecondary": "#f1e6ce",
+    "state.hover": "#305046", "state.selected": "#70bca5", "state.onSelected": "#102820",
+    "state.disabled": "#35433d", "state.onDisabled": "#d5d9cf", "state.focus": "#e3c892",
+    "phase.activeEnabled": "#70bca5", "phase.activeDisabled": "#ddd0ad",
+    "phase.inactiveEnabled": "#354b41", "phase.inactiveDisabled": "#203630",
+    "target.normal": "#80c9ea", "target.combat": "#ef9b91", "target.planeswalker": "#e2c06a"
+  },
+  "fonts": { "body": "legacy:default", "heading": "legacy:default" },
+  "components": { "shape": "round" },
+  "presentation": { "ornament": "full", "paperTexture": 0.16 }
+}

@@ -276,6 +276,9 @@ public final class ItemListView<T extends InventoryItem> extends ItemView<T> {
                         FCheckBox.drawCheckBox(g, selectedIndices.contains(index), x + w, y + (h - checkBoxSize) / 2, checkBoxSize, checkBoxSize);
                         w -= padding;
                     }
+                    var theme=forge.adventure.theme.ThemePaletteBridge.presentationForAdventure();
+                    if(theme!=null&&((maxSelections==1&&selectedIndices.contains(index))||(maxSelections>1&&pressed)))
+                        foreColor=FSkinColor.getStandardColor(forge.adventure.theme.ThemePaletteBridge.rowText(theme,true,foreColor.getColor(),true));
                     renderer.drawValue(g, value, font, foreColor, backColor, pressed, x + 1, y, w - 2, h); //x + 1 and w - 2 to account for left and right borders
                     if(itemManager.itemIsFavorite(value)) {
                         float starSize = h * 0.35f;

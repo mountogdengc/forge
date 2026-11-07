@@ -135,6 +135,7 @@
                     <version>3.1.2</version>
                     <configuration>
                         <argLine>
+                            "-Djava.io.tmpdir=${project.build.directory}"
                             --add-opens java.base/java.lang=ALL-UNNAMED
                             --add-opens java.base/java.time=ALL-UNNAMED
                             --add-opens java.base/java.text=ALL-UNNAMED

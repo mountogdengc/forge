@@ -1,0 +1,56 @@
+<?xml version='1.0' encoding='utf-8'?>
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="40" height="34" tilewidth="16" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="1018">
+ <tileset firstgid="1" source="../../tileset/main.tsx" />
+ <tileset firstgid="10113" source="../../tileset/buildings.tsx" />
+ <tileset firstgid="11905" source="../../tileset/main-nocollide.tsx" />
+ <layer id="1" name="Background" width="40" height="34">
+  <data encoding="base64" compression="zlib">eJztwzENAAAMA6DK21//XvpPAyT0kqqqqqqqmn8MrDee</data>
+ </layer>
+ <layer id="2" name="Ground" width="40" height="34">
+  <data encoding="base64" compression="zlib">eJzt1LsJACAQBNGrTsxtzYKtQBGGAz8zsPmLNsJsXavznZA+lj6WPpY+lj6WPpa+e3295E6fPn3/+nbyn1n6WPre9kViA9Rh8Iw=</data>
+ </layer>
+ <layer id="3" name="Foreground" width="40" height="34">
+  <properties>
+   <property name="spriteLayer" type="bool" value="true" />
+  </properties>
+  <data encoding="base64" compression="zlib">eJzt1LENgCAQheHnOqygpSGO5TgOYWOle+geGmsTlDuBS3hfQifcH0gEqLTVAZuDWbsDDsN9RGTH0gNzxAr5esY9M6YvNyt946CfWfP9/TEz9G3j5Q2hvbXcXyrs02GfDvt0+H/WkfZN/rkk3s6J6Ttb5NGVfTMiQlIXTK1JVA==</data>
+ </layer>
+ <layer id="4" name="AboveSprites" width="40" height="34">
+  <data encoding="base64" compression="zlib">eJztwYEAAAAAw6D5U1/gCFUBAAAAANAxFUAAAQ==</data>
+ </layer>
+ <objectgroup id="5" name="Objects">
+  <object id="38" template="../../obj/entry_up.tx" x="320" y="528" />
+  <object id="60" template="../../obj/dialog.tx" x="320" y="368">
+   <properties>
+    <property name="cosDialogKey" value="landmark.ravenloft.arrival" />
+    <property name="dialog" value="[{&quot;text&quot;:&quot;The road ends in a stone forecourt beneath dark towers. The barred doors admit neither the wind nor an invitation. This arrival area is open. Further stories here continue in a future chapter. The southern exit returns to the overworld.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Look around.&quot;,&quot;text&quot;:&quot;A dry fountain stands beneath the windows. Tracks stop at the great doors, but the return path is clear.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}]},{&quot;name&quot;:&quot;Where does the current story continue?&quot;,&quot;text&quot;:&quot;Your journal follows the village church, Eva's camp and Vallaki's sanctuary. These arrival visits do not advance or replace those objectives.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}]},{&quot;name&quot;:&quot;Return to exploring.&quot;}]}]" />
+    <property name="hidden" type="bool" value="false" />
+   </properties>
+  </object>
+  <object id="61" template="../../obj/dialog.tx" x="448" y="224">
+   <properties>
+    <property name="cosDialogKey" value="landmark.ravenloft.detail" />
+    <property name="dialog" value="[{&quot;text&quot;:&quot;A dry fountain stands beneath the windows. Tracks stop at the great doors, but the return path is clear.&quot;,&quot;options&quot;:[{&quot;name&quot;:&quot;Continue.&quot;}]}]" />
+    <property name="hidden" type="bool" value="false" />
+   </properties>
+  </object>
+  <object id="1000" name="scenery footprint" type="collision" x="0" y="0" width="640" height="16" />
+  <object id="1001" name="scenery footprint" type="collision" x="0" y="528" width="640" height="16" />
+  <object id="1002" name="scenery footprint" type="collision" x="0" y="16" width="16" height="512" />
+  <object id="1003" name="scenery footprint" type="collision" x="624" y="16" width="16" height="512" />
+  <object id="1004" name="scenery footprint" type="collision" x="80" y="160" width="192" height="16" />
+  <object id="1005" name="scenery footprint" type="collision" x="384" y="160" width="176" height="16" />
+  <object id="1006" name="scenery footprint" type="collision" x="80" y="160" width="16" height="288" />
+  <object id="1007" name="scenery footprint" type="collision" x="544" y="160" width="16" height="288" />
+  <object id="1008" name="scenery footprint" type="collision" x="272" y="32" width="32" height="32" />
+  <object id="1009" name="scenery footprint" type="collision" x="192" y="240" width="16" height="16" />
+  <object id="1010" name="scenery footprint" type="collision" x="432" y="240" width="16" height="16" />
+  <object id="1011" name="scenery footprint" type="collision" x="192" y="384" width="16" height="16" />
+  <object id="1012" name="scenery footprint" type="collision" x="432" y="384" width="16" height="16" />
+  <object id="1013" name="scenery footprint" type="collision" x="128" y="416" width="80" height="16" />
+  <object id="1014" name="scenery footprint" type="collision" x="416" y="416" width="80" height="16" />
+  <object id="1015" name="scenery footprint" type="collision" x="80" y="432" width="16" height="16" />
+  <object id="1016" name="scenery footprint" type="collision" x="496" y="432" width="16" height="16" />
+  <object id="1017" name="scenery footprint" type="collision" x="448" y="192" width="16" height="16" />
+ </objectgroup>
+</map>

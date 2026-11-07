@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "user.moonlit-folio",
+  "name": "Moonlit Folio",
+  "extends": "midnight",
+  "colors": {
+    "surface.paper": "#e2dfeb",
+    "text.onPaper": "#252131"
+  },
+  "presentation": {
+    "ornament": "quiet",
+    "paperTexture": 0
+  }
+}

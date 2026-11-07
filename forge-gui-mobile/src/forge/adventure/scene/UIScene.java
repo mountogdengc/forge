@@ -105,6 +105,7 @@ public class UIScene extends Scene {
     }
 
     public void showDialog(Dialog dialog) {
+        forge.adventure.theme.ThemePresentation.paperText(dialog.getContentTable());
         stage.addActor(dialog);
         possibleSelectionStack.add(new Array<>());
         addToSelectable(dialog.getContentTable());
@@ -665,6 +666,7 @@ public class UIScene extends Scene {
 
     @Override
     public void enter() {
+        forge.adventure.theme.ThemePresentation.styleTree(stage.getRoot());
         if (screenImage != null) {
             try {
                 if (Forge.lastPreview != null) {

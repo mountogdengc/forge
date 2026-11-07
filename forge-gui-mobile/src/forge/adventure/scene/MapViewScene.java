@@ -24,6 +24,7 @@ import forge.adventure.stage.GameHUD;
 import forge.adventure.stage.WorldStage;
 import forge.adventure.util.Controls;
 import forge.adventure.util.Current;
+import forge.adventure.util.QuestNavigation;
 import forge.adventure.world.WorldSave;
 
 import java.util.List;
@@ -291,11 +292,15 @@ public class MapViewScene extends UIScene {
         miniMapPlayer.layout();
         scroll.scrollTo(avatarX, avatarY, miniMapPlayer.getWidth(), miniMapPlayer.getHeight(), true, true);
         for (AdventureQuestData adq : Current.player().getQuests()) {
-            PointOfInterest poi = adq.getTargetPOI();
+            if (adq != QuestNavigation.trackedQuest(Current.player().getQuests())) continue;
+            PointOfInterest poi = QuestNavigation.destination(adq, WorldStage.getInstance().getPlayerSprite().getCenter());
             if (poi != null) {
                 if (positions.contains(poi.getPosition()))
                     continue; //don't map duplicate position to prevent stacking
-                TypingLabel label = Controls.newTypingLabel("[+GPS][%?BLACKEN] " + adq.name);
+                TypingLabel label = Controls.newTypingLabel("[+GPS][%?BLACKEN] " + poi.getDisplayName() + "\n" + adq.name);
+                label.setName("quest-destination-" + adq.getID());
+                label.skipToTheEnd();
+                label.pack();
                 labels.add(label);
                 table.addActor(label);
                 label.setPosition(getMapX(poi.getPosition().x) - label.getWidth() / 2, getMapY(poi.getPosition().y) - label.getHeight() / 2);

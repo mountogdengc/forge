@@ -185,6 +185,8 @@ public class Forge implements ApplicationListener {
     public void create() {
         //install our error handler
         ExceptionHandler.registerErrorHandling();
+        // Freeze Adventure appearance before any skin or gameplay stage is built.
+        forge.adventure.theme.AdventureThemeRuntime.initializeFromProfile();
         //log version and system info
         GuiBase.logHWInfo();
         // closeSplashScreen() is called early on non-Windows OS so it will not crash, LWJGL3 bug on AWT Splash.
@@ -416,6 +418,7 @@ public class Forge implements ApplicationListener {
         clearScreenStack();
         openHomeScreen(-1, null); //default for startup
         isMobileAdventureMode = false;
+        forge.adventure.theme.ThemePaletteBridge.activate(null);
         MusicPlaylist.invalidateMusicPlaylist();
         SoundSystem.instance.setBackgroundMusic(MusicPlaylist.MENUS);
         if (isLandscapeMode()) { //open preferred new game screen by default if landscape mode
@@ -1084,6 +1087,7 @@ public class Forge implements ApplicationListener {
 
     @Override
     public void dispose() {
+        forge.adventure.util.Controls.disposeThemeSkins();
         lifecycleClosing = true;
         isDisposed = true;
         if (currentScreen != null) {

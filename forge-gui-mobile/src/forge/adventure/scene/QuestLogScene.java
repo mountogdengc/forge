@@ -17,6 +17,8 @@ import forge.adventure.util.AdventureQuestController;
 import forge.adventure.util.Controls;
 import forge.adventure.util.Current;
 import forge.adventure.util.Config;
+import forge.adventure.util.QuestNavigation;
+import forge.adventure.stage.WorldStage;
 
 public class QuestLogScene extends UIScene {
     private Table scrollContainer, detailScrollContainer;
@@ -74,6 +76,7 @@ public class QuestLogScene extends UIScene {
         root.align(Align.right);
         root.row();
         Label column0Label = new Label(Forge.getLocalizer().getMessage("lblQuestName"), Controls.getSkin());
+        column0Label.setName("quest-list-heading");
         column0Label.setColor(Color.BLACK);
         root.add(column0Label).align(Align.bottomLeft);
         root.row();
@@ -139,6 +142,7 @@ public class QuestLogScene extends UIScene {
             addToSelectable(details);
         }
         performTouch(scrollPaneOfActor(scrollContainer)); //can use mouse wheel if available to scroll
+        forge.adventure.theme.ThemePresentation.paperText(root);
     }
 
     private void backToList() {
@@ -221,6 +225,16 @@ public class QuestLogScene extends UIScene {
             detailScrollContainer.row();
         }
         updateTrackButton(quest.isTracked);
+        var destination = QuestNavigation.destination(quest, WorldStage.getInstance().getPlayerSprite().getCenter());
+        if (destination != null) {
+            TypingLabel destinationLabel = Controls.newTypingLabel(
+                    Forge.getLocalizer().getMessageorUseDefault("lblQuestDestination", "Destination") + ": " + destination.getDisplayName());
+            destinationLabel.skipToTheEnd();
+            destinationLabel.setWrap(true);
+            detailScrollContainer.add(destinationLabel).padLeft(25).width(detailRoot.getWidth() - 50);
+            detailScrollContainer.row();
+        }
+        forge.adventure.theme.ThemePresentation.paperText(detailRoot);
     }
 
     private void toggleTracked(AdventureQuestData quest) {

@@ -33,6 +33,21 @@ import java.util.function.Function;
  * Class to create ui elements in the correct style
  */
 public class Controls {
+    private static final java.util.IdentityHashMap<Skin, java.util.Map<String, Skin>> themeSkins = new java.util.IdentityHashMap<>();
+    public static void retireThemeSkins() {
+        for (java.util.Map<String, Skin> skins : themeSkins.values()) for (Skin skin : skins.values()) {
+            Forge.retireAdventureResource(() -> {
+                if (skin instanceof forge.adventure.theme.ThemeSkinAdapter adapter)
+                    Forge.getAssets().forgetAdventureThemeFonts(adapter.ownedFonts());
+                skin.dispose();
+            });
+        }
+        themeSkins.clear();
+    }
+    public static void disposeThemeSkins() {
+        for (java.util.Map<String, Skin> skins : themeSkins.values()) for (Skin skin : skins.values()) skin.dispose();
+        themeSkins.clear();
+    }
     private static final Rectangle boundingBox = new Rectangle();
     private static final HashMap<String, String> currencyStringsMap = new HashMap<>(256);
     static public Label.LabelStyle getLabelStyle(String name) {
@@ -517,6 +532,47 @@ public class Controls {
 
     static public Skin getSkin() {
         FileHandle skinFile = Config.instance().getFile(Paths.SKIN);
+        return themedSkin(loadLegacySkin(skinFile));
+    }
+
+    public static Skin getThemeEditorSkin() {
+        return themedSkin(getThemePreviewSkin());
+    }
+
+    private static Skin themedSkin(Skin skin) {
+        forge.adventure.theme.AdventureThemeRuntime runtime = forge.adventure.theme.AdventureThemeRuntime.current();
+        if (!Forge.isMobileAdventureMode || runtime == null) return skin;
+        String issue = forge.adventure.theme.ThemeSkinAdapter.compatibilityIssue(skin);
+        if (!issue.isEmpty()) {
+            runtime.useCampaignPresentation(Config.instance(),issue);
+            return skin;
+        }
+        java.util.Map<String, Skin> byTheme = themeSkins.computeIfAbsent(skin, ignored -> new java.util.HashMap<>());
+        for (int attempt=0;attempt<2;attempt++) {
+            forge.adventure.theme.ResolvedTheme theme = runtime.resolveActive(Config.instance());
+            if (theme == null) return skin;
+            try {
+                Skin adapted = byTheme.get(theme.id());
+                if (adapted == null) {
+                    adapted = forge.adventure.theme.ThemeSkinAdapter.adapt(skin, theme);
+                    byTheme.put(theme.id(), adapted);
+                    if(adapted instanceof forge.adventure.theme.ThemeSkinAdapter adapter)
+                        adapter.warnings().forEach(runtime::reportCompatibility);
+                }
+                return adapted;
+            } catch (RuntimeException failure) {
+                runtime.rejectTheme(theme.id(),failure.toString());
+            }
+        }
+        runtime.resolveActive(Config.instance()); // Resolve and reset the bridge after the final rejection.
+        return skin;
+    }
+
+    public static Skin getThemePreviewSkin() {
+        return loadLegacySkin(new FileHandle(Config.instance().getCommonFilePath(Paths.SKIN)));
+    }
+
+    private static Skin loadLegacySkin(FileHandle skinFile) {
         Skin skin = Forge.getAssets().manager().get(skinFile.path(), Skin.class, false);
         if (skin == null) {
             Forge.getAssets().manager().load(skinFile.path(), Skin.class);

@@ -30,6 +30,10 @@ public class WorldData implements Serializable {
     public String biomesSprites;
     public float maxRoadDistance;
     public String[] biomesNames;
+    /** Optional campaign-local fixed geography. Null preserves procedural generation. */
+    public String authoredMap;
+
+    public boolean hasAuthoredMap() { return authoredMap != null && !authoredMap.isBlank(); }
 
 
     private BiomeSprites sprites;

@@ -339,6 +339,11 @@ public class Config {
         return commonPrefix + path;
     }
 
+    /** Custom campaign skins keep their existing presentation by default. */
+    public boolean hasCustomThemeSkin() {
+        return Files.isRegularFile(Path.of(prefix, "skin/ui_skin.json"));
+    }
+
     public String getRootMapFilePath(String reference) {
         return forge.adventure.campaign.CampaignMapResolver.resolve(
                 Path.of(prefix),Path.of(commonPrefix),reference).toString();

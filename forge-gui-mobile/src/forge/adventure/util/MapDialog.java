@@ -36,6 +36,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * MapDialog
@@ -347,6 +348,17 @@ public class MapDialog {
         }
     }
 
+    /** Ordinary TMX actors have no quest-offer listener to receive this action. */
+    void issueQuest(String questID, Consumer<String> defaultIssuer) {
+        questAccepted = questID;
+        if (questAcceptedList.isEmpty()) {
+            defaultIssuer.accept(questID);
+        } else {
+            // Quest offers can retain a generated quest with its bound POI data.
+            emitQuestAccepted();
+        }
+    }
+
     void fadeIn() {
         disposeAudio(true);
         GameHUD.getInstance().fadeIn();
@@ -471,8 +483,7 @@ public class MapDialog {
                Forge.switchScene(RewardScene.instance());
             }
             if (E.issueQuest != null && (!E.issueQuest.isEmpty())) {
-                questAccepted = E.issueQuest;
-                emitQuestAccepted();
+                issueQuest(E.issueQuest, id -> Current.player().addQuest(id, false));
             }
         }
         if (data.length > 0) WorldSave.requestExplorationCheckpoint("After a story interaction");

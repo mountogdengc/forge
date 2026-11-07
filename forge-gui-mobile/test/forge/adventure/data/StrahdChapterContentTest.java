@@ -31,7 +31,7 @@ public class StrahdChapterContentTest {
     @Test public void isolatedCampaignAndFixedFortyCardStarts() throws Exception {
         JsonValue manifest = read("campaign.json"), config = read("config.json");
         assertEquals(manifest.getString("id"), "fork.curse-of-strahd");
-        assertEquals(manifest.getString("version"), "0.1.0");
+        assertEquals(manifest.getString("version"), "0.5.0");
         for (String key : List.of("inheritCommonWorld", "inheritCommonQuests", "allowNewGamePlus", "development")) assertFalse(manifest.getBoolean(key));
         assertEquals(Set.of(config.get("allowedEditions").asStringArray()), Set.of("ISD", "DKA", "AVR", "SOI", "EMN", "MID", "VOW", "AFR", "CLB"));
         assertEquals(Set.of(config.get("colorIds").asStringArray()), Set.of("W", "B"));
@@ -45,7 +45,9 @@ public class StrahdChapterContentTest {
             assertEquals(count, 40, deck.asString());
         }
         EnemyData[] enemies = new Json().fromJson(EnemyData[].class, Files.readString(root().resolve("world/enemies.json")));
-        assertEquals(Arrays.stream(enemies).map(e -> e.name).collect(java.util.stream.Collectors.toSet()), Set.of("Svalich Roadwarden", "Doru", "Mist-Stalked Pack"));
+        assertEquals(Arrays.stream(enemies).map(e -> e.name).collect(java.util.stream.Collectors.toSet()), Set.of(
+                "Svalich Roadwarden", "Doru", "Mist-Stalked Pack", "Western Road Ambush", "Coffin Shop Spawn", "Belfry Stalker",
+                "Krezk Mist Wolves", "Spring Watcher", "Abbey Sentinel"));
         for (EnemyData enemy : enemies) assertEquals(enemy.practice, enemy.name.equals("Svalich Roadwarden"));
     }
     @Test public void trackedObjectivesStayWithinTheCompactHudTextBudget() throws Exception {
@@ -151,7 +153,7 @@ public class StrahdChapterContentTest {
     }
     @Test public void trainingChoicesCommitTwoCardsAndOnceOnlyMarkerTogether() throws Exception {
         JsonValue story = read("story/dialogues.json");
-        assertEquals(story.size, 13);
+        assertEquals(story.size, 90);
         Map<String, Integer> flags = new HashMap<>();
         JsonValue reward = entry("village.practice", "defeatDialog", flags);
         Set<String> cards = new HashSet<>();
