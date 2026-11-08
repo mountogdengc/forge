@@ -47,7 +47,13 @@ public final class AdventureOverrides {
     private static final AdventureOverrides INSTANCE = new AdventureOverrides();
 
     public static AdventureOverrides instance() {
-        return INSTANCE;
+        return forge.adventure.character.StarterDeckPreview.overridesOr(INSTANCE);
+    }
+
+    public static AdventureOverrides forPreview(Config config) {
+        AdventureOverrides preview = new AdventureOverrides();
+        preview.load(config.getPrefix(), StaticData.instance().getEditions(), config.getConfigData());
+        return preview;
     }
 
     private final Map<String, CardBlock> blocks = new LinkedHashMap<>();

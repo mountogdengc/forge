@@ -34,6 +34,7 @@ public class MyRandom {
     /** Constant <code>random</code>. */
     private static final AtomicLong calls = new AtomicLong();
     private static Random random = new CountingRandom(new SecureRandom());
+    private static final ThreadLocal<Random> scopedRandom = new ThreadLocal<>();
 
     /** Every Random method (nextInt, nextBoolean, shuffle, ...) funnels through next(bits). */
     private static final class CountingRandom extends Random {
@@ -60,7 +61,15 @@ public class MyRandom {
      * @return the random
      */
     public static Random getRandom() {
-        return MyRandom.random;
+        Random local = scopedRandom.get();
+        return local == null ? MyRandom.random : local;
+    }
+
+    public static <T> T withRandom(Random preview, java.util.function.Supplier<T> task) {
+        Random previous = scopedRandom.get();
+        scopedRandom.set(java.util.Objects.requireNonNull(preview));
+        try { return task.get(); }
+        finally { if (previous == null) scopedRandom.remove(); else scopedRandom.set(previous); }
     }
 
     /**
@@ -68,6 +77,7 @@ public class MyRandom {
      * @param random the random
      */
     public static void setRandom(Random random) {
+        if (scopedRandom.get() != null) { scopedRandom.set(java.util.Objects.requireNonNull(random)); return; }
         MyRandom.random = random instanceof CountingRandom ? random : new CountingRandom(random);
     }
 
@@ -75,7 +85,7 @@ public class MyRandom {
         int[] groups = new int[numGroups];
 
         for (int i = 0; i < value; i++) {
-            groups[random.nextInt(numGroups)]++;
+            groups[getRandom().nextInt(numGroups)]++;
         }
 
         return groups;

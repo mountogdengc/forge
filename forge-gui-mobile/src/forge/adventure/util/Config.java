@@ -63,6 +63,8 @@ public class Config {
 
 
     static public Config instance() {
+        Config preview = forge.adventure.character.StarterDeckPreview.resources();
+        if (preview != null) return preview;
         if (currentConfig == null)
             currentConfig = new Config();
         return currentConfig;
@@ -437,7 +439,7 @@ public class Config {
             case Constructed:
                 for (ObjectMap.Entry<String, String> entry : difficultyData.constructedStarterDecks) {
                     if (ColorSet.fromNames(entry.key.toCharArray()).getColor() == color.getColor()) {
-                        return CardUtil.getDeck(entry.value, false, false, "", false, false);
+                        return CardUtil.getDeck(this, entry.value, false, false, "", false, false);
                     }
                 }
             case Standard:
@@ -447,7 +449,7 @@ public class Config {
                     if (editionDecks != null) {
                         for (ObjectMap.Entry<String, String> entry : editionDecks) {
                             if (ColorSet.fromNames(entry.key.toCharArray()).getColor() == color.getColor()) {
-                                return CardUtil.getDeck(entry.value, false, false, "", false, false);
+                                return CardUtil.getDeck(this, entry.value, false, false, "", false, false);
                             }
                         }
                     }
@@ -455,7 +457,7 @@ public class Config {
                 // Fall back to default starter decks (JSON generation with edition filter)
                 for (ObjectMap.Entry<String, String> entry : difficultyData.starterDecks) {
                     if (ColorSet.fromNames(entry.key.toCharArray()).getColor() == color.getColor()) {
-                        return CardUtil.getDeck(entry.value, false, false, "", false, false, starterEdition, true);
+                        return CardUtil.getDeck(this, entry.value, false, false, "", false, false, starterEdition, true);
                     }
                 }
             case Chaos:
@@ -468,28 +470,67 @@ public class Config {
             case Pile:
                 for (ObjectMap.Entry<String, String> entry : difficultyData.pileDecks) {
                     if (ColorSet.fromNames(entry.key.toCharArray()).getColor() == color.getColor()) {
-                        return CardUtil.getDeck(entry.value, false, false, "", false, false);
+                        return CardUtil.getDeck(this, entry.value, false, false, "", false, false);
                     }
                 }
             case Commander:
                 for (ObjectMap.Entry<String, String> entry : difficultyData.commanderDecks) {
                     if (ColorSet.fromNames(entry.key.toCharArray()).getColor() == color.getColor()) {
-                        return CardUtil.getDeck(entry.value, false, false, "", false, false);
+                        return CardUtil.getDeck(this, entry.value, false, false, "", false, false);
                     }
                 }
                 return null;
             case Precon:
                 String preconPath = getPreconDeckPath(index);
                 if (preconPath != null) {
-                    return CardUtil.getDeck(preconPath, false, false, "", false, false);
+                    return CardUtil.getDeck(this, preconPath, false, false, "", false, false);
                 }
                 return null;
             case CommanderPrecon:
                 String commanderPreconPath = getCommanderPreconDeckPath(index);
                 if (commanderPreconPath != null) {
-                    return CardUtil.getDeck(commanderPreconPath, false, false, "", false, false);
+                    return CardUtil.getDeck(this, commanderPreconPath, false, false, "", false, false);
                 }
                 return null;
+        }
+        return null;
+    }
+
+    /** Stable effective source identity for confirmation; deliberately mirrors starterDeck's legacy fallthroughs. */
+    public String starterDeckSourceKey(ColorSet color, DifficultyData difficulty, AdventureModes mode, int index, CardEdition edition) {
+        String source;
+        switch (mode) {
+            case Constructed:
+                source = starterReferenceKey(difficulty.constructedStarterDecks, color, difficulty, null);
+                if (source != null) return source;
+                // Legacy Constructed falls through to Standard for an unmatched color.
+            case Standard:
+                if (edition != null && configData.starterDecksByEdition != null) {
+                    source = starterReferenceKey(configData.starterDecksByEdition.get(edition.getCode()), color, difficulty, null);
+                    if (source != null) return source;
+                }
+                source = starterReferenceKey(difficulty.starterDecks, color, difficulty, edition);
+                if (source != null) return source;
+                // Standard's final fallback is Chaos, whose confirmed cards must not reroll on difficulty.
+            case Chaos:
+                return "random:Chaos:" + configData.chaosDeckFormat;
+            case Pile:
+                source = starterReferenceKey(difficulty.pileDecks, color, difficulty, null);
+                if (source != null) return source;
+                // Pile intentionally falls through to Commander in the existing loader.
+            case Commander:
+                source = starterReferenceKey(difficulty.commanderDecks, color, difficulty, null);
+                return source == null ? "none" : source;
+            default:
+                return mode.name() + ":" + index;
+        }
+    }
+    private static String starterReferenceKey(ObjectMap<String, String> references, ColorSet color, DifficultyData difficulty, CardEdition edition) {
+        if (references != null) for (ObjectMap.Entry<String, String> entry : references) {
+            if (ColorSet.fromNames(entry.key.toCharArray()).getColor() == color.getColor()) {
+                return "file:" + entry.value + (edition == null ? "" : "|" + edition.getCode())
+                        + (entry.value != null && entry.value.endsWith(".json") ? "|" + difficulty.rewardMaxFactor : "");
+            }
         }
         return null;
     }

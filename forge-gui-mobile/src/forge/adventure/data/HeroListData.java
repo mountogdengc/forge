@@ -73,4 +73,31 @@ public class HeroListData {
         }
         return ret;
     }
+
+    public HeroData[] getHeroes() {
+        return heroes.clone();
+    }
+
+    /** Legacy avatars become independent choices; their shared atlas remains owned by the asset manager. */
+    public java.util.List<CharacterCreationData.Portrait> creationPortraits() {
+        java.util.List<CharacterCreationData.Portrait> result = new java.util.ArrayList<>();
+        for (int i = 0; i < heroes.length; i++) {
+            HeroData hero = heroes[i];
+            for (boolean female : new boolean[]{false, true}) {
+                String region = female ? hero.femaleAvatar : hero.maleAvatar;
+                int count = region == null ? 0 : avatarAtlas.createSprites(region).size;
+                for (int index = 0; index < count; index++) {
+                    CharacterCreationData.Portrait portrait = new CharacterCreationData.Portrait();
+                    String race = forge.adventure.character.CharacterCreationCatalog.id(hero.name);
+                    portrait.id = race + (female ? "-f-" : "-m-") + index;
+                    portrait.label = hero.name;
+                    portrait.races = new String[]{race};
+                    portrait.genders = new String[]{female ? "female" : "male"};
+                    portrait.legacy = true; portrait.heroIndex = i; portrait.female = female; portrait.avatarIndex = index;
+                    result.add(portrait);
+                }
+            }
+        }
+        return result;
+    }
 }

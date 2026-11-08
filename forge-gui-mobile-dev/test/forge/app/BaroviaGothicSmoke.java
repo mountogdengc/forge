@@ -84,6 +84,7 @@ public final class BaroviaGothicSmoke {
                 require(location.poiId.equals(expected.getProperty("poi")) && location.playerX == Float.parseFloat(expected.getProperty("x"))
                         && location.playerY == Float.parseFloat(expected.getProperty("y")), "Old Continue changed position");
                 life = Current.player().getLife(); gold = Current.player().getGold();
+                require(Current.player().getCharacterIdentity() == null, "Legacy save unexpectedly changed its portrait/sprite identity format");
                 require(life == Integer.parseInt(expected.getProperty("life")) && gold == Integer.parseInt(expected.getProperty("gold")), "Old Continue changed life/currency");
                 require(Current.player().checkQuestFlag("cosChapterThreeComplete"), "Old Continue lost completed chapter");
                 deck = Current.player().getSelectedDeck().getMain().toCardList("\n");

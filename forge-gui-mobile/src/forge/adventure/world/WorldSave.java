@@ -543,13 +543,22 @@ public class WorldSave {
     }
 
     public static WorldSave generateNewWorld(String name, boolean male, int race, int avatarIndex, ColorSet startingColorIdentity, DifficultyData diff, AdventureModes mode, int customDeckIndex, CardEdition starterEdition, long seed) {
+        return generateNewWorld(name, male, race, avatarIndex, startingColorIdentity, diff, mode, customDeckIndex,
+                starterEdition, seed, null, null);
+    }
+
+    public static WorldSave generateNewWorld(String name, boolean male, int race, int avatarIndex, ColorSet startingColorIdentity,
+            DifficultyData diff, AdventureModes mode, int customDeckIndex, CardEdition starterEdition, long seed,
+            forge.adventure.character.CharacterIdentity identity, Deck previewedDeck) {
         if (activePlaythrough == null) beginPlaythrough(CampaignManager.current(), name, name);
         worldAvailable = false;
         Forge.getLocalizer().loadAdventureBundle(Config.instance().getPlanePath(Config.instance().getSettingData().plane) + "languages/");
         if (!currentSave.world.generateNew(seed)) throw new IllegalStateException("The selected campaign could not generate its world.");
         currentSave.pointOfInterestChanges.clear();
-        Deck starterDeck = Config.instance().starterDeck(startingColorIdentity, diff, mode, customDeckIndex, starterEdition);
+        Deck starterDeck = previewedDeck == null
+                ? Config.instance().starterDeck(startingColorIdentity, diff, mode, customDeckIndex, starterEdition) : previewedDeck;
         currentSave.player.create(name, starterDeck, male, race, avatarIndex, mode == AdventureModes.Chaos, mode == AdventureModes.Custom, diff, mode);
+        currentSave.player.setCharacterIdentity(identity);
         currentSave.player.setWorldPosY((int) (currentSave.world.getData().playerStartPosY * currentSave.world.getData().height * currentSave.world.getTileSize()));
         currentSave.player.setWorldPosX((int) (currentSave.world.getData().playerStartPosX * currentSave.world.getData().width * currentSave.world.getTileSize()));
         WorldSaveHeader priorHeader = currentSave.header;

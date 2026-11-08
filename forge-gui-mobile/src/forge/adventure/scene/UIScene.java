@@ -252,6 +252,9 @@ public class UIScene extends Scene {
         }
     }
 
+    /** Ordinary control dialogs can navigate while the separate on-screen keyboard keeps its input guard. */
+    protected void enableDialogNavigation() { textboxOpen = false; }
+
     public Dialog createGenericDialog(String title, String label, String stringYes, String stringNo, Runnable runnableYes, Runnable runnableNo) {
         return createGenericDialog(title, label, stringYes, stringNo, runnableYes, runnableNo, false, "", false);
     }

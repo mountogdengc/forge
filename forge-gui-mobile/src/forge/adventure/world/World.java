@@ -54,7 +54,7 @@ public class World implements Disposable, SaveFileContent {
     private Pixmap emptyTile = null;
 
     public Random getRandom() {
-        return random;
+        return forge.adventure.character.StarterDeckPreview.randomOr(random);
     }
 
     public void restoreRandom(Random restored) {

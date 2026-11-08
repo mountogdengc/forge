@@ -206,6 +206,7 @@ public class PlayerStatisticScene extends UIScene {
 
         if (playerName != null) {
             String gender = Current.player().isFemale() ? "{GRADIENT=MAGENTA;MAUVE;1;1}\u2640{ENDGRADIENT}[BLACK] " : "{GRADIENT=CYAN;BLUE;1;1}\u2642{ENDGRADIENT}[BLACK] ";
+            if (Current.player().getCharacterIdentity() != null) gender = "";
             playerName.setText(gender + GamePlayerUtil.getGuiPlayer().getName());
             playerName.skipToTheEnd();
         }

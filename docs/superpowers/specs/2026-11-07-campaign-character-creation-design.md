@@ -1,0 +1,19 @@
+# Campaign character creation
+
+Approved through the interactive mockup and the November 7 implementation request.
+
+The existing Adventure client must present the campaign title first, then character name, gender, race, independent portrait and independent in-world appearance. Choices cycle with inline arrows and keyboard left/right. The sprite sits between its arrows without an appearance name. Portrait import and Begin journey are directly below the portrait. No repeated selection summary or portrait selection window appears.
+
+Race and gender each have an optional Match portraits checkbox, initially off unless a campaign explicitly configures otherwise. Combined filters intersect author-supplied portrait tags. Unspecified gender imposes no gender restriction. Filters never infer an identity from artwork or restrict an imported image. An empty collection explains how to broaden the choices or import; it cannot start a character without a portrait.
+
+Class identifies a campaign's starting deck. Its separate window browses classes/decks and their cards using the existing card image renderer in a fixed card-shaped area. Only color and card count appear below the class name. Existing campaign deck lists remain placeholders until separately authored; no shared/default deck names, metadata or contents change. Legacy campaigns retain mode, edition and custom/preconstructed/chaos deck choices in that window.
+
+Both campaign-supplied high-resolution portraits and player-imported PNG/JPEG files are supported. Barovia uses the four painted portrait concepts already shown, stored as one texture with square regions, without conversion to pixel art. Imported images are center-cropped to a square and normalized to 512 pixels, previewed before starting, embedded in the playthrough save, and rendered smoothly. The original file is never modified or required after saving. Input is bounded to 10 MiB and 4096 pixels per dimension. Invalid images report an error without clearing the prior selection.
+
+Configuration is optional `characterCreation` in campaign config.json: genders (stable id, label, name pool), races (stable id and label), portraits (stable id, image/region or legacy atlas reference, race and gender tags), appearances (stable id, sprite path, legacy fallback), starterClasses (stable id, label, deck path, color), import permission and initial filter flags. Missing collections inherit the existing hero catalog or existing deck-selection policy. IDs and paths are saved rather than positions in the new option arrays.
+
+New identity data is additive to the current player save, alongside the unchanged legacy heroRace/isFemale/avatarIndex fields. Old saves with no identity section follow exactly their former portrait, sprite and race paths. New characters persist race, gender, portrait and appearance independently, and keep their chosen images across save/Continue and campaign switches. Texture ownership must follow scene/player lifecycle; shared hero/card textures must not be disposed or have their sampling modified. Existing generateNewWorld/create callers stay valid.
+
+Scope excludes race/class bonuses, backgrounds, replacement deck lists, editing existing characters, remaking animated sprites, publishing, merging and pushing. Work is in the current checkout on codex/campaign-character-creation, per the user's workspace preference. Existing user profiles/saves and frozen playtest builds must not be written during validation.
+
+Validation covers inherited and curated campaigns, filtering and no-match recovery, imported image bounds and save portability, old identity fallback, new save round trips, fixed card geometry, card rendering, main-screen controls and campaign switches. Native checks use an invisible/unfocused window and disposable profiles. Final reporting distinguishes automated checks from unperformed physical/controller playtests.

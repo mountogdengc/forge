@@ -20,6 +20,7 @@ public class ConfigData {
     public String[] colorIdNames;
     // Null preserves inherited campaign options; explicit campaigns can curate their starts.
     public String[] allowedStarterModes;
+    public CharacterCreationData characterCreation;
     public String chapterCompletionQuestFlag;
     public String chapterCompletionText;
 

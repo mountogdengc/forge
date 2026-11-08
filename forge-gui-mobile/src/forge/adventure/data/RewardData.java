@@ -102,7 +102,7 @@ public class RewardData implements Serializable {
 
     static private void initializeAllCards() {
         cardPoolConfig = Config.instance();
-        commanderCardPool = AdventurePlayer.current().isCommanderMode();
+        commanderCardPool = forge.adventure.character.StarterDeckPreview.commanderOr(AdventurePlayer.current().isCommanderMode());
         ConfigData configData = cardPoolConfig.getConfigData();
         RewardData legals = configData.legalCards;
 
@@ -147,7 +147,7 @@ public class RewardData implements Serializable {
 
     static public Iterable<PaperCard> getAllCards() {
         if (allCards == null || cardPoolConfig != Config.instance()
-                || commanderCardPool != AdventurePlayer.current().isCommanderMode())
+                || commanderCardPool != forge.adventure.character.StarterDeckPreview.commanderOr(AdventurePlayer.current().isCommanderMode()))
             initializeAllCards();
         return allCards;
     }
@@ -180,7 +180,7 @@ public class RewardData implements Serializable {
         if (probability == 0 || rewardRandom.nextFloat() <= probability) {
             if(type == null || type.isEmpty())
                 type="randomCard";
-            int maxCount = Math.round(addMaxCount * Current.player().getDifficulty().rewardMaxFactor);
+            int maxCount = Math.round(addMaxCount * forge.adventure.character.StarterDeckPreview.rewardFactorOr(Current.player().getDifficulty().rewardMaxFactor));
             int addedCount = (maxCount > 0 ? rewardRandom.nextInt(maxCount) : 0);
 
             switch(type) {
@@ -327,7 +327,7 @@ public class RewardData implements Serializable {
                 case "deckCard":
                     if (cards == null)
                         return ret;
-                    for (PaperCard card : CardUtil.generateCards(cards,this, count + addedCount + Current.player().bonusDeckCards(), rewardRandom)) {
+                    for (PaperCard card : CardUtil.generateCards(cards,this, count + addedCount + forge.adventure.character.StarterDeckPreview.bonusCardsOr(Current.player().bonusDeckCards()), rewardRandom)) {
                         if (card != null)
                             ret.add(new Reward(card, isNoSell));
                     }

@@ -276,7 +276,7 @@ public class CardUtil {
                 this.colors = 0;
                 for (String color : type.colors) {
                     if ("colorID".equals(color))
-                        colors |= Current.player().getColorIdentity().getColor();
+                        colors |= forge.adventure.character.StarterDeckPreview.colorOr(Current.player().getColorIdentity()).getColor();
                     else
                         colors |= MagicColor.fromName(color.toLowerCase());
                 }
@@ -763,8 +763,18 @@ public class CardUtil {
 
     public static Deck getDeck(String path, boolean forAI, boolean isFantasyMode, String colors, boolean isTheme,
             boolean useGeneticAI, CardEdition starterEdition, boolean discourageDuplicates) {
+        return getDeck(Config.instance(), path, forAI, isFantasyMode, colors, isTheme, useGeneticAI, starterEdition, discourageDuplicates);
+    }
+
+    public static Deck getDeck(Config resources, String path, boolean forAI, boolean isFantasyMode, String colors,
+            boolean isTheme, boolean useGeneticAI) {
+        return getDeck(resources, path, forAI, isFantasyMode, colors, isTheme, useGeneticAI, null, true);
+    }
+
+    public static Deck getDeck(Config resources, String path, boolean forAI, boolean isFantasyMode, String colors,
+            boolean isTheme, boolean useGeneticAI, CardEdition starterEdition, boolean discourageDuplicates) {
         if (path.endsWith(".dck")) {
-            FileHandle fileHandle = Config.instance().getFile(path);
+            FileHandle fileHandle = resources.getFile(path);
             Deck deck = null;
             if (fileHandle != null) {
                 deck = DeckSerializer.fromFile(fileHandle.file());
@@ -784,7 +794,7 @@ public class CardUtil {
         }
 
         Json json = new Json();
-        FileHandle handle = Config.instance().getFile(path);
+        FileHandle handle = resources.getFile(path);
         if (handle.exists())
             return generateDeck(json.fromJson(GeneratedDeckData.class, handle), starterEdition, discourageDuplicates);
         Deck deck = DeckgenUtil.getRandomOrPreconOrThemeDeck(colors, true, false, true);

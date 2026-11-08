@@ -44,6 +44,9 @@ public class AdventurePlayer implements Serializable, SaveFileContent {
     private String name;
     private int heroRace;
     private int avatarIndex;
+    private forge.adventure.character.CharacterIdentity characterIdentity;
+    private forge.adventure.character.PortraitImages.Handle characterPortrait;
+    private boolean portraitLoadAttempted;
     private boolean isFemale;
     private ColorSet colorIdentity = ColorSet.WUBRG;
 
@@ -115,6 +118,7 @@ public class AdventurePlayer implements Serializable, SaveFileContent {
     }
 
     private void clear() {
+        setCharacterIdentity(null);
         //Ensure sensitive gameplay data is properly reset between games.
         //Reset all properties HERE.
         fantasyMode = false;
@@ -325,6 +329,7 @@ public class AdventurePlayer implements Serializable, SaveFileContent {
     }
 
     public Boolean isFemale() {
+        if (characterIdentity != null) return "female".equals(characterIdentity.genderId);
         return isFemale;
     }
     
@@ -454,6 +459,13 @@ public class AdventurePlayer implements Serializable, SaveFileContent {
         heroRace = data.readInt("heroRace");
         avatarIndex = data.readInt("avatarIndex");
         isFemale = data.readBool("isFemale");
+        try {
+            setCharacterIdentity(forge.adventure.character.CharacterIdentity.fromSaveData(data.readSubData("characterIdentity")));
+        } catch (RuntimeException error) {
+            // A damaged optional presentation section must not prevent an otherwise valid legacy save from loading.
+            setCharacterIdentity(null);
+            System.err.println("Unable to restore character presentation: " + error.getMessage());
+        }
 
         String _mode = data.readString("adventure_mode");
         if (_mode == null)
@@ -821,6 +833,7 @@ public class AdventurePlayer implements Serializable, SaveFileContent {
         data.store("name", name);
         data.store("heroRace", heroRace);
         data.store("avatarIndex", avatarIndex);
+        if (characterIdentity != null) data.store("characterIdentity", characterIdentity.toSaveData());
         data.store("isFemale", isFemale);
         data.store("colorIdentity", colorIdentity.getColor());
 
@@ -930,19 +943,48 @@ public class AdventurePlayer implements Serializable, SaveFileContent {
     }
 
     public String spriteName() {
+        if (characterIdentity != null && !characterIdentity.appearanceSprite.isEmpty()) {
+            try {
+                forge.adventure.character.PortraitImages.resource(Config.instance(), characterIdentity.appearanceSprite);
+                return characterIdentity.appearanceSprite;
+            } catch (IllegalArgumentException ignored) { /* Keep the legacy sprite if campaign art was removed. */ }
+        }
         return HeroListData.instance().getHero(heroRace, isFemale);
     }
 
     public FileHandle sprite() {
-        return Config.instance().getFile(HeroListData.instance().getHero(heroRace, isFemale));
+        return Config.instance().getFile(spriteName());
     }
 
     public TextureRegion avatar() {
+        if (characterIdentity != null) {
+            if (!portraitLoadAttempted) {
+                portraitLoadAttempted = true;
+                try {
+                    characterPortrait = forge.adventure.character.PortraitImages.load(Config.instance(), HeroListData.instance(),
+                            characterIdentity.portrait, characterIdentity.portraitPng);
+                } catch (RuntimeException error) {
+                    System.err.println("Unable to restore character portrait: " + error.getMessage());
+                }
+            }
+            if (characterPortrait != null) return characterPortrait.region;
+        }
         return HeroListData.instance().getAvatar(heroRace, isFemale, avatarIndex);
     }
 
     public String raceName() {
+        if (characterIdentity != null && !characterIdentity.raceLabel.isEmpty()) return characterIdentity.raceLabel;
         return HeroListData.instance().getRaces().get(Current.player().heroRace);
+    }
+
+    public forge.adventure.character.CharacterIdentity getCharacterIdentity() { return characterIdentity; }
+
+    public void setCharacterIdentity(forge.adventure.character.CharacterIdentity identity) {
+        if (characterPortrait != null) Forge.retireAdventureResource(characterPortrait);
+        characterPortrait = null;
+        portraitLoadAttempted = false;
+        characterIdentity = identity == null ? null
+                : forge.adventure.character.CharacterIdentity.fromSaveData(identity.toSaveData());
     }
 
     public GameStage getCurrentGameStage() {

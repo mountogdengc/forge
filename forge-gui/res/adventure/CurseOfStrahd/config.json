@@ -13,6 +13,21 @@
     "Village Vigil [+W]",
     "Grave Resolve [+B]"
   ],
+  "characterCreation": {
+    "allowPortraitImport": true,
+    "matchPortraitRace": false,
+    "matchPortraitGender": false,
+    "portraits": [
+      { "id": "wayfarer", "label": "The Wayfarer", "image": "portraits/travelers.png", "x": 0, "y": 0, "width": 627, "height": 627, "races": ["human"], "genders": ["nonbinary"] },
+      { "id": "keeper", "label": "The Keeper", "image": "portraits/travelers.png", "x": 627, "y": 0, "width": 627, "height": 627, "races": ["human"], "genders": ["female"] },
+      { "id": "watchman", "label": "The Watchman", "image": "portraits/travelers.png", "x": 0, "y": 627, "width": 627, "height": 627, "races": ["human"], "genders": ["male"] },
+      { "id": "wanderer", "label": "The Wanderer", "image": "portraits/travelers.png", "x": 627, "y": 627, "width": 627, "height": 627, "races": ["human"], "genders": ["female", "male", "nonbinary"] }
+    ],
+    "starterClasses": [
+      { "id": "paladin", "label": "Paladin", "deck": "decks/barovia-white.dck", "color": "W" },
+      { "id": "necromancer", "label": "Necromancer", "deck": "decks/barovia-black.dck", "color": "B" }
+    ]
+  },
   "restrictedCards": [
     "Black Lotus",
     "Mox Emerald",
