@@ -342,11 +342,10 @@ public final class CharacterCreationSmoke {
             require(Config.instance()==preview,"Generated preview uses the outgoing campaign policy");
             require(Current.world().getRandom()!=random,"Generated preview consumes the outgoing world's RNG");
             require(AdventureOverrides.instance()!=overrides,"Generated preview uses the outgoing booster overrides");
-            forge.adventure.data.RewardData.getAllCards();
-            try {
-                var commanderPool=forge.adventure.data.RewardData.class.getDeclaredField("commanderCardPool"); commanderPool.setAccessible(true);
-                require(!commanderPool.getBoolean(null),"Generated preview inherited outgoing Commander policy");
-            } catch(ReflectiveOperationException error) { throw new RuntimeException(error); }
+            for (var previewCard : forge.adventure.data.RewardData.getAllCards()) {
+                require(!previewCard.getRules().getAiHints().getRemNonCommanderDecks(),
+                        "Generated preview inherited outgoing Commander policy");
+            }
             var rule=new forge.adventure.data.RewardData(); rule.colors=new String[]{"colorID"};
             var predicate=new forge.adventure.util.CardUtil.CardPredicate(rule,true);
             var white=forge.StaticData.instance().getCommonCards().getCard("Doomed Traveler","ISD");

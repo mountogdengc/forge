@@ -21,6 +21,7 @@ import forge.adventure.util.*;
 import forge.card.CardEdition;
 import forge.card.ColorSet;
 import forge.deck.Deck;
+import forge.gui.GuiBase;
 import forge.localinstance.properties.ForgeConstants;
 import forge.player.GamePlayerUtil;
 
@@ -72,8 +73,8 @@ public class WorldSave {
     }
 
     private static long lastPreviewTimestamp = 0L;
+    private static volatile long previewRequestSequence;
     private static final long COOLDOWN_WINDOW_MS = 800L;
-    private static boolean firstCapture = true;
     private static final ExecutorService SAVE_EXECUTOR =
         Executors.newSingleThreadExecutor(r -> {
             Thread thread = new Thread(r, "Forge-Adventure-Save");
@@ -142,7 +143,7 @@ public class WorldSave {
                     campaign.getTitle(), campaign.getPlane(), runName, characterName);
             activePlaythrough = new PlaythroughSession(metadata);
             worldAvailable = false;
-            firstCapture = true;
+            lastPreviewTimestamp = 0L;
         } catch (IOException e) {
             lastError = "Could not create the playthrough: " + e.getMessage();
             throw new IllegalStateException(lastError, e);
@@ -789,26 +790,29 @@ public class WorldSave {
 
     // prevent spam of preview if user repeatedly/accidentally reopen scene that request previews
     public static void requestPreview() {
-        final long currentTimestamp = TimeUtils.millis();
+        requestPreview(false);
+    }
 
-        if (firstCapture) {
-            firstCapture = false;
-            // init once
+    /** Force a fresh preview when it will be serialized immediately by a graphics-thread quicksave. */
+    public static synchronized void requestPreview(final boolean force) {
+        final long currentTimestamp = TimeUtils.millis();
+        if (!force && currentTimestamp - lastPreviewTimestamp < COOLDOWN_WINDOW_MS) {
+            return;
+        }
+        lastPreviewTimestamp = currentTimestamp;
+        final long requestSequence = ++previewRequestSequence;
+        if (GuiBase.getInterface().isGuiThread()) {
+            // Input runs before drawing the next scene: the back buffer still shows the world.
             currentSave.header.createPreview();
             return;
         }
-
-        // If 800ms has not passed since the last successful generation, skip
-        if (currentTimestamp - lastPreviewTimestamp < COOLDOWN_WINDOW_MS) {
-            return;
-        }
-
-        // Update the timestamp immediately to lock out parallel thread spam on the spot
-        lastPreviewTimestamp = currentTimestamp;
-        Gdx.app.postRunnable(new Runnable() {
-            @Override
-            public void run() {
-                currentSave.header.createPreview();
+        final WorldSaveHeader requestedHeader = currentSave.header;
+        final PlaythroughSession requestedSession = activePlaythrough;
+        Gdx.app.postRunnable(() -> {
+            // Loading even the same run creates a new session. Never capture an old request into its replacement.
+            if (previewRequestSequence == requestSequence && currentSave.header == requestedHeader
+                    && activePlaythrough == requestedSession && !restoring) {
+                requestedHeader.createPreview();
             }
         });
     }

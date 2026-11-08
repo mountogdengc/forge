@@ -483,7 +483,7 @@ public abstract class GameStage extends Stage {
                 GameHUD.getInstance().addNotification(reason);
             } else {
                 if (!MapStage.getInstance().isInMap()) getPlayerSprite().storePos();
-                WorldSave.requestPreview();
+                WorldSave.requestPreview(true);
                 if (!WorldSave.getCurrentSave().quickSave())
                     GameHUD.getInstance().addNotification(WorldSave.getLastError());
             }

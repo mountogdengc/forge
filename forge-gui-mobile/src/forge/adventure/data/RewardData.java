@@ -95,15 +95,24 @@ public class RewardData implements Serializable {
         minDate          = rewardData.minDate;
     }
 
-    private static Iterable<PaperCard> allCards;
-    private static Iterable<PaperCard> allEnemyCards;
-    private static Config cardPoolConfig;
-    private static boolean commanderCardPool;
+    private static CardPools cardPools;
 
-    static private void initializeAllCards() {
-        cardPoolConfig = Config.instance();
-        commanderCardPool = forge.adventure.character.StarterDeckPreview.commanderOr(AdventurePlayer.current().isCommanderMode());
-        ConfigData configData = cardPoolConfig.getConfigData();
+    private static final class CardPools {
+        final Config config;
+        final boolean commander;
+        final List<PaperCard> cards;
+        final List<PaperCard> enemyCards;
+
+        CardPools(Config config, boolean commander, List<PaperCard> cards, List<PaperCard> enemyCards) {
+            this.config = config;
+            this.commander = commander;
+            this.cards = Collections.unmodifiableList(cards);
+            this.enemyCards = Collections.unmodifiableList(enemyCards);
+        }
+    }
+
+    private static CardPools initializeAllCards(Config config, boolean commander) {
+        ConfigData configData = config.getConfigData();
         RewardData legals = configData.legalCards;
 
         List<Predicate<PaperCard>> filters = new ArrayList<>();
@@ -119,13 +128,13 @@ public class RewardData implements Serializable {
         else
             filters.add(PaperCardPredicates.isObtainableAnyEdition());
 
-        if (Config.instance().getSettingData().excludeAlchemyVariants)
+        if (config.getSettingData().excludeAlchemyVariants)
             filters.add(PaperCardPredicates.IS_REBALANCED.negate());
 
         if (!FModel.getPreferences().getPrefBoolean(FPref.UI_ANTE))
             filters.add(pc -> !pc.getRules().hasKeyword("Remove CARDNAME from your deck before playing if you're not playing for ante."));
 
-        if (!commanderCardPool)
+        if (!commander)
             filters.add(pc -> !pc.getRules().getAiHints().getRemNonCommanderDecks());
 
         filters.add(pc -> !(pc.getRules().isCustom() && pc.getImageKey(false).startsWith(ImageKeys.ADVENTURECARD_PREFIX)));
@@ -134,28 +143,40 @@ public class RewardData implements Serializable {
         filters.add(pc -> !restrictedCards.contains(pc.getName()));
 
         // Filter out specific cards.
-        allCards = CardUtil.getFullCardPool(false).stream()
+        List<PaperCard> cards = CardUtil.getFullCardPool(false).stream()
                 .filter(IterableUtil.and(filters))
                 .collect(Collectors.toList());
 
-        //Filter AI cards for enemies.
-        allEnemyCards = IterableUtil.filter(allCards, input -> {
-            if (input == null) return false;
-            return !input.getRules().getAiHints().getRemAIDecks();
-        });
+        // Materialize once: each enemy template used to re-run this filter over the entire pool.
+        List<PaperCard> enemyCards = new ArrayList<>(cards.size());
+        for (PaperCard input : cards) {
+            if (input != null && !input.getRules().getAiHints().getRemAIDecks()) {
+                enemyCards.add(input);
+            }
+        }
+        return new CardPools(config, commander, cards, enemyCards);
     }
 
-    static public Iterable<PaperCard> getAllCards() {
-        if (allCards == null || cardPoolConfig != Config.instance()
-                || commanderCardPool != forge.adventure.character.StarterDeckPreview.commanderOr(AdventurePlayer.current().isCommanderMode()))
-            initializeAllCards();
-        return allCards;
+    private static synchronized CardPools getCardPools() {
+        Config config = Config.instance();
+        boolean commander = forge.adventure.character.StarterDeckPreview.commanderOr(AdventurePlayer.current().isCommanderMode());
+        if (cardPools == null || cardPools.config != config || cardPools.commander != commander) {
+            // Publish both complete pools together; failures leave the previous snapshot intact.
+            cardPools = initializeAllCards(config, commander);
+        }
+        return cardPools;
     }
 
-    public static void invalidateCardPool() {
-        allCards = null;
-        allEnemyCards = null;
-        cardPoolConfig = null;
+    public static Iterable<PaperCard> getAllCards() {
+        return getCardPools().cards;
+    }
+
+    public static Iterable<PaperCard> getAllEnemyCards() {
+        return getCardPools().enemyCards;
+    }
+
+    public static synchronized void invalidateCardPool() {
+        cardPools = null;
     }
 
     public Array<Reward> generate(boolean isForEnemy, boolean useSeedlessRandom) {
@@ -240,8 +261,8 @@ public class RewardData implements Serializable {
                                 ret.add(new Reward(card, isNoSell));
                         }
                     } else {
-                        getAllCards();
-                        for (PaperCard card : CardUtil.generateCards(isForEnemy ? allEnemyCards:allCards,this, count + addedCount, rewardRandom)) {
+                        CardPools pools = getCardPools();
+                        for (PaperCard card : CardUtil.generateCards(isForEnemy ? pools.enemyCards : pools.cards,this, count + addedCount, rewardRandom)) {
                             if (card != null)
                                 ret.add(new Reward(card, isNoSell));
                         }

@@ -5,6 +5,7 @@ import forge.CardStorageReader;
 import forge.Forge;
 import forge.GuiMobile;
 import forge.StaticData;
+import forge.card.CardDb;
 import forge.adventure.data.RewardData;
 import forge.adventure.data.SettingData;
 import forge.adventure.util.CardUtil;
@@ -31,6 +32,70 @@ import static org.testng.Assert.*;
 /** Real three-script database: never initializes the full catalog or a graphics application. */
 @Test(singleThreaded = true)
 public class CampaignCardLoadingTest {
+    private static final class CountingCard extends PaperCard {
+        int rulesReads;
+        CountingCard(PaperCard card) {
+            super(card.getRules(), card.getEdition(), card.getRarity());
+        }
+        @Override public forge.card.CardRules getRules() {
+            rulesReads++;
+            return super.getRules();
+        }
+    }
+
+    @Test
+    public void repeatedEnemyTemplateScansReuseTheFilteredCampaignPool() throws Exception {
+        try (Fixture fixture = new Fixture()) {
+            fixture.activate("AAA");
+            fixture.data.preloadEditionCards(Set.of("AAA"));
+            CardDb database = fixture.data.getCommonCards();
+            CountingCard counted = new CountingCard(database.getLoadedUniqueCards().stream()
+                    .filter(card -> card.getName().equals("Alpha Card")).findFirst().orElseThrow());
+            // Substitute only this tiny fixture's unique printing, so rules reads measure actual filtering work.
+            @SuppressWarnings("unchecked")
+            java.util.Map<forge.card.CardRules, PaperCard> unique =
+                    (java.util.Map<forge.card.CardRules, PaperCard>) field(CardDb.class, "uniqueCardsByRules").get(database);
+            unique.put(counted.getRules(), counted);
+            RewardData.getAllCards();
+            Iterable<PaperCard> enemies = enemyCards();
+            int readsAfterBuilding = counted.rulesReads;
+            assertTrue(readsAfterBuilding > 0);
+            for (int scan = 0; scan < 3; scan++) {
+                assertEquals(names(enemies), Set.of("Alpha Card", "Shared Card"));
+            }
+            assertEquals(counted.rulesReads, readsAfterBuilding,
+                    "Every template scan must reuse the materialized AI filter, not inspect every card again");
+            fixture.activate("BBB");
+            RewardData.getAllCards();
+            assertEquals(names(enemyCards()), Set.of("Beta Card", "Shared Card"));
+            assertEquals(names(enemies), Set.of("Alpha Card", "Shared Card"),
+                    "A previously returned pool remains a complete snapshot after switching campaigns");
+        }
+    }
+
+    @Test
+    public void cachedEnemyPoolStillExcludesCardsMarkedUnsuitableForTheAi() throws Exception {
+        try (Fixture fixture = new Fixture()) {
+            Files.writeString(fixture.root.resolve("cards/Beta_Card.txt"),
+                    "Name:Beta Card\nManaCost:W\nTypes:Sorcery\nOracle:Fixture.\nAI:RemoveDeck:All\n");
+            fixture.activate("BBB");
+            assertEquals(names(RewardData.getAllCards()), Set.of("Beta Card", "Shared Card"));
+            assertEquals(names(enemyCards()), Set.of("Shared Card"));
+            RewardData.invalidateCardPool();
+            assertEquals(names(enemyCards()), Set.of("Shared Card"));
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Iterable<PaperCard> enemyCards() throws Exception {
+        try {
+            return (Iterable<PaperCard>) RewardData.class.getMethod("getAllEnemyCards").invoke(null);
+        } catch (NoSuchMethodException beforeImport) {
+            RewardData.getAllCards();
+            return (Iterable<PaperCard>) field(RewardData.class, "allEnemyCards").get(null);
+        }
+    }
+
     @Test
     public void unassignedNamedRewardAndSavedPrintingResolveWithoutTheCatalog() throws Exception {
         try (Fixture fixture = new Fixture(true)) {

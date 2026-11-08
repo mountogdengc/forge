@@ -157,7 +157,15 @@ public class UIActor extends Group {
                 forge.adventure.theme.ThemePresentation.drawableFor(handle.name(), newActor.getName(), element.get("image"), presentationSkin)
                         .ifPresent(image::setDrawable);
             }
-            if (themeChrome != null) forge.adventure.theme.ThemePresentation.style(newActor, handle.name(), newActor.getName());
+            if (themeChrome != null) {
+                float declaredWidth = newActor.getWidth();
+                forge.adventure.theme.ThemePresentation.style(newActor, handle.name(), newActor.getName());
+                // Styling sets the label text, whose LabelFix implementation measures even an empty string.
+                // Explicit JSON geometry must survive that measurement; otherwise empty descriptions become 0 wide.
+                if (newActor instanceof TextraLabel && element.containsKey("width")) {
+                    newActor.setWidth(declaredWidth);
+                }
+            }
             addActor(newActor);
         }
 
