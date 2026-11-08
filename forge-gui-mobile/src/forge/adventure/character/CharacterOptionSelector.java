@@ -18,6 +18,9 @@ public class CharacterOptionSelector extends Selector {
         arrow.up = button.up; arrow.down = button.down; arrow.over = button.over;
         arrow.focused = button.focused; arrow.disabled = button.disabled;
         getLeftArrow().setStyle(arrow); getRightArrow().setStyle(arrow);
+        // These 17–19px rows cannot use the skin's 13px vertical button padding.
+        // Keep the complete font line inside the marquee's clipping rectangle.
+        getLabel().pad(0, 2, 0, 2);
         leftGlyph = glyph("<", button); rightGlyph = glyph(">", button);
         getLeftArrow().addActor(leftGlyph); getRightArrow().addActor(rightGlyph);
     }
