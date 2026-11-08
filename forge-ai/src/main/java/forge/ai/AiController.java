@@ -987,6 +987,9 @@ public class AiController {
         if (deckPlan(player).combos.payoffMustWait(player, sa)) {
             return AiPlayDecision.AnotherTime; // Replenish on a graveyard without its enchantments is a wasted card
         }
+        if (DredgeLine.mustWait(player, deckPlan(player).combos, sa)) {
+            return AiPlayDecision.AnotherTime; // Breakthrough without the Diamond and a dredger only empties the hand
+        }
         if (!checkAiSpecificRestrictions(sa)) {
             return AiPlayDecision.CantPlayAi;
         }
@@ -1874,6 +1877,22 @@ public class AiController {
             }
         }
 
+        if (topOwnedByAI && flatMonteCarloActive()) {
+            // Thassa's Oracle trigger on the stack: Demonic Consultation exiles the library in response, the Oracle wins
+            final SpellAbility consultation = ConsultationWin.response(player);
+            if (consultation != null) {
+                return consultation;
+            }
+        }
+
+        if (topOwnedByAI && flatMonteCarloActive()) {
+            // Breakthrough on the stack: Lion's Eye Diamond puts the dredgers into the graveyard before the four draws
+            final SpellAbility diamond = DredgeLine.response(player, deckPlan(player).combos);
+            if (diamond != null) {
+                return diamond;
+            }
+        }
+
         if (topOwnedByAI) {
             // AI's own spell: should probably let my stuff resolve first, but may want to copy the SA or respond to it
             // in a scripted timed fashion.
@@ -1920,6 +1939,51 @@ public class AiController {
         skipped = saList.stream().filter(SpellAbility::isSkip).collect(Collectors.toList());
         if (!skipped.isEmpty())
             saList.removeAll(skipped);
+        // Deterministic shortcuts must honor the same failed-cast circuit breaker as ordinary choices.
+        saList.removeIf(this::hasFailedToCast);
+        if (flatMonteCarloActive()) {
+            final SpellAbility vault = VaultLoop.sureCast(player, saList);
+            if (vault != null) {
+                return vault; // Time Vault and what untaps it: an extra turn every turn, no rollouts needed
+            }
+        }
+        if (flatMonteCarloActive()) {
+            final SpellAbility oracle = ConsultationWin.sureCast(player, saList);
+            if (oracle != null) {
+                return oracle; // Thassa's Oracle with Demonic Consultation in hand: cast it, the Consultation answers its trigger
+            }
+            final SpellAbility pileDraw = DoomsdayPile.sureDraw(player, saList);
+            if (pileDraw != null && !hasFailedToCast(pileDraw)) {
+                return pileDraw; // Doomsday has cut the library: draw through the pile to the Oracle
+            }
+            final SpellAbility will = WillReplay.sureCast(player, saList);
+            if (will != null) {
+                return will; // Yawgmoth's Will with Time Walk, a Mox or Black Lotus in the graveyard
+            }
+            final SpellAbility orchard = OathTiming.sureCast(player);
+            if (orchard != null) {
+                return orchard; // Oath of Druids: the opponent is given a creature at its end step so that the upkeep trigger works
+            }
+            final SpellAbility dreadReturn = DreadReturnWin.sureCast(player, saList);
+            if (dreadReturn != null) {
+                return dreadReturn; // Oops! All Spells: the flashback of Dread Return brings the Oracle back to an empty library
+            }
+        }
+        if (flatMonteCarloActive()) {
+            final SpellAbility donateFinish = DonateCombo.sureFinish(player, saList);
+            if (donateFinish != null) {
+                if (!hasFailedToCast(donateFinish)) {
+                    lastFlatMcResult = null;
+                    return donateFinish; // Removing donated Illusions now makes the only opponent lose 20 life.
+                }
+                for (SpellAbility ability = donateFinish; ability != null; ability = ability.getSubAbility()) {
+                    ability.resetTargets();
+                }
+                if (donateFinish.costHasManaX()) {
+                    donateFinish.setXManaCostPaid(null);
+                }
+            }
+        }
         // Stiflenought: the Dreadnought is cast as soon as its Stifle can be paid for as well, without rollouts
         final SpellAbility sureStifle = StifleCombo.sureCast(player, saList);
         if (sureStifle != null) {
@@ -1929,6 +1993,12 @@ public class AiController {
             final SpellAbility sure = deckPlan(player).combos.sureMadnessPlay(player, saList);
             if (sure != null) {
                 return sure; // safe and sure: no rollouts needed
+            }
+        }
+        if (flatMonteCarloActive() && game.getStack().isEmpty()) {
+            final SpellAbility cut = deckPlan(player).combos.sureCutPlay(player, saList);
+            if (cut != null) {
+                return cut; // the library cut with a finisher in place: no rollouts needed
             }
         }
 
@@ -2433,6 +2503,55 @@ public class AiController {
                 && !deckPlan(player).combos.isKeyCard(h) && !TutorPlan.hasPlanTarget(player, sa);
     }
 
+    /**
+     * A mana rock or mana creature marked AI:RemoveDeck:All (Springleaf Drum): the heuristics never cast it, and
+     * without broad discovery nothing else would either, so it is always offered to the rollouts, which decide.
+     */
+    private boolean isRemoveDeckManaPermanent(final SpellAbility sa) {
+        final Card h = sa.getHostCard();
+        return h != null && sa.isSpell() && h.isPermanent() && !h.isLand() && ComputerUtilCard.isCardRemAIDeck(h)
+                && !h.getManaAbilities().isEmpty();
+    }
+
+    /**
+     * A cost-reduction permanent marked AI:RemoveDeck:All or :Random (Sapphire Medallion, for example): the heuristic may omit it,
+     * but FlatMC should still compare deploying it when it can make a catalogued setup safer or cheaper.
+     */
+    boolean isRemoveDeckCostReductionPermanent(final SpellAbility sa) {
+        final Card h = sa == null ? null : sa.getHostCard();
+        // CardAiHints keeps the All and Random deck-removal flags separately; include both for this narrow exception.
+        if (h == null || !sa.isSpell() || !h.isPermanent() || h.isLand()
+            || !(ComputerUtilCard.isCardRemAIDeck(h) || ComputerUtilCard.isCardRemRandomDeck(h))) {
+            return false;
+        }
+        for (final StaticAbility ability : h.getStaticAbilities()) {
+            final String activator = ability.getParam("Activator");
+            final String valid = ability.getParam("ValidCard");
+            if (ability.getMode().contains(StaticAbilityMode.ReduceCost)
+                && (activator == null || "You".equals(activator) || "Any".equals(activator))
+                && (valid == null || !valid.contains("OppCtrl"))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Whether this ability moves a card from its controller's hand onto the battlefield.
+     * These hidden-origin ChangeZone abilities need an eligible card in hand (Aether Vial,
+     * Quicksilver Amulet, Belbe's Portal, Elvish Piper, and similar effects).
+     */
+    private static boolean isHandToBattlefieldChangeZone(final SpellAbility sa) {
+        for (SpellAbility current = sa; current != null; current = current.getSubAbility()) {
+            if (current.getApi() == ApiType.ChangeZone && current.hasParam("Origin")
+                && ZoneType.listValueOf(current.getParam("Origin")).contains(ZoneType.Hand)
+                && ZoneType.Battlefield.toString().equals(current.getParam("Destination"))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private boolean isLegalDiscovery(final SpellAbility sa, final AiPlayDecision opinion) {
         if (sa == null) {
             return false;
@@ -2447,15 +2566,31 @@ public class AiController {
         if (GuardedAbilities.isNeverLogic(sa) && !GuardedAbilities.mayConsider(player, sa, true)) {
             return false; // the script says the AI never plays it, and nothing makes an exception
         }
+        // ChangeZoneAi rejects a hidden-origin activation when no eligible card is in hand.
+        // Broad discovery must not add it back just because the activation cost itself is payable.
+        if (isHandToBattlefieldChangeZone(sa)
+                && (opinion == AiPlayDecision.CantPlayAi || opinion == AiPlayDecision.MissingNeededCards)) {
+            return false;
+        }
         switch (opinion) {
             case CantPlaySa, CantAfford, CantAffordX, TimingRestrictions, WouldDestroyLegend, WouldBecomeZeroToughnessCreature:
                 return false;
             default:
                 break;
         }
+        if (TimedAbilityGuard.isTimed(sa) && !opinion.willingToPlay()) {
+            // a manland, crew, saddle or station is only worth its cost at one moment of the turn, and the heuristics
+            // know which: their "not now" is final, and the rollouts cannot see the waste (nothing in the score)
+            return false;
+        }
+        if (ActivationGuard.problem(player, sa) != null) {
+            return false; // nothing to act on: a discovered tap or mana for no effect (Oran-Rief with no new green creature)
+        }
         final Card host = sa.getHostCard();
         final ComboPlan combos = deckPlan(player).combos;
         if (!FlatMonteCarloPicker.isDiscoverable(sa, getBoolProperty(AiProps.FLAT_MC_BROAD_DISCOVERY) || isFlatMonteCarloMax())
+                && !isRemoveDeckManaPermanent(sa)
+                && !isRemoveDeckCostReductionPermanent(sa)
                 && !combos.isFuelPlay(sa)
                 && !(host != null && ComputerUtilCard.isCardRemAIDeck(host) && combos.isKeyCard(host))
                 && !TutorPlan.hasUse(player, sa)) {
@@ -3204,6 +3339,11 @@ public class AiController {
 
         if (decider == player && sa.getApi() != ApiType.Learn) {
             // the win card of a cheating spell, the creature to put into the graveyard: what the deck is built for
+            final Card tinkered = flatMonteCarloActive() && destination == ZoneType.Battlefield && origin.contains(ZoneType.Library)
+                    ? VaultLoop.tinkerPick(player, fetchList) : null; // Tinker: the vault or its key, whatever the deck's plan
+            if (tinkered != null) {
+                return tinkered;
+            }
             final Card forCombo = deckPlan(player).combos.choose(player, destination, origin, fetchList);
             if (forCombo != null) {
                 return forCombo;

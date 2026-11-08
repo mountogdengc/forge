@@ -6,6 +6,8 @@ import forge.Forge;
 import forge.GuiMobile;
 import forge.StaticData;
 import forge.card.CardDb;
+import forge.card.CardAiHints;
+import forge.ai.simulation.AiCardLists;
 import forge.adventure.data.RewardData;
 import forge.adventure.data.SettingData;
 import forge.adventure.util.CardUtil;
@@ -15,6 +17,7 @@ import forge.gui.GuiBase;
 import forge.gui.interfaces.IGuiBase;
 import forge.item.PaperCard;
 import forge.localinstance.properties.ForgeConstants;
+import forge.localinstance.properties.ForgePreferences.FPref;
 import forge.model.FModel;
 import forge.util.Localizer;
 import org.testng.annotations.Test;
@@ -93,6 +96,55 @@ public class CampaignCardLoadingTest {
         } catch (NoSuchMethodException beforeImport) {
             RewardData.getAllCards();
             return (Iterable<PaperCard>) field(RewardData.class, "allEnemyCards").get(null);
+        }
+    }
+
+    @Test
+    public void flatMcEligibilityRefreshesWithoutChangingPlayerPoolsOrCampaignRestrictions() throws Exception {
+        Object oldKept = field(CardAiHints.class, "keptForFlatMc").get(null);
+        String oldPreference = FModel.getPreferences().getPref(FPref.MATCH_AI_FLAT_MONTE_CARLO);
+        java.util.Map<Field, Object> oldLists = new java.util.LinkedHashMap<>();
+        for (String name : List.of("rolesFile", "comboFiles", "data", "warned")) {
+            Field value = field(AiCardLists.class, name);
+            oldLists.put(value, value.get(null));
+        }
+        try (Fixture fixture = new Fixture()) {
+            for (String name : List.of("Beta", "Shared")) {
+                Files.writeString(fixture.root.resolve("cards/" + name + "_Card.txt"),
+                        "Name:" + name + " Card\nManaCost:W\nTypes:Sorcery\nOracle:Fixture.\nAI:RemoveDeck:All\n");
+            }
+            AiCardLists.configure(() -> List.of("storm_payoff | Beta Card"));
+            CardAiHints.setKeptForFlatMc(name -> FModel.getPreferences().getPrefBoolean(FPref.MATCH_AI_FLAT_MONTE_CARLO)
+                    && AiCardLists.isFlatMcPlayable(name));
+            FModel.getPreferences().setPref(FPref.MATCH_AI_FLAT_MONTE_CARLO, false);
+            fixture.activate("BBB");
+            Iterable<PaperCard> playerPool = RewardData.getAllCards();
+            Iterable<PaperCard> strictSnapshot = enemyCards();
+            assertEquals(names(playerPool), Set.of("Beta Card", "Shared Card"));
+            assertTrue(names(strictSnapshot).isEmpty());
+
+            FModel.getPreferences().setPref(FPref.MATCH_AI_FLAT_MONTE_CARLO, true);
+            Iterable<PaperCard> supportedSnapshot = enemyCards();
+            assertEquals(names(supportedSnapshot), Set.of("Beta Card"), "Only supported marked cards become eligible");
+            assertTrue(names(strictSnapshot).isEmpty(), "A previously returned pool cannot change under its caller");
+            assertEquals(names(RewardData.getAllCards()), names(playerPool));
+
+            FModel.getPreferences().setPref(FPref.MATCH_AI_FLAT_MONTE_CARLO, false);
+            assertTrue(names(enemyCards()).isEmpty(), "Disabling Flat MC must not retain its expanded cached eligibility");
+            assertEquals(names(supportedSnapshot), Set.of("Beta Card"));
+
+            FModel.getPreferences().setPref(FPref.MATCH_AI_FLAT_MONTE_CARLO, true);
+            fixture.activate("BBB");
+            Config.instance().getConfigData().restrictedCards = new String[]{"Beta Card"};
+            assertEquals(names(RewardData.getAllCards()), Set.of("Shared Card"));
+            assertTrue(names(enemyCards()).isEmpty(), "Combo roles cannot override a campaign's restricted cards");
+            fixture.activate("AAA");
+            assertEquals(names(enemyCards()), Set.of("Alpha Card"), "A campaign's allowed editions still apply");
+        } finally {
+            FModel.getPreferences().setPref(FPref.MATCH_AI_FLAT_MONTE_CARLO, oldPreference);
+            field(CardAiHints.class, "keptForFlatMc").set(null, oldKept);
+            for (var entry : oldLists.entrySet()) entry.getKey().set(null, entry.getValue());
+            RewardData.invalidateCardPool();
         }
     }
 

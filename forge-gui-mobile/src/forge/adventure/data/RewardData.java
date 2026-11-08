@@ -100,18 +100,20 @@ public class RewardData implements Serializable {
     private static final class CardPools {
         final Config config;
         final boolean commander;
+        final boolean flatMc;
         final List<PaperCard> cards;
         final List<PaperCard> enemyCards;
 
-        CardPools(Config config, boolean commander, List<PaperCard> cards, List<PaperCard> enemyCards) {
+        CardPools(Config config, boolean commander, boolean flatMc, List<PaperCard> cards, List<PaperCard> enemyCards) {
             this.config = config;
             this.commander = commander;
+            this.flatMc = flatMc;
             this.cards = Collections.unmodifiableList(cards);
             this.enemyCards = Collections.unmodifiableList(enemyCards);
         }
     }
 
-    private static CardPools initializeAllCards(Config config, boolean commander) {
+    private static CardPools initializeAllCards(Config config, boolean commander, boolean flatMc) {
         ConfigData configData = config.getConfigData();
         RewardData legals = configData.legalCards;
 
@@ -150,19 +152,22 @@ public class RewardData implements Serializable {
         // Materialize once: each enemy template used to re-run this filter over the entire pool.
         List<PaperCard> enemyCards = new ArrayList<>(cards.size());
         for (PaperCard input : cards) {
-            if (input != null && !input.getRules().getAiHints().getRemAIDecks()) {
+            // Capture the setting for this whole snapshot; campaign legality was already applied above.
+            if (input != null && (!input.getRules().getAiHints().getRemAIDecks()
+                    || flatMc && forge.ai.simulation.AiCardLists.isFlatMcPlayable(input.getName()))) {
                 enemyCards.add(input);
             }
         }
-        return new CardPools(config, commander, cards, enemyCards);
+        return new CardPools(config, commander, flatMc, cards, enemyCards);
     }
 
     private static synchronized CardPools getCardPools() {
         Config config = Config.instance();
         boolean commander = forge.adventure.character.StarterDeckPreview.commanderOr(AdventurePlayer.current().isCommanderMode());
-        if (cardPools == null || cardPools.config != config || cardPools.commander != commander) {
+        boolean flatMc = FModel.getPreferences().getPrefBoolean(FPref.MATCH_AI_FLAT_MONTE_CARLO);
+        if (cardPools == null || cardPools.config != config || cardPools.commander != commander || cardPools.flatMc != flatMc) {
             // Publish both complete pools together; failures leave the previous snapshot intact.
-            cardPools = initializeAllCards(config, commander);
+            cardPools = initializeAllCards(config, commander, flatMc);
         }
         return cardPools;
     }

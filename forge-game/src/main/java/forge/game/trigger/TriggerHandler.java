@@ -59,6 +59,11 @@ public class TriggerHandler {
         delayedTriggers.add(trig);
     }
 
+    /** Snapshot of pending delayed triggers, for forecasting obligations that outlive the casting turn. */
+    public final List<Trigger> getDelayedTriggers() {
+        return List.copyOf(delayedTriggers);
+    }
+
     public final void clearDelayedTrigger() {
         delayedTriggers.clear();
     }

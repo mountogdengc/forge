@@ -677,6 +677,17 @@ public class PlayerControllerAi extends PlayerController {
                 }
             }
         } else if (destinationZone == ZoneType.Library) {
+            // Doomsday: the five cards go on top in the order that draws through to the winner
+            if (source != null && forge.ai.simulation.DoomsdayPile.isDoomsday(source.getHostCard())) {
+                try {
+                    final CardCollectionView pile = forge.ai.simulation.DoomsdayPile.order(player, cards);
+                    if (pile != null) {
+                        return pile;
+                    }
+                } catch (final RuntimeException e) {
+                    // fall through to the general ordering
+                }
+            }
             // Ponder and similar cards
             Player p = cards.getFirst().getController(); // whose library are we reordering?
             CardCollection reordered = new CardCollection();
@@ -1778,12 +1789,18 @@ public class PlayerControllerAi extends PlayerController {
                 name = SpecialCardAi.CursedScroll.chooseCard(player, sa);
             } else if (logic.equals("PithingNeedle") || logic.equals("PhyrexianRevoker") || logic.equals("SorcerousSpyglass")) {
                 name = SpecialCardAi.PithingNeedle.chooseCard(player, sa);
+            } else if (logic.equals(NamedDiscard.LOGIC)) {
+                name = NamedDiscard.chooseName(player, sa, valid);
             }
 
             if (!StringUtils.isBlank(name)) {
                 return name;
             }
         } else {
+            final String outside = forge.ai.simulation.ConsultationWin.nameOutsideLibrary(player, sa);
+            if (outside != null) {
+                return outside; // Demonic Consultation with Thassa's Oracle: a card that is not in the library
+            }
             CardCollectionView list = CardLists.filterControlledBy(getGame().getCardsInGame(), player.getOpponents());
             list = CardLists.filter(list, CardPredicates.NON_LANDS);
             if (!list.isEmpty()) {
